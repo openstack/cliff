@@ -1,0 +1,6 @@
+include setup.py
+include distribute_setup.py
+include tests/*
+recursive-include docs *.rst *.py *.html *.css *.js *.png *.txt
+include tox.ini
+
