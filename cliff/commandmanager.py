@@ -21,25 +21,24 @@ class CommandManager(object):
     def _load_commands(self):
         for ep in pkg_resources.iter_entry_points(self.namespace):
             LOG.debug('found command %r', ep.name)
-            self.commands[ep.name] = ep
+            self.commands[ep.name.replace('_', ' ')] = ep
         return
 
     def find_command(self, argv):
         """Given an argument list, find a command and
         return the processor and any remaining arguments.
         """
-        orig_args = argv[:]
+        search_args = argv[:]
         name = ''
-        while argv:
-            if argv[0].startswith('-'):
-                raise ValueError('Invalid command %r' % argv[0])
-            next_val = argv.pop(0)
-            name = '%s_%s' % (name, next_val) if name else next_val
+        while search_args:
+            if search_args[0].startswith('-'):
+                raise ValueError('Invalid command %r' % search_args[0])
+            next_val = search_args.pop(0)
+            name = '%s %s' % (name, next_val) if name else next_val
             if name in self.commands:
                 cmd_ep = self.commands[name]
                 cmd_factory = cmd_ep.load()
-                cmd = cmd_factory()
-                return (cmd, argv)
+                return (cmd_factory, name, search_args)
         else:
             raise ValueError('Did not find command processor for %r' %
-                             (orig_args,))
+                             (argv,))

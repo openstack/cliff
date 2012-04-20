@@ -15,15 +15,16 @@ class TestCommandManager(CommandManager):
     def _load_commands(self):
         self.commands = {
             'one': TestCommand,
-            'two_words': TestCommand,
-            'three_word_command': TestCommand,
+            'two words': TestCommand,
+            'three word command': TestCommand,
             }
 
 
 def test_lookup_and_find():
     def check(mgr, argv):
-        cmd, remaining = mgr.find_command(argv)
+        cmd, name, remaining = mgr.find_command(argv)
         assert cmd
+        assert name == ' '.join(argv)
         assert not remaining
     mgr = TestCommandManager('test')
     for expected in [['one'],
@@ -36,7 +37,7 @@ def test_lookup_and_find():
 
 def test_lookup_with_remainder():
     def check(mgr, argv):
-        cmd, remaining = mgr.find_command(argv)
+        cmd, name, remaining = mgr.find_command(argv)
         assert cmd
         assert remaining == ['--opt']
     mgr = TestCommandManager('test')
