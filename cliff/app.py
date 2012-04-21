@@ -22,6 +22,7 @@ class App(object):
     def _build_parser(self, description, version):
         self.parser = optparse.OptionParser(
             description=description,
+            version='%prog {}'.format(version),
             )
         self.parser.disable_interspersed_args()
         self.parser.add_option(
