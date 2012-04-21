@@ -54,10 +54,12 @@ class App(object):
         raise SystemExit()
 
     def run(self, argv):
-        parsed_args, remainder = self.parser.parse_args(argv)
+        if not argv:
+            argv = ['-h']
+        app_options, remainder = self.parser.parse_args(argv)
         # FIXME(dhellmann): set up logging based on verbosity flag
         cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(remainder)
-        cmd = cmd_factory(self, parsed_args)
+        cmd = cmd_factory(self, app_options)
         cmd_parser = cmd.get_parser(' '.join([self.NAME, cmd_name]))
         parsed_args = cmd_parser.parse_args(sub_argv)
         return cmd.run(parsed_args)
