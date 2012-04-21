@@ -31,15 +31,6 @@ class App(object):
             dest='verbose',
             help='Increase verbosity of output. Can be repeated.',
             )
-        # self.parser.add_option(
-        #     '-V', '--version',
-        #     action='version',
-        #     version='%(prog)s {}'.format(version),
-        #     )
-        # FIXME(dhellmann): Add help option to list available commands.
-        # subparsers = self.parser.add_subparsers(dest='command')
-        # for name, factory in self.command_manager.commands.items():
-        #     subparsers.add_parser(name)
         return
 
     def run(self, argv):
