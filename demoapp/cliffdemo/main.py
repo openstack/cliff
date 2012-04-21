@@ -13,6 +13,10 @@ class DemoApp(App):
             )
 
 
-def main():
+def main(argv=sys.argv[1:]):
     myapp = DemoApp()
-    myapp.run(sys.argv[1:])
+    myapp.run(argv)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
