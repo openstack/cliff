@@ -24,6 +24,9 @@ class CommandManager(object):
             self.commands[ep.name.replace('_', ' ')] = ep
         return
 
+    def __iter__(self):
+        return iter(self.commands.items())
+
     def find_command(self, argv):
         """Given an argument list, find a command and
         return the processor and any remaining arguments.
