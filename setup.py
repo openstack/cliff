@@ -160,6 +160,7 @@ setup(
     entry_points={
         'cliff.formatter.list': [
             'table = cliff.formatters.table:TableLister',
+            'csv = cliff.formatters.commaseparated:CSVLister',
             ],
         },
 

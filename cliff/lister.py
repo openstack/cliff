@@ -27,7 +27,9 @@ class Lister(Command):
             description='List output formatter options',
             )
         formatter_choices = sorted(self.formatters.keys())
-        formatter_default = formatter_choices[0]
+        formatter_default = 'table'
+        if formatter_default not in formatter_choices:
+            formatter_default = formatter_choices[0]
         formatter_group.add_argument(
             '-f', '--format',
             dest='formatter',
