@@ -1,9 +1,13 @@
 """Application base class for providing a list of data as output.
 """
+import logging
 
 import pkg_resources
 
 from .command import Command
+
+
+LOG = logging.getLogger(__name__)
 
 
 class Lister(Command):
@@ -15,10 +19,14 @@ class Lister(Command):
         self.load_formatter_plugins()
 
     def load_formatter_plugins(self):
-        self.formatters = dict(
-            (ep.name, ep.load()())
-            for ep in pkg_resources.iter_entry_points('cliff.formatter.list')
-            )
+        self.formatters = {}
+        for ep in pkg_resources.iter_entry_points('cliff.formatter.list'):
+            try:
+                self.formatters[ep.name] = ep.load()()
+            except Exception as err:
+                LOG.error(err)
+                if self.app_args.debug:
+                    raise
 
     def get_parser(self, prog_name):
         parser = super(Lister, self).get_parser(prog_name)
