@@ -22,41 +22,48 @@ class App(object):
 
     def __init__(self, description, version, command_manager):
         self.command_manager = command_manager
-        self._build_parser(description, version)
+        self.parser = self.build_option_parser(description, version)
 
-    def _build_parser(self, description, version):
-        self.parser = optparse.OptionParser(
+    def build_option_parser(self, description, version):
+        """Return an optparse option parser for this application.
+
+        Subclasses may override this method to extend
+        the parser with more global options.
+        """
+        parser = optparse.OptionParser(
             description=description,
             version='%prog {}'.format(version),
             add_help_option=False,
             )
-        self.parser.disable_interspersed_args()
-        self.parser.add_option(
+        parser.disable_interspersed_args()
+        parser.add_option(
             '-v', '--verbose',
             action='count',
             dest='verbose_level',
             default=self.DEFAULT_VERBOSE_LEVEL,
             help='Increase verbosity of output. Can be repeated.',
             )
-        self.parser.add_option(
+        parser.add_option(
             '-q', '--quiet',
             action='store_const',
             dest='verbose_level',
             const=0,
             help='suppress output except warnings and errors',
             )
-        self.parser.add_option(
+        parser.add_option(
             '-h', action='help',
             help="show this help message and exit",
             )
-        self.parser.add_option(
+        parser.add_option(
             '--help', action='callback',
             callback=self.show_verbose_help,
             help="show verbose help message and exit",
             )
-        return
+        return parser
 
     def show_verbose_help(self, *args):
+        """Displays the normal syntax info and a list of available subcommands.
+        """
         self.parser.print_help()
         print('')
         print('Commands:')
@@ -94,13 +101,28 @@ class App(object):
         root_logger.addHandler(console)
         return
 
+    def prepare_to_run_command(self, cmd):
+        """Perform any preliminary work needed to run a command.
+        """
+        return
+
+    def clean_up(self, cmd, result):
+        """Hook run after a command is done to shutdown the app.
+        """
+        return
+
     def run(self, argv):
+        """Equivalent to the main program for the application.
+        """
         if not argv:
             argv = ['-h']
         self.options, remainder = self.parser.parse_args(argv)
         self.configure_logging()
         cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(remainder)
         cmd = cmd_factory(self, self.options)
+        self.prepare_to_run_command(cmd)
         cmd_parser = cmd.get_parser(' '.join([self.NAME, cmd_name]))
         parsed_args = cmd_parser.parse_args(sub_argv)
-        return cmd.run(parsed_args)
+        result = cmd.run(parsed_args)
+        self.clean_up(cmd, result)
+        return result

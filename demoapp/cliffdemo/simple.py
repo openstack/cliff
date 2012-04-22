@@ -9,5 +9,6 @@ class Simple(Command):
     log = logging.getLogger(__name__)
 
     def run(self, parsed_args):
+        self.log.info('sending greeting')
         self.log.debug('debugging')
-        self.log.info('hi!')
+        print('hi!')
