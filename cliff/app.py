@@ -20,8 +20,21 @@ class App(object):
     LOG_FILE_MESSAGE_FORMAT = '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
     DEFAULT_VERBOSE_LEVEL = 1
 
-    def __init__(self, description, version, command_manager):
+    def __init__(self, description, version, command_manager,
+                 stdin=None, stdout=None, stderr=None):
+        """Initialize the application.
+
+        :param description: One liner explaining the program purpose
+        :param version: String containing the application version number
+        :param command_manager: A CommandManager instance
+        :param stdin: Standard input stream
+        :param stdout: Standard output stream
+        :param stderr: Standard error output stream
+        """
         self.command_manager = command_manager
+        self.stdin = stdin or sys.stdin
+        self.stdout = stdout or sys.stdout
+        self.stderr = stderr or sys.stderr
         self.parser = self.build_option_parser(description, version)
 
     def build_option_parser(self, description, version):

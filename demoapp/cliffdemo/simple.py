@@ -11,7 +11,7 @@ class Simple(Command):
     def run(self, parsed_args):
         self.log.info('sending greeting')
         self.log.debug('debugging')
-        print('hi!')
+        self.app.stdout.write('hi!\n')
 
 
 class Error(Command):
