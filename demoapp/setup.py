@@ -163,6 +163,7 @@ setup(
         'cliff.demo': [
             'simple = cliffdemo.simple:Simple',
             'two_part = cliffdemo.simple:Simple',
+            'error = cliffdemo.simple:Error',
             ],
         # 'virtualenvwrapper.initialize': [
         #     'user_scripts = virtualenvwrapper.user_scripts:initialize',

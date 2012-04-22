@@ -59,6 +59,12 @@ class App(object):
             callback=self.show_verbose_help,
             help="show verbose help message and exit",
             )
+        parser.add_option(
+            '--debug', 
+            default=False,
+            action='store_true',
+            help='show tracebacks on errors',
+            )
         return parser
 
     def show_verbose_help(self, *args):
@@ -106,7 +112,7 @@ class App(object):
         """
         return
 
-    def clean_up(self, cmd, result):
+    def clean_up(self, cmd, result, err):
         """Hook run after a command is done to shutdown the app.
         """
         return
@@ -120,9 +126,18 @@ class App(object):
         self.configure_logging()
         cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(remainder)
         cmd = cmd_factory(self, self.options)
-        self.prepare_to_run_command(cmd)
-        cmd_parser = cmd.get_parser(' '.join([self.NAME, cmd_name]))
-        parsed_args = cmd_parser.parse_args(sub_argv)
-        result = cmd.run(parsed_args)
-        self.clean_up(cmd, result)
+        err = None
+        result = 1
+        try:
+            self.prepare_to_run_command(cmd)
+            cmd_parser = cmd.get_parser(' '.join([self.NAME, cmd_name]))
+            parsed_args = cmd_parser.parse_args(sub_argv)
+            result = cmd.run(parsed_args)
+        except Exception as err:
+            if self.options.debug:
+                LOG.exception(err)
+                raise
+            LOG.error(err)
+        finally:
+            self.clean_up(cmd, result, err)
         return result

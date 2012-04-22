@@ -12,3 +12,13 @@ class Simple(Command):
         self.log.info('sending greeting')
         self.log.debug('debugging')
         print('hi!')
+
+
+class Error(Command):
+    "Always raises an error"
+
+    log = logging.getLogger(__name__)
+
+    def run(self, parsed_args):
+        self.log.info('causing error')
+        raise RuntimeError('this is the expected exception')
