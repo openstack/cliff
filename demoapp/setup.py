@@ -164,6 +164,7 @@ setup(
             'simple = cliffdemo.simple:Simple',
             'two_part = cliffdemo.simple:Simple',
             'error = cliffdemo.simple:Error',
+            'files = cliffdemo.list:Files',
             ],
         # 'virtualenvwrapper.initialize': [
         #     'user_scripts = virtualenvwrapper.user_scripts:initialize',

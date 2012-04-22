@@ -158,13 +158,9 @@ setup(
                                    ),
 
     entry_points={
-        # 'console_scripts': [
-        #     'venvw_hook = virtualenvwrapper.hook_loader:main'
-        #     ],
-        # 'virtualenvwrapper.initialize': [
-        #     'user_scripts = virtualenvwrapper.user_scripts:initialize',
-        #     'project = virtualenvwrapper.project:initialize',
-        #     ],
+        'cliff.formatter.list': [
+            'table = cliff.formatters.table:TableLister',
+            ],
         },
 
     zip_safe=False,
