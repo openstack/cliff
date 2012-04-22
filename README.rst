@@ -5,3 +5,12 @@
 cliff is a framework for building command line programs. It uses
 setuptools entry points to provide subcommands, output formatters, and
 other extensions.
+
+To do
+=====
+
+- Should commands have an explicit API for checking whether the user
+  can invoke them?
+- example show app
+- change API for list app to expect a sequence of dictionaries?
+- unicode output for python 2 (incompatible with csv?)
