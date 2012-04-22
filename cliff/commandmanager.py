@@ -1,7 +1,6 @@
 """Discover and lookup command plugins.
 """
 
-import argparse
 import logging
 
 import pkg_resources
