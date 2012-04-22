@@ -17,7 +17,7 @@ class App(object):
     NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 
     CONSOLE_MESSAGE_FORMAT = '%(message)s'
-    LOG_FILE_MESSAGE_FORMAT = '%(asctime)s %(levelname)s %(name)s %(message)s'
+    LOG_FILE_MESSAGE_FORMAT = '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
     DEFAULT_VERBOSE_LEVEL = 1
 
     def __init__(self, description, version, command_manager):
@@ -89,7 +89,7 @@ class App(object):
         file_handler.setFormatter(formatter)
         root_logger.addHandler(file_handler)
 
-        # Send higher-level messages to the console, too
+        # Send higher-level messages to the console via stderr
         console = logging.StreamHandler()
         console_level = {0: logging.WARNING,
                          1: logging.INFO,
