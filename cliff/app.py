@@ -150,7 +150,13 @@ class App(object):
             if self.options.debug:
                 LOG.exception(err)
                 raise
-            LOG.error(err)
+            LOG.error('ERROR: %s', err)
         finally:
-            self.clean_up(cmd, result, err)
+            try:
+                self.clean_up(cmd, result, err)
+            except Exception as err2:
+                if self.options.debug:
+                    LOG.exception(err2)
+                else:
+                    LOG.error('Could not clean up: %s', err2)
         return result
