@@ -144,7 +144,9 @@ setup(
 
     provides=['cliff',
               ],
-    install_requires=['distribute'],
+    install_requires=['distribute',
+                      'PrettyTable',
+                      ],
 
     namespace_packages=[],
     packages=find_packages(),
