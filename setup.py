@@ -126,6 +126,7 @@ setup(
     author_email='doug.hellmann@gmail.com',
 
     url='https://github.com/dreamhost/cliff',
+    download_url='https://github.com/dreamhost/cliff/tarball/master',
 
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: Apache Software License',
