@@ -1,35 +1,50 @@
-Running demoapp
-===============
+=================
+ Running demoapp
+=================
 
 Setup
 -----
 
-First, you need to create a virtual environment and switch to it::
+First, you need to create a virtual environment and activate it.
+
+::
 
  $ pip install virtualenv
  $ virtualenv .venv
  $ . .venv/bin/activate
+ (.venv)$ 
 
-Now, install the demo into the virtual environment::
+Next, install ``cliff`` in the environment.
 
- $ python setup.py install
+::
+
+ (.venv)$ python setup.py install
+
+Now, install the demo application into the virtual environment.
+
+::
+
+ (.venv)$ cd demoapp
+ (.venv)$ python setup.py install
 
 Usage
 -----
 
 With cliff and the demo setup up, you can now play with it.
 
-Here are a list of the commands available::
+To see a list of commands availble, run::
 
- XXX
+  (.venv)$ cliffdemo --help
 
-Here is some example usage::
+To see help for an individual command, include the command name on the
+command line::
 
- XXX
+  (.venv)$ cliffdemo files --help
 
 Cleaning Up
 -----------
 
 Finally, when done, deactivate your virtual environment::
 
- $ deactivate
+ (.venv)$ deactivate
+ $
