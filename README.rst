@@ -14,3 +14,7 @@ To do
 - example show app
 - change API for list app to expect a sequence of dictionaries?
 - unicode output for python 2 (incompatible with csv?)
+- json formatter(s)
+- pprint formatter(s)
+- pretty but non-table formatter(s)
+- shell script formatter(s)? (properties as variable names)
