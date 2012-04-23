@@ -18,3 +18,8 @@ To do
 - pprint formatter(s)
 - pretty but non-table formatter(s)
 - shell script formatter(s)? (properties as variable names)
+- create a few example commands that use a sqlite database to show how
+  to manage transactions
+- switch setup/teardown functions in app to use some sort of context
+  manager?
+
