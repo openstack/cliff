@@ -22,4 +22,6 @@ To do
   to manage transactions
 - switch setup/teardown functions in app to use some sort of context
   manager?
-
+- switch to distutils2 and the extensions package?
+  - http://docs.python.org/dev/packaging/setupcfg.html
+  - http://pypi.python.org/pypi/extensions
