@@ -15,6 +15,8 @@ Contents:
    demoapp
    list_commands
    classes
+   install
+   developers
 
 
 Indices and tables
