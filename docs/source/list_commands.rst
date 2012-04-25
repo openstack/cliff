@@ -34,6 +34,15 @@ The ``csv`` formatter produces a comma-separated-values document as
 output. CSV data can be imported into a database or spreadsheet for
 further manipulation.
 
+::
+    
+    (.venv)$ cliffdemo files -f csv
+    "Name","Size"
+    "build",136
+    "cliffdemo.log",2690
+    "Makefile",5569
+    "source",408
+
 PrettyTable
 -----------
 
@@ -41,6 +50,18 @@ The ``PrettyTable`` formatter uses PrettyTable_ to produce output
 formatted for human consumption.
 
 .. _PrettyTable: http://code.google.com/p/prettytable/
+
+::
+    
+    (.venv)$ cliffdemo files
+    +---------------+------+
+    |      Name     | Size |
+    +---------------+------+
+    | build         |  136 |
+    | cliffdemo.log | 2546 |
+    | Makefile      | 5569 |
+    | source        |  408 |
+    +---------------+------+
 
 Creating Your Own Formatter
 ---------------------------
