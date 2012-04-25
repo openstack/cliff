@@ -3,14 +3,18 @@
 =======================================================
 
 cliff is a framework for building command line programs. It uses
-setuptools `entry points`_ to provide subcommands, output formatters, and
-other extensions.
+plugins to define sub-commands, output formatters, and other
+extensions.
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   introduction
+   demoapp
+   list_commands
+   classes
 
 
 Indices and tables
@@ -19,6 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-.. _entry points: http://packages.python.org/distribute/setuptools.html
-
