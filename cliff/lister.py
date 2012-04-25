@@ -1,5 +1,6 @@
 """Application base class for providing a list of data as output.
 """
+import abc
 import logging
 
 import pkg_resources
@@ -13,6 +14,7 @@ LOG = logging.getLogger(__name__)
 class Lister(Command):
     """Command base class for providing a list of data as output.
     """
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, app, app_args):
         super(Lister, self).__init__(app, app_args)
@@ -49,6 +51,11 @@ class Lister(Command):
         for name, formatter in sorted(self.formatters.items()):
             formatter.add_argument_group(parser)
         return parser
+
+    @abc.abstractmethod
+    def get_data(self, parsed_args):
+        """Return an iterable containing the data to be listed.
+        """
 
     def run(self, parsed_args):
         column_names, data = self.get_data(parsed_args)
