@@ -167,10 +167,6 @@ setup(
             'error = cliffdemo.simple:Error',
             'files = cliffdemo.list:Files',
             ],
-        # 'virtualenvwrapper.initialize': [
-        #     'user_scripts = virtualenvwrapper.user_scripts:initialize',
-        #     'project = virtualenvwrapper.project:initialize',
-        #     ],
         },
 
     zip_safe=False,
