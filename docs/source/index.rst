@@ -1,10 +1,10 @@
-.. cliff documentation master file, created by
-   sphinx-quickstart on Wed Apr 25 11:14:29 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+=======================================================
+ cliff -- Command Line Interface Formulation Framework
+=======================================================
 
-Welcome to cliff's documentation!
-=================================
+cliff is a framework for building command line programs. It uses
+setuptools `entry points`_ to provide subcommands, output formatters, and
+other extensions.
 
 Contents:
 
@@ -19,4 +19,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _entry points: http://packages.python.org/distribute/setuptools.html
 
