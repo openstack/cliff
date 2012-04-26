@@ -1,9 +1,9 @@
 """Application base class.
 """
 
+import argparse
 import logging
 import logging.handlers
-import optparse
 import os
 import sys
 
@@ -38,41 +38,40 @@ class App(object):
         self.parser = self.build_option_parser(description, version)
 
     def build_option_parser(self, description, version):
-        """Return an optparse option parser for this application.
+        """Return an argparse option parser for this application.
 
         Subclasses may override this method to extend
         the parser with more global options.
         """
-        parser = optparse.OptionParser(
+        parser = argparse.ArgumentParser(
             description=description,
-            version='%prog {}'.format(version),
-            add_help_option=False,
+            add_help=False,
             )
-        parser.disable_interspersed_args()
-        parser.add_option(
+        parser.add_argument(
+            '--version',
+            action='version',
+            version='%(prog)s {}'.format(version),
+            )
+        parser.add_argument(
             '-v', '--verbose',
             action='count',
             dest='verbose_level',
             default=self.DEFAULT_VERBOSE_LEVEL,
             help='Increase verbosity of output. Can be repeated.',
             )
-        parser.add_option(
+        parser.add_argument(
             '-q', '--quiet',
             action='store_const',
             dest='verbose_level',
             const=0,
             help='suppress output except warnings and errors',
             )
-        parser.add_option(
-            '-h', action='help',
+        parser.add_argument(
+            '-h', '--help',
+            action='help',
             help="show this help message and exit",
             )
-        parser.add_option(
-            '--help', action='callback',
-            callback=self.show_verbose_help,
-            help="show verbose help message and exit",
-            )
-        parser.add_option(
+        parser.add_argument(
             '--debug', 
             default=False,
             action='store_true',
@@ -135,7 +134,7 @@ class App(object):
         """
         if not argv:
             argv = ['-h']
-        self.options, remainder = self.parser.parse_args(argv)
+        self.options, remainder = self.parser.parse_known_args(argv)
         self.configure_logging()
         cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(remainder)
         cmd = cmd_factory(self, self.options)
