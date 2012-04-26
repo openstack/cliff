@@ -17,6 +17,7 @@ Contents:
    classes
    install
    developers
+   history
 
 
 Indices and tables
