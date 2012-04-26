@@ -26,7 +26,7 @@ You will need the following packages in order to build the docs:
 - docutils
 
 Once all of the tools are installed into a virtualenv using
-pip, run ``make html`` to generate the HTML version of the
+pip, run ``make docs`` to generate the HTML version of the
 documentation::
 
     $ make docs
@@ -51,7 +51,7 @@ documentation::
     Build finished. The HTML pages are in build/html.
     
 The output version of the documentation ends up in
-``./cliff/docs/build/html`` inside your sandbox.
+``./docs/build/html`` inside your sandbox.
 
 Running Tests
 =============
