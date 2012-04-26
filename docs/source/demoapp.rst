@@ -39,11 +39,12 @@ Usage
 Both cliff and the demo installed, you can now run the command
 ``cliffdemo``.
 
-For basic command usage instructions, run::
+For basic command usage instructions and a list of the commands
+available from the plugins, run::
 
   (.venv)$ cliffdemo -h
 
-To see a list of commands availble from the plugins, run::
+or::
 
   (.venv)$ cliffdemo --help
 
@@ -61,10 +62,9 @@ The ``simple`` command prints this output to the console:
   hi!
 
 
-To see help for an individual command, include the command name on the
-command line::
+To see help for an individual command, use the ``help`` command::
 
-  (.venv)$ cliffdemo files --help
+  (.venv)$ cliffdemo help files
 
 The Source
 ==========
