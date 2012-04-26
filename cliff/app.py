@@ -7,6 +7,8 @@ import logging.handlers
 import os
 import sys
 
+from .help import HelpAction, HelpCommand
+
 LOG = logging.getLogger(__name__)
 
 
@@ -32,6 +34,7 @@ class App(object):
         :param stderr: Standard error output stream
         """
         self.command_manager = command_manager
+        self.command_manager.add_command('help', HelpCommand)
         self.stdin = stdin or sys.stdin
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
@@ -68,7 +71,9 @@ class App(object):
             )
         parser.add_argument(
             '-h', '--help',
-            action='help',
+            action=HelpAction,
+            nargs=0,
+            default=self.command_manager,  # tricky
             help="show this help message and exit",
             )
         parser.add_argument(
@@ -78,18 +83,6 @@ class App(object):
             help='show tracebacks on errors',
             )
         return parser
-
-    def show_verbose_help(self, *args):
-        """Displays the normal syntax info and a list of available subcommands.
-        """
-        self.parser.print_help()
-        print('')
-        print('Commands:')
-        for name, ep in sorted(self.command_manager):
-            factory = ep.load()
-            cmd = factory(self, None)
-            print('  %-13s  %s' % (name, cmd.get_description()))
-        sys.exit(0)
 
     def configure_logging(self):
         """Create logging handlers for any log output.
