@@ -19,11 +19,15 @@ class HelpAction(argparse.Action):
         for name, ep in sorted(command_manager):
             factory = ep.load()
             cmd = factory(self, None)
-            print('  %-13s  %s' % (name, cmd.get_description()))
+            one_liner = cmd.get_description().split('\n')[0]
+            print('  %-13s  %s' % (name, one_liner))
         sys.exit(0)
 
 
 class HelpCommand(Command):
+    """print detailed help for another command
+    """
+
     def get_parser(self, prog_name):
         parser = super(HelpCommand, self).get_parser(prog_name)
         parser.add_argument('cmd',
