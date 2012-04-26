@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/sphinx/conf.py too!
-VERSION = '0.1'
+VERSION = '0.2'
 
 # Bootstrap installation of Distribute
 import distribute_setup
