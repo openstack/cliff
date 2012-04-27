@@ -2,6 +2,12 @@
  Release History
 =================
 
+0.3
+
+  - Add ShowOne base class for commands that show details about single
+    objects.
+  - Fix a problem with Lister when there is no data to be printed.
+
 0.2
 
   - Incorporate changes from dtroyer to replace use of optparse in App
