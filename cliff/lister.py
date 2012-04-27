@@ -54,7 +54,8 @@ class Lister(Command):
 
     @abc.abstractmethod
     def get_data(self, parsed_args):
-        """Return an iterable containing the data to be listed.
+        """Return a tuple containing the column names and an iterable
+        containing the data to be listed.
         """
 
     def run(self, parsed_args):
