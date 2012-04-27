@@ -162,8 +162,11 @@ setup(
 
     entry_points={
         'cliff.formatter.list': [
-            'table = cliff.formatters.table:TableLister',
+            'table = cliff.formatters.table:TableFormatter',
             'csv = cliff.formatters.commaseparated:CSVLister',
+            ],
+        'cliff.formatter.show': [
+            'table = cliff.formatters.table:TableFormatter',
             ],
         },
 

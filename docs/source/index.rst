@@ -14,6 +14,7 @@ Contents:
    introduction
    demoapp
    list_commands
+   show_commands
    classes
    install
    developers

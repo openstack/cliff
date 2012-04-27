@@ -166,6 +166,7 @@ setup(
             'two_part = cliffdemo.simple:Simple',
             'error = cliffdemo.simple:Error',
             'files = cliffdemo.list:Files',
+            'file = cliffdemo.show:File',
             ],
         },
 

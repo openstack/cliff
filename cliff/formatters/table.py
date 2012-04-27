@@ -3,10 +3,10 @@
 
 import prettytable
 
-from .base import ListFormatter
+from .base import ListFormatter, SingleFormatter
 
 
-class TableLister(ListFormatter):
+class TableFormatter(ListFormatter, SingleFormatter):
 
     ALIGNMENTS = {
         int: 'r',
@@ -45,6 +45,22 @@ class TableLister(ListFormatter):
             for row in data_iter:
                 x.add_row(row)
         formatted = x.get_string(fields=(parsed_args.columns or column_names))
+        stdout.write(formatted)
+        stdout.write('\n')
+        return
+
+    def emit_one(self, column_names, data, stdout, parsed_args):
+        x = prettytable.PrettyTable(('Field', 'Value'))
+        x.set_padding_width(1)
+        # Align all columns left because the values are
+        # not all the same type.
+        x.set_field_align('Field', 'l')
+        x.set_field_align('Value', 'l')
+        desired_columns = parsed_args.columns
+        for name, value in zip(column_names, data):
+            if name in desired_columns or not desired_columns:
+                x.add_row((name, value))
+        formatted = x.get_string(fields=('Field', 'Value'))
         stdout.write(formatted)
         stdout.write('\n')
         return
