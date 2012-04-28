@@ -85,14 +85,20 @@ The :class:`DemoApp` class inherits from :class:`App` and overrides
 also passes a :class:`CommandManager` instance configured to look for
 plugins in the ``cliff.demo`` namespace.
 
-The :func:`prepare_to_run_command` method of :class:`DemoApp` will be
-invoked after the main program arguments are parsed and the command is
-identified, but before the command is given its arguments and
-run. This hook is intended for opening connections to remote web
+The :func:`initialize_app` method of :class:`DemoApp` will be invoked
+after the main program arguments are parsed, but before any command
+processing is performed and before the application enters interactive
+mode. This hook is intended for opening connections to remote web
 services, databases, etc. using arguments passed to the main
 application.
 
-The :func:`clean_up` method of :class:`DemoApp` is invoked after the
+The :func:`prepare_to_run_command` method of :class:`DemoApp` will be
+invoked after a command is identified, but before the command is given
+its arguments and run. This hook is intended for pre-command
+validation or setup that must be repeated and cannot be handled by
+:func:`initialize_app`.
+
+The :func:`clean_up` method of :class:`DemoApp` is invoked after a
 command runs. If the command raised an exception, the exception object
 is passed to :func:`clean_up`. Otherwise the ``err`` argument is
 ``None``.

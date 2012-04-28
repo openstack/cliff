@@ -15,6 +15,7 @@ Contents:
    demoapp
    list_commands
    show_commands
+   interactive_mode
    classes
    install
    developers
@@ -27,3 +28,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. todolist::

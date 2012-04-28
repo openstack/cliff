@@ -5,6 +5,8 @@
 dev
 
   - Add shell formatter for single objects.
+  - Add interactive mode.
+  - Expand documentation.
 
 0.3
 

@@ -6,6 +6,9 @@ import inspect
 
 class Command(object):
     """Base class for command plugins.
+
+    :param app: Application instance invoking the command.
+    :paramtype app: cliff.app.App
     """
     __metaclass__ = abc.ABCMeta
 

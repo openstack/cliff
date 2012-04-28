@@ -8,6 +8,12 @@ App
 .. autoclass:: cliff.app.App
    :members:
 
+InteractiveApp
+==============
+
+.. autoclass:: cliff.interactive.InteractiveApp
+   :members:
+
 CommandManager
 ==============
 

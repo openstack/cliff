@@ -12,6 +12,20 @@ LOG = logging.getLogger(__name__)
 
 
 class InteractiveApp(cmd2.Cmd):
+    """Provides "interactive mode" features.
+
+    Refer to the cmd2_ and cmd_ documentation for details
+    about subclassing and configuring this class.
+
+    .. _cmd2: http://packages.python.org/cmd2/index.html
+    .. _cmd: http://docs.python.org/library/cmd.html
+
+    :param parent_app: The calling application (expected to be derived
+                       from :class:`cliff.main.App`).
+    :param command_manager: A :class:`cliff.commandmanager.CommandManager` instance.
+    :param stdin: Standard input stream
+    :param stdout: Standard output stream
+    """
 
     use_rawinput = True
     doc_header = "Shell commands (type help <topic>):"
@@ -32,10 +46,8 @@ class InteractiveApp(cmd2.Cmd):
         self.parent_app.run_subcommand(line_parts)
 
     def completedefault(self, text, line, begidx, endidx):
-        """Tab-completion for commands known to the command manager.
-
-        Does not handle options on the commands.
-        """
+        # Tab-completion for commands known to the command manager.
+        # Does not handle options on the commands.
         if not text:
             completions = sorted(n for n, v in self.command_manager)
         else:
@@ -75,6 +87,9 @@ class InteractiveApp(cmd2.Cmd):
         return
 
     def get_names(self):
+        # Override the base class version to filter out
+        # things that look like they should be hidden
+        # from the user.
         return [n
                 for n in cmd2.Cmd.get_names(self)
                 if not n.startswith('do__')

@@ -19,7 +19,7 @@ fit.
 Cliff Objects
 =============
 
-Cliff is organized around three objects that are combined to create a
+Cliff is organized around four objects that are combined to create a
 useful command line program.
 
 The Application
@@ -49,6 +49,15 @@ support for those plugins. Each :class:`Command` subclass is
 responsible for taking action based on instructions from the user. It
 defines its own local argument parser (usually using argparse_) and a
 :func:`run` method that does the appropriate work.
+
+The Interactive Application
+---------------------------
+
+The main program uses an :class:`cliff.interactive.InteractiveApp`
+instance to provide a command-shell mode in which the user can type
+multiple commands before the program exits. Many cliff-based
+applications will be able to use the default implementation of
+:class:`InteractiveApp` without subclassing it.
 
 .. _setuptools entry points: http://packages.python.org/distribute/setuptools.html
 

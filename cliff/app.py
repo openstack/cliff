@@ -15,6 +15,21 @@ LOG = logging.getLogger(__name__)
 
 class App(object):
     """Application base class.
+
+    :param description: one-liner explaining the program purpose
+    :paramtype description: str
+    :param version: application version number
+    :paramtype version: str
+    :param command_manager: plugin loader
+    :paramtype command_manager: cliff.commandmanager.CommandManager
+    :param stdin: Standard input stream
+    :paramtype stdin: readable I/O stream
+    :param stdout: Standard output stream
+    :paramtype stdout: writable I/O stream
+    :param stderr: Standard error output stream
+    :paramtype stderr: writable I/O stream
+    :param interactive_app_factory: callable to create an interactive application
+    :paramtype interactive_app_factory: cliff.interactive.InteractiveApp
     """
 
     NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
@@ -24,21 +39,16 @@ class App(object):
     DEFAULT_VERBOSE_LEVEL = 1
 
     def __init__(self, description, version, command_manager,
-                 stdin=None, stdout=None, stderr=None):
+                 stdin=None, stdout=None, stderr=None,
+                 interactive_app_factory=InteractiveApp):
         """Initialize the application.
-
-        :param description: One liner explaining the program purpose
-        :param version: String containing the application version number
-        :param command_manager: A CommandManager instance
-        :param stdin: Standard input stream
-        :param stdout: Standard output stream
-        :param stderr: Standard error output stream
         """
         self.command_manager = command_manager
         self.command_manager.add_command('help', HelpCommand)
         self.stdin = stdin or sys.stdin
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
+        self.interactive_app_factory = interactive_app_factory
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
 
@@ -47,6 +57,11 @@ class App(object):
 
         Subclasses may override this method to extend
         the parser with more global options.
+
+        :param description: full description of the application
+        :paramtype description: str
+        :param version: version number for the application
+        :paramtype version: str
         """
         parser = argparse.ArgumentParser(
             description=description,
@@ -116,6 +131,9 @@ class App(object):
 
     def run(self, argv):
         """Equivalent to the main program for the application.
+
+        :param argv: input arguments and options
+        :paramtype argv: list of str
         """
         self.options, remainder = self.parser.parse_known_args(argv)
         self.configure_logging()
@@ -138,17 +156,27 @@ class App(object):
 
     def prepare_to_run_command(self, cmd):
         """Perform any preliminary work needed to run a command.
+
+        :param cmd: command processor being invoked
+        :paramtype cmd: cliff.command.Command
         """
         return
 
     def clean_up(self, cmd, result, err):
         """Hook run after a command is done to shutdown the app.
+
+        :param cmd: command processor being invoked
+        :paramtype cmd: cliff.command.Command
+        :param result: return value of cmd
+        :paramtype result: int
+        :param err: exception or None
+        :paramtype err: Exception
         """
         return
 
     def interact(self):
         self.interactive_mode = True
-        interpreter = InteractiveApp(self, self.command_manager, self.stdin, self.stdout)
+        interpreter = self.interactive_app_factory(self, self.command_manager, self.stdin, self.stdout)
         interpreter.prompt = '(%s) ' % self.NAME
         interpreter.cmdloop()
         return 0

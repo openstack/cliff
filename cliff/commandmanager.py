@@ -23,6 +23,10 @@ class EntryPointWrapper(object):
 
 class CommandManager(object):
     """Discovers commands and handles lookup based on argv data.
+
+    :param namespace: String containing the setuptools entrypoint namespace
+                      for the plugins to be loaded. For example,
+                      ``'cliff.formatter.list'``.
     """
     def __init__(self, namespace):
         self.commands = {}
