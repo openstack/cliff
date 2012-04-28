@@ -2,7 +2,7 @@
  Release History
 =================
 
-dev
+0.4
 
   - Add shell formatter for single objects.
   - Add interactive mode.

@@ -1,5 +1,5 @@
 ======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 0.3
+ cliff -- Command Line Interface Formulation Framework -- version 0.4
 ======================================================================
 
 .. tags: python, cliff, release, DreamHost
@@ -11,9 +11,9 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Add ShowOne base class for commands that show details about single
-  objects.
-- Fix a problem with Lister when there is no data to be printed.
+- Add shell formatter for single objects.
+- Add interactive mode.
+- Expand documentation.
 
 Documentation
 =============
