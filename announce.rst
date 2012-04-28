@@ -34,5 +34,5 @@ Use pip::
 
 See `the installation guide`_ for more details.
 
-.. _the installation guide: http://cliff.readthedocs.org/en/latest/install.html>
+.. _the installation guide: http://cliff.readthedocs.org/en/latest/install.html
 
