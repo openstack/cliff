@@ -26,3 +26,4 @@ To do
 - switch setup/teardown functions in app to use some sort of context
   manager?
 - interactive shell mode
+- add options to csv formatter to control output (delimiter, etc.)
