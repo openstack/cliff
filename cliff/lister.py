@@ -33,7 +33,7 @@ class Lister(Command):
     def get_parser(self, prog_name):
         parser = super(Lister, self).get_parser(prog_name)
         formatter_group = parser.add_argument_group(
-            title='Output Formatters',
+            title='output formatters',
             description='List output formatter options',
             )
         formatter_choices = sorted(self.formatters.keys())

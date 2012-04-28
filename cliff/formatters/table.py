@@ -16,12 +16,16 @@ class TableFormatter(ListFormatter, SingleFormatter):
         }
 
     def add_argument_group(self, parser):
-        group = parser.add_argument_group('Table Formatter')
+        group = parser.add_argument_group(
+            title='table formatter',
+            description='Pretty-print output in a table',
+            )
         group.add_argument(
             '-c', '--column',
             action='append',
             default=[],
             dest='columns',
+            metavar='COLUMN',
             help='specify the column(s) to include, can be repeated',
             )
 
