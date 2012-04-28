@@ -19,6 +19,13 @@ class ShellFormatter(SingleFormatter):
             metavar='VARIABLE',
             help='specify the variable(s) to include, can be repeated',
             )
+        group.add_argument(
+            '--prefix',
+            action='store',
+            default='',
+            dest='prefix',
+            help='add a prefix to all variable names',
+            )
 
     def emit_one(self, column_names, data, stdout, parsed_args):
         variable_names = [c.lower().replace(' ', '_')
@@ -27,5 +34,5 @@ class ShellFormatter(SingleFormatter):
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):
             if name in desired_columns or not desired_columns:
-                stdout.write('%s="%s"\n' % (name, value))
+                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
         return

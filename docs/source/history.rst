@@ -2,6 +2,10 @@
  Release History
 =================
 
+dev
+
+  - Add shell formatter for single objects.
+
 0.3
 
   - Add ShowOne base class for commands that show details about single

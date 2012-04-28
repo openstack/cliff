@@ -27,10 +27,10 @@ commands. :class:`ShowOne` adds a command line switch to let the user
 specify the formatter they want, so you don't have to do any extra
 work in your application.
 
-PrettyTable
------------
+table
+-----
 
-The ``PrettyTable`` formatter uses PrettyTable_ to produce output
+The ``table`` formatter uses PrettyTable_ to produce output
 formatted for human consumption.
 
 .. _PrettyTable: http://code.google.com/p/prettytable/
@@ -47,6 +47,27 @@ formatted for human consumption.
     | GID           | 20           |
     | Modified Time | 1335569964.0 |
     +---------------+--------------+
+
+shell
+-----
+
+The ``shell`` formatter produces output that can be parsed directly by
+a typical UNIX shell as variable assignments. This avoids extra
+parsing overhead in shell scripts.
+
+::
+
+    (.venv)$ cliffdemo file -f shell setup.py
+    name="setup.py"
+    size="5916"
+    uid="527"
+    gid="501"
+    modified_time="1335655655.0"
+
+    (.venv)$ eval "$(cliffdemo file -f shell --prefix example_ setup.py)"
+    (.venv)$ echo $example_size
+    5916
+
 
 Creating Your Own Formatter
 ---------------------------
