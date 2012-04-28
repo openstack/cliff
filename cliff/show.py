@@ -1,4 +1,4 @@
-"""Application base class for providing a list of data as output.
+"""Application base class for displaying data about a single object.
 """
 import abc
 import logging
@@ -11,18 +11,18 @@ from .command import Command
 LOG = logging.getLogger(__name__)
 
 
-class Lister(Command):
-    """Command base class for providing a list of data as output.
+class ShowOne(Command):
+    """Command base class for displaying data about a single object.
     """
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, app, app_args):
-        super(Lister, self).__init__(app, app_args)
+        super(ShowOne, self).__init__(app, app_args)
         self.load_formatter_plugins()
 
     def load_formatter_plugins(self):
         self.formatters = {}
-        for ep in pkg_resources.iter_entry_points('cliff.formatter.list'):
+        for ep in pkg_resources.iter_entry_points('cliff.formatter.show'):
             try:
                 self.formatters[ep.name] = ep.load()()
             except Exception as err:
@@ -31,7 +31,7 @@ class Lister(Command):
                     raise
 
     def get_parser(self, prog_name):
-        parser = super(Lister, self).get_parser(prog_name)
+        parser = super(ShowOne, self).get_parser(prog_name)
         formatter_group = parser.add_argument_group(
             title='Output Formatters',
             description='List output formatter options',
@@ -54,12 +54,12 @@ class Lister(Command):
 
     @abc.abstractmethod
     def get_data(self, parsed_args):
-        """Return a tuple containing the column names and an iterable
-        containing the data to be listed.
+        """Return a two-part tuple with a tuple of column names
+        and a tuple of values.
         """
 
     def run(self, parsed_args):
         column_names, data = self.get_data(parsed_args)
         formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_list(column_names, data, self.app.stdout, parsed_args)
+        formatter.emit_one(column_names, data, self.app.stdout, parsed_args)
         return 0

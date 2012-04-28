@@ -20,6 +20,12 @@ Command
 .. autoclass:: cliff.command.Command
    :members:
 
+ShowOne
+=======
+
+.. autoclass:: cliff.show.ShowOne
+   :members:
+
 Lister
 ======
 
@@ -36,4 +42,10 @@ ListFormatter
 =============
 
 .. autoclass:: cliff.formatters.base.ListFormatter
+   :members:
+
+SingleFormatter
+===============
+
+.. autoclass:: cliff.formatters.base.SingleFormatter
    :members:

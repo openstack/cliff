@@ -1,5 +1,5 @@
 ======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 0.2
+ cliff -- Command Line Interface Formulation Framework -- version 0.3
 ======================================================================
 
 .. tags: python, cliff, release, DreamHost
@@ -11,10 +11,9 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Incorporate changes from dtroyer to replace use of optparse in App
-  with argparse.
-- Added "help" subcommand to replace ``--help`` option handling in
-  subcommands.
+- Add ShowOne base class for commands that show details about single
+  objects.
+- Fix a problem with Lister when there is no data to be printed.
 
 Documentation
 =============

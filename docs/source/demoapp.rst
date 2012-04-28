@@ -199,6 +199,35 @@ output formatter and printing the data to the console.
     "Makefile",5569
     "source",408
 
+.. _demoapp-show:
+
+show.py
+-------
+
+``show.py`` includes a single command derived from
+:class:`cliff.show.ShowOne` which prints the properties of the named
+file.
+
+.. literalinclude:: ../../demoapp/cliffdemo/show.py
+   :linenos:
+
+:class:`File` prepares the data, and :class:`ShowOne` manages the
+output formatter and printing the data to the console.
+
+::
+
+    (.venv)$ cliffdemo file setup.py
+    +---------------+--------------+
+    |     Field     |    Value     |
+    +---------------+--------------+
+    | Name          | setup.py     |
+    | Size          | 5825         |
+    | UID           | 502          |
+    | GID           | 20           |
+    | Modified Time | 1335569964.0 |
+    +---------------+--------------+
+
+
 setup.py
 --------
 

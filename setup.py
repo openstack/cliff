@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/sphinx/conf.py too!
-VERSION = '0.2'
+VERSION = '0.3'
 
 # Bootstrap installation of Distribute
 import distribute_setup
@@ -162,8 +162,11 @@ setup(
 
     entry_points={
         'cliff.formatter.list': [
-            'table = cliff.formatters.table:TableLister',
+            'table = cliff.formatters.table:TableFormatter',
             'csv = cliff.formatters.commaseparated:CSVLister',
+            ],
+        'cliff.formatter.show': [
+            'table = cliff.formatters.table:TableFormatter',
             ],
         },
 
