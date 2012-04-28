@@ -147,6 +147,7 @@ setup(
               ],
     install_requires=['distribute',
                       'PrettyTable',
+                      'cmd2',
                       ],
 
     namespace_packages=[],
@@ -167,6 +168,7 @@ setup(
             ],
         'cliff.formatter.show': [
             'table = cliff.formatters.table:TableFormatter',
+            'shell = cliff.formatters.shell:ShellFormatter',
             ],
         },
 
