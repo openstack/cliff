@@ -1,12 +1,14 @@
 import logging
 import os
-import stat
 
 from cliff.lister import Lister
 
 
 class Files(Lister):
-    "Show a list of files in the current directory."
+    """Show a list of files in the current directory.
+
+    The file name and size are printed by default.
+    """
 
     log = logging.getLogger(__name__)
 
