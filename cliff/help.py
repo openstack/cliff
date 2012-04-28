@@ -38,9 +38,13 @@ class HelpCommand(Command):
 
     def run(self, parsed_args):
         if parsed_args.cmd:
-            cmd_factory, name, search_args = self.app.command_manager.find_command(parsed_args.cmd)
+            cmd_factory, cmd_name, search_args = self.app.command_manager.find_command(parsed_args.cmd)
             cmd = cmd_factory(self.app, search_args)
-            cmd_parser = cmd.get_parser(' '.join([self.app.NAME, name]))
+            full_name = (cmd_name
+                         if self.app.interactive_mode
+                         else ' '.join([self.app.NAME, cmd_name])
+                         )
+            cmd_parser = cmd.get_parser(full_name)
         else:
             cmd_parser = self.get_parser(' '.join([self.app.NAME, 'help']))
         cmd_parser.parse_args(['--help'])

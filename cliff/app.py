@@ -8,6 +8,7 @@ import os
 import sys
 
 from .help import HelpAction, HelpCommand
+from .interactive import InteractiveApp
 
 LOG = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ class App(object):
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
         self.parser = self.build_option_parser(description, version)
+        self.interactive_mode = False
 
     def build_option_parser(self, description, version):
         """Return an argparse option parser for this application.
@@ -77,7 +79,7 @@ class App(object):
             help="show this help message and exit",
             )
         parser.add_argument(
-            '--debug', 
+            '--debug',
             default=False,
             action='store_true',
             help='show tracebacks on errors',
@@ -112,6 +114,28 @@ class App(object):
         root_logger.addHandler(console)
         return
 
+    def run(self, argv):
+        """Equivalent to the main program for the application.
+        """
+        self.options, remainder = self.parser.parse_known_args(argv)
+        self.configure_logging()
+        self.initialize_app()
+        result = 1
+        if not remainder:
+            result = self.interact()
+        else:
+            result = self.run_subcommand(remainder)
+        return result
+
+    # FIXME(dhellmann): Consider moving these command handling methods
+    # to a separate class.
+    def initialize_app(self):
+        """Hook for subclasses to take global initialization action
+        after the arguments are parsed but before a command is run.
+        Invoked only once, even in interactive mode.
+        """
+        return
+
     def prepare_to_run_command(self, cmd):
         """Perform any preliminary work needed to run a command.
         """
@@ -122,20 +146,22 @@ class App(object):
         """
         return
 
-    def run(self, argv):
-        """Equivalent to the main program for the application.
-        """
-        if not argv:
-            argv = ['-h']
-        self.options, remainder = self.parser.parse_known_args(argv)
-        self.configure_logging()
-        cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(remainder)
+    def interact(self):
+        self.interactive_mode = True
+        interpreter = InteractiveApp(self, self.command_manager, self.stdin, self.stdout)
+        interpreter.prompt = '(%s) ' % self.NAME
+        interpreter.cmdloop()
+        return 0
+
+    def run_subcommand(self, argv):
+        cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(argv)
         cmd = cmd_factory(self, self.options)
         err = None
         result = 1
         try:
             self.prepare_to_run_command(cmd)
-            cmd_parser = cmd.get_parser(' '.join([self.NAME, cmd_name]))
+            full_name = cmd_name if self.interactive_mode else ' '.join([self.NAME, cmd_name])
+            cmd_parser = cmd.get_parser(full_name)
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)
         except Exception as err:

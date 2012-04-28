@@ -25,5 +25,7 @@ To do
   to manage transactions
 - switch setup/teardown functions in app to use some sort of context
   manager?
-- interactive shell mode
 - add options to csv formatter to control output (delimiter, etc.)
+- option to spit out bash completion data
+- move command execution into a separate class to be used by App and
+  InteractiveApp?

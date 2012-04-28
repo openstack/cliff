@@ -16,6 +16,9 @@ class DemoApp(App):
             command_manager=CommandManager('cliff.demo'),
             )
 
+    def initialize_app(self):
+        self.log.debug('initialize_app')
+
     def prepare_to_run_command(self, cmd):
         self.log.debug('prepare_to_run_command %s', cmd.__class__.__name__)
 
