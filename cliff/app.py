@@ -177,7 +177,6 @@ class App(object):
     def interact(self):
         self.interactive_mode = True
         interpreter = self.interactive_app_factory(self, self.command_manager, self.stdin, self.stdout)
-        interpreter.prompt = '(%s) ' % self.NAME
         interpreter.cmdloop()
         return 0
 
