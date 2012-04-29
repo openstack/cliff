@@ -90,7 +90,7 @@ class App(object):
             '-h', '--help',
             action=HelpAction,
             nargs=0,
-            default=self.command_manager,  # tricky
+            default=self,  # tricky
             help="show this help message and exit",
             )
         parser.add_argument(
@@ -118,7 +118,7 @@ class App(object):
         root_logger.addHandler(file_handler)
 
         # Send higher-level messages to the console via stderr
-        console = logging.StreamHandler()
+        console = logging.StreamHandler(self.stderr)
         console_level = {0: logging.WARNING,
                          1: logging.INFO,
                          2: logging.DEBUG,
@@ -177,7 +177,6 @@ class App(object):
     def interact(self):
         self.interactive_mode = True
         interpreter = self.interactive_app_factory(self, self.command_manager, self.stdin, self.stdout)
-        interpreter.prompt = '(%s) ' % self.NAME
         interpreter.cmdloop()
         return 0
 
@@ -193,11 +192,9 @@ class App(object):
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)
         except Exception as err:
+            LOG.error('ERROR: %s', err)
             if self.options.debug:
                 LOG.exception(err)
-                raise
-            LOG.error('ERROR: %s', err)
-        finally:
             try:
                 self.clean_up(cmd, result, err)
             except Exception as err2:
@@ -205,4 +202,14 @@ class App(object):
                     LOG.exception(err2)
                 else:
                     LOG.error('Could not clean up: %s', err2)
+            if self.options.debug:
+                raise
+        else:
+            try:
+                self.clean_up(cmd, result, None)
+            except Exception as err3:
+                if self.options.debug:
+                    LOG.exception(err3)
+                else:
+                    LOG.error('Could not clean up: %s', err3)
         return result

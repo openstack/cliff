@@ -33,6 +33,7 @@ class InteractiveApp(cmd2.Cmd):
 
     def __init__(self, parent_app, command_manager, stdin, stdout):
         self.parent_app = parent_app
+        self.prompt = '(%s) ' % parent_app.NAME
         self.command_manager = command_manager
         cmd2.Cmd.__init__(self, 'tab', stdin=stdin, stdout=stdout)
 

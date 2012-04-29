@@ -12,15 +12,15 @@ class HelpAction(argparse.Action):
     instance, passed in as the "default" value for the action.
     """
     def __call__(self, parser, namespace, values, option_string=None):
-        parser.print_help()
-        print('')
-        print('Commands:')
-        command_manager = self.default
+        app = self.default
+        parser.print_help(app.stdout)
+        app.stdout.write('\nCommands:\n')
+        command_manager = app.command_manager
         for name, ep in sorted(command_manager):
             factory = ep.load()
             cmd = factory(self, None)
             one_liner = cmd.get_description().split('\n')[0]
-            print('  %-13s  %s' % (name, one_liner))
+            app.stdout.write('  %-13s  %s\n' % (name, one_liner))
         sys.exit(0)
 
 
@@ -47,5 +47,5 @@ class HelpCommand(Command):
             cmd_parser = cmd.get_parser(full_name)
         else:
             cmd_parser = self.get_parser(' '.join([self.app.NAME, 'help']))
-        cmd_parser.parse_args(['--help'])
+        cmd_parser.print_help(self.app.stdout)
         return 0
