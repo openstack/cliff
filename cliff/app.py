@@ -192,10 +192,9 @@ class App(object):
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)
         except Exception as err:
+            LOG.error('ERROR: %s', err)
             if self.options.debug:
                 LOG.exception(err)
-                raise
-            LOG.error('ERROR: %s', err)
             try:
                 self.clean_up(cmd, result, err)
             except Exception as err2:
@@ -203,6 +202,8 @@ class App(object):
                     LOG.exception(err2)
                 else:
                     LOG.error('Could not clean up: %s', err2)
+            if self.options.debug:
+                raise
         else:
             try:
                 self.clean_up(cmd, result, None)
