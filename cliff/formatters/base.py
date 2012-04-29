@@ -5,16 +5,14 @@ import abc
 
 
 class Formatter(object):
+    __metaclass__ = abc.ABCMeta
 
-    def __init__(self):
-        return
-
+    @abc.abstractmethod
     def add_argument_group(self, parser):
         """Add any options to the argument parser.
 
         Should use our own argument group.
         """
-        return
 
 
 class ListFormatter(Formatter):
