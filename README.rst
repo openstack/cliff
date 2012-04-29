@@ -30,3 +30,4 @@ To do
   InteractiveApp?
 - refactor Lister and ShowOne to share common base (at least for
   loading plugins)
+- prettytable doesn't work under python3 (http://code.google.com/p/prettytable/issues/detail?id=7)
