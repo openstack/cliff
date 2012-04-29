@@ -118,7 +118,7 @@ class App(object):
         root_logger.addHandler(file_handler)
 
         # Send higher-level messages to the console via stderr
-        console = logging.StreamHandler()
+        console = logging.StreamHandler(self.stderr)
         console_level = {0: logging.WARNING,
                          1: logging.INFO,
                          2: logging.DEBUG,
