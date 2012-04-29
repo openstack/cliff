@@ -90,7 +90,7 @@ class App(object):
             '-h', '--help',
             action=HelpAction,
             nargs=0,
-            default=self.command_manager,  # tricky
+            default=self,  # tricky
             help="show this help message and exit",
             )
         parser.add_argument(
