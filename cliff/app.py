@@ -197,7 +197,6 @@ class App(object):
                 LOG.exception(err)
                 raise
             LOG.error('ERROR: %s', err)
-        finally:
             try:
                 self.clean_up(cmd, result, err)
             except Exception as err2:
@@ -205,4 +204,12 @@ class App(object):
                     LOG.exception(err2)
                 else:
                     LOG.error('Could not clean up: %s', err2)
+        else:
+            try:
+                self.clean_up(cmd, result, None)
+            except Exception as err3:
+                if self.options.debug:
+                    LOG.exception(err3)
+                else:
+                    LOG.error('Could not clean up: %s', err3)
         return result
