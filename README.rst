@@ -20,7 +20,6 @@ To do
 - unicode output for python 2 (incompatible with csv?)
 - json formatter(s)
 - pprint formatter(s)
-- shell script formatter for show commands
 - create a few example commands that use a sqlite database to show how
   to manage transactions
 - switch setup/teardown functions in app to use some sort of context
@@ -29,3 +28,5 @@ To do
 - option to spit out bash completion data
 - move command execution into a separate class to be used by App and
   InteractiveApp?
+- refactor Lister and ShowOne to share common base (at least for
+  loading plugins)
