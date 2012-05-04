@@ -11,9 +11,12 @@ class TableFormatter(ListFormatter, SingleFormatter):
     ALIGNMENTS = {
         int: 'r',
         str: 'l',
-        unicode: 'l',
         float: 'r',
         }
+    try:
+        ALIGNMENTS[unicode] = 'l'
+    except NameError:
+        pass
 
     def add_argument_group(self, parser):
         group = parser.add_argument_group(
