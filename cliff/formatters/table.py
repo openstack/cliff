@@ -34,7 +34,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
 
     def emit_list(self, column_names, data, stdout, parsed_args):
         x = prettytable.PrettyTable(column_names)
-        x.set_padding_width(1)
+        x.padding_width = 1
         # Figure out the types of the columns in the
         # first row and set the alignment of the
         # output accordingly.
@@ -46,7 +46,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
         else:
             for value, name in zip(first_row, column_names):
                 alignment = self.ALIGNMENTS.get(type(value), 'l')
-                x.set_field_align(name, alignment)
+                x.align[name] = alignment
             # Now iterate over the data and add the rows.
             x.add_row(first_row)
             for row in data_iter:
@@ -57,12 +57,12 @@ class TableFormatter(ListFormatter, SingleFormatter):
         return
 
     def emit_one(self, column_names, data, stdout, parsed_args):
-        x = prettytable.PrettyTable(('Field', 'Value'))
-        x.set_padding_width(1)
+        x = prettytable.PrettyTable(field_names=('Field', 'Value'))
+        x.padding_width = 1
         # Align all columns left because the values are
         # not all the same type.
-        x.set_field_align('Field', 'l')
-        x.set_field_align('Value', 'l')
+        x.align['Field'] = 'l'
+        x.align['Value'] = 'l'
         desired_columns = parsed_args.columns
         for name, value in zip(column_names, data):
             if name in desired_columns or not desired_columns:
