@@ -2,6 +2,11 @@
  Release History
 =================
 
+dev
+
+  - Asking for help about a command by prefix lists all matching
+    commands.
+
 0.4
 
   - Add shell formatter for single objects.

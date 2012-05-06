@@ -38,7 +38,20 @@ class HelpCommand(Command):
 
     def run(self, parsed_args):
         if parsed_args.cmd:
-            cmd_factory, cmd_name, search_args = self.app.command_manager.find_command(parsed_args.cmd)
+            try:
+                cmd_factory, cmd_name, search_args = self.app.command_manager.find_command(parsed_args.cmd)
+            except ValueError:
+                # Did not find an exact match
+                cmd = parsed_args.cmd[0]
+                fuzzy_matches = [k[0] for k in self.app.command_manager
+                                 if k[0].startswith(cmd)
+                                 ]
+                if not fuzzy_matches:
+                    raise
+                self.app.stdout.write('Command "%s" matches:\n' % cmd)
+                for fm in fuzzy_matches:
+                    self.app.stdout.write('  %s\n' % fm)
+                return
             cmd = cmd_factory(self.app, search_args)
             full_name = (cmd_name
                          if self.app.interactive_mode

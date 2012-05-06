@@ -57,6 +57,47 @@ def test_show_help_for_command():
         pass
     assert stdout.getvalue() == 'TestParser'
 
+
+def test_list_matching_commands():
+    # FIXME(dhellmann): Are commands tied too closely to the app? Or
+    # do commands know too much about apps by using them to get to the
+    # command manager?
+    stdout = StringIO()
+    app = App('testing', '1', TestCommandManager('cliff.test'), stdout=stdout)
+    app.NAME = 'test'
+    help_cmd = HelpCommand(app, mock.Mock())
+    parser = help_cmd.get_parser('test')
+    parsed_args = parser.parse_args(['t'])
+    try:
+        help_cmd.run(parsed_args)
+    except SystemExit:
+        pass
+    help_output = stdout.getvalue()
+    assert 'Command "t" matches:' in help_output
+    assert 'two' in help_output
+    assert 'three' in help_output
+
+
+def test_list_matching_commands_no_match():
+    # FIXME(dhellmann): Are commands tied too closely to the app? Or
+    # do commands know too much about apps by using them to get to the
+    # command manager?
+    stdout = StringIO()
+    app = App('testing', '1', TestCommandManager('cliff.test'), stdout=stdout)
+    app.NAME = 'test'
+    help_cmd = HelpCommand(app, mock.Mock())
+    parser = help_cmd.get_parser('test')
+    parsed_args = parser.parse_args(['z'])
+    try:
+        help_cmd.run(parsed_args)
+    except SystemExit:
+        pass
+    except ValueError:
+        pass
+    else:
+        assert False, 'Should have seen a ValueError'
+
+
 def test_show_help_for_help():
     # FIXME(dhellmann): Are commands tied too closely to the app? Or
     # do commands know too much about apps by using them to get to the
