@@ -146,7 +146,7 @@ setup(
     provides=['cliff',
               ],
     install_requires=['distribute',
-                      'PrettyTable',
+                      'PrettyTable>=0.6',
                       'cmd2',
                       ],
 
