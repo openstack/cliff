@@ -19,9 +19,9 @@ class TablibFormatterBase(ListFormatter, SingleFormatter):
         return
 
     def emit_one(self, column_names, data, stdout, parsed_args):
-        dataset = tablib.Dataset(headers=column_names)
-        for row in data:
-            dataset.append(row)
+        dataset = tablib.Dataset(headers=('Field', 'Value'))
+        for name, value in zip(column_names, data):
+            dataset.append((name, value))
         stdout.write(self._format_dataset(dataset))
         return
 

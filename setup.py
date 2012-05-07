@@ -173,6 +173,9 @@ setup(
         'cliff.formatter.show': [
             'table = cliff.formatters.table:TableFormatter',
             'shell = cliff.formatters.shell:ShellFormatter',
+            'yaml = cliff.formatters.tablibformatters:YamlFormatter',
+            'html = cliff.formatters.tablibformatters:HtmlFormatter',
+            'json = cliff.formatters.tablibformatters:JsonFormatter',
             ],
         },
 
