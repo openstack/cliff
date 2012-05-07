@@ -6,6 +6,7 @@ dev
 
   - Asking for help about a command by prefix lists all matching
     commands.
+  - Add formatters for HTML, JSON, and YAML.
 
 0.4
 
