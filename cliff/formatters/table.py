@@ -19,18 +19,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
         pass
 
     def add_argument_group(self, parser):
-        group = parser.add_argument_group(
-            title='table formatter',
-            description='Pretty-print output in a table',
-            )
-        group.add_argument(
-            '-c', '--column',
-            action='append',
-            default=[],
-            dest='columns',
-            metavar='COLUMN',
-            help='specify the column(s) to include, can be repeated',
-            )
+        pass
 
     def emit_list(self, column_names, data, stdout, parsed_args):
         x = prettytable.PrettyTable(column_names)
@@ -51,7 +40,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
             x.add_row(first_row)
             for row in data_iter:
                 x.add_row(row)
-        formatted = x.get_string(fields=(parsed_args.columns or column_names))
+        formatted = x.get_string(fields=column_names)
         stdout.write(formatted)
         stdout.write('\n')
         return
