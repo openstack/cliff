@@ -52,10 +52,8 @@ class TableFormatter(ListFormatter, SingleFormatter):
         # not all the same type.
         x.align['Field'] = 'l'
         x.align['Value'] = 'l'
-        desired_columns = parsed_args.columns
         for name, value in zip(column_names, data):
-            if name in desired_columns or not desired_columns:
-                x.add_row((name, value))
+            x.add_row((name, value))
         formatted = x.get_string(fields=('Field', 'Value'))
         stdout.write(formatted)
         stdout.write('\n')

@@ -29,18 +29,6 @@ class Lister(DisplayCommandBase):
         containing the data to be listed.
         """
 
-    def get_parser(self, prog_name):
-        parser = super(Lister, self).get_parser(prog_name)
-        parser.add_argument(
-            '-c', '--column',
-            action='append',
-            default=[],
-            dest='columns',
-            metavar='COLUMN',
-            help='specify the column(s) to include, can be repeated',
-            )
-        return parser
-
     def run(self, parsed_args):
         column_names, data = self.get_data(parsed_args)
         if not parsed_args.columns:

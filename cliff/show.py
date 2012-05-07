@@ -1,6 +1,7 @@
 """Application base class for displaying data about a single object.
 """
 import abc
+import itertools
 import logging
 
 from .display import DisplayCommandBase
@@ -30,6 +31,15 @@ class ShowOne(DisplayCommandBase):
 
     def run(self, parsed_args):
         column_names, data = self.get_data(parsed_args)
+        if not parsed_args.columns:
+            columns_to_include = column_names
+        else:
+            columns_to_include = [c for c in column_names
+                                  if c in parsed_args.columns]
+            # Set up argument to compress()
+            selector = [(c in columns_to_include)
+                        for c in column_names]
+            data = list(itertools.compress(data, selector))
         formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_one(column_names, data, self.app.stdout, parsed_args)
+        formatter.emit_one(columns_to_include, data, self.app.stdout, parsed_args)
         return 0
