@@ -2,6 +2,11 @@
  Release History
 =================
 
+0.5.1
+
+  - Remove pinned version requirement for PrettyTable until the
+    OpenStack clients catch up to the API change.
+
 0.5
 
   - Asking for help about a command by prefix lists all matching

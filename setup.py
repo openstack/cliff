@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/source/conf.py too!
-VERSION = '0.5'
+VERSION = '0.5.1'
 
 # Bootstrap installation of Distribute
 import distribute_setup
@@ -146,7 +146,8 @@ setup(
     provides=['cliff',
               ],
     install_requires=['distribute',
-                      'PrettyTable>=0.6',
+                      # disabled until OpenStack catches up 'PrettyTable>=0.6',
+                      'PrettyTable',
                       'cmd2',
                       'tablib',
                       ],
