@@ -2,7 +2,7 @@
  Release History
 =================
 
-dev
+0.5
 
   - Asking for help about a command by prefix lists all matching
     commands.
