@@ -70,7 +70,7 @@ class App(object):
         parser.add_argument(
             '--version',
             action='version',
-            version='%(prog)s {}'.format(version),
+            version='%(prog)s {0}'.format(version),
             )
         parser.add_argument(
             '-v', '--verbose',

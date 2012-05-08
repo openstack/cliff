@@ -21,6 +21,18 @@ try:
 except IOError:
     long_description = ''
 
+install_requires = ['distribute',
+                   # disabled until OpenStack catches up 'PrettyTable>=0.6',
+                   'PrettyTable',
+                   'cmd2',
+                   'tablib',
+                   ]
+try:
+    import argparse
+except ImportError:
+    install_requires.append('argparse')
+
+
 ##############################################################################
 # find_package_data is an Ian Bicking creation.
 
@@ -145,12 +157,7 @@ setup(
 
     provides=['cliff',
               ],
-    install_requires=['distribute',
-                      # disabled until OpenStack catches up 'PrettyTable>=0.6',
-                      'PrettyTable',
-                      'cmd2',
-                      'tablib',
-                      ],
+    install_requires=install_requires,
 
     namespace_packages=[],
     packages=find_packages(),
