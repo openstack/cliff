@@ -2,7 +2,7 @@
  Release History
 =================
 
-dev
+0.6
 
   - Pass the non-global argument list to :func:`initialize_app` to be
     used in initialization work.
