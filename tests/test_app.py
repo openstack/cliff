@@ -48,7 +48,7 @@ def test_initialize_app():
     app, command = make_app()
     app.initialize_app = mock.MagicMock(name='initialize_app')
     app.run(['mock'])
-    app.initialize_app.assert_called_once_with()
+    app.initialize_app.assert_called_once_with(['mock'])
 
 
 def test_prepare_to_run_command():

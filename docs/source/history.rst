@@ -2,6 +2,11 @@
  Release History
 =================
 
+dev
+
+  - Pass the non-global argument list to :func:`initialize_app` to be
+    used in initialization work.
+
 0.5.1
 
   - Remove pinned version requirement for PrettyTable until the

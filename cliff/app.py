@@ -137,7 +137,7 @@ class App(object):
         """
         self.options, remainder = self.parser.parse_known_args(argv)
         self.configure_logging()
-        self.initialize_app()
+        self.initialize_app(remainder)
         result = 1
         if not remainder:
             result = self.interact()
@@ -147,10 +147,13 @@ class App(object):
 
     # FIXME(dhellmann): Consider moving these command handling methods
     # to a separate class.
-    def initialize_app(self):
+    def initialize_app(self, argv):
         """Hook for subclasses to take global initialization action
         after the arguments are parsed but before a command is run.
         Invoked only once, even in interactive mode.
+
+        :param argv: List of arguments, including the subcommand to run.
+                     Empty for interactive mode.
         """
         return
 
