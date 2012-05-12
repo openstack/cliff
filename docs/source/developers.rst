@@ -56,6 +56,8 @@ The output version of the documentation ends up in
 Running Tests
 =============
 
+.. image:: https://secure.travis-ci.org/dhellmann/cliff.png?branch=master
+
 The test suite for clif uses tox_, which must be installed separately
 (``pip install tox``).
 
