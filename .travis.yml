@@ -2,6 +2,5 @@ language: python
 python:
   - 2.7
   - 3.2
-install: pip install nose mock coverage pep8
+install: pip install -r test-requirements.txt
 script: nosetests -d
-

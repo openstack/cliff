@@ -1,0 +1,8 @@
+nose
+mock
+coverage
+pep8
+cmd2
+distribute
+PrettyTable
+tablib
