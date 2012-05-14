@@ -43,7 +43,7 @@ class InteractiveApp(cmd2.Cmd):
         # We send the message through our parent app,
         # since it already has the logic for executing
         # the subcommand.
-        line_parts = shlex.split(line)
+        line_parts = shlex.split(line.parsed.raw)
         self.parent_app.run_subcommand(line_parts)
 
     def completedefault(self, text, line, begidx, endidx):
@@ -95,3 +95,18 @@ class InteractiveApp(cmd2.Cmd):
                 for n in cmd2.Cmd.get_names(self)
                 if not n.startswith('do__')
                 ]
+
+    def precmd(self, statement):
+        # Pre-process the parsed command in case it looks like one of
+        # our subcommands, since cmd2 does not handle multi-part
+        # command names by default.
+        line_parts = shlex.split(statement.parsed.raw)
+        try:
+            cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(line_parts)
+        except ValueError:
+            # Not a plugin command
+            pass
+        else:
+            statement.parsed.command = cmd_name
+            statement.parsed.args = ' '.join(sub_argv)
+        return statement
