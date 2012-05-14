@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/source/conf.py too!
-VERSION = '0.6'
+VERSION = '0.7'
 
 # Bootstrap installation of Distribute
 import distribute_setup
