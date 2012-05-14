@@ -64,8 +64,10 @@ setup(
             'simple = cliffdemo.simple:Simple',
             'two_part = cliffdemo.simple:Simple',
             'error = cliffdemo.simple:Error',
+            'list files = cliffdemo.list:Files',
             'files = cliffdemo.list:Files',
             'file = cliffdemo.show:File',
+            'show file = cliffdemo.show:File',
             ],
         },
 
