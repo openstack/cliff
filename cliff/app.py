@@ -135,11 +135,20 @@ class App(object):
         :param argv: input arguments and options
         :paramtype argv: list of str
         """
-        self.options, remainder = self.parser.parse_known_args(argv)
-        self.configure_logging()
-        self.initialize_app(remainder)
+        try:
+            self.options, remainder = self.parser.parse_known_args(argv)
+            self.configure_logging()
+            self.interactive_mode = not remainder
+            self.initialize_app(remainder)
+        except Exception as err:
+            if self.options.debug:
+                LOG.exception(err)
+                raise
+            else:
+                LOG.error(err)
+            return 1
         result = 1
-        if not remainder:
+        if self.interactive_mode:
             result = self.interact()
         else:
             result = self.run_subcommand(remainder)
@@ -178,7 +187,6 @@ class App(object):
         return
 
     def interact(self):
-        self.interactive_mode = True
         interpreter = self.interactive_app_factory(self, self.command_manager, self.stdin, self.stdout)
         interpreter.cmdloop()
         return 0
@@ -195,9 +203,10 @@ class App(object):
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)
         except Exception as err:
-            LOG.error('ERROR: %s', err)
             if self.options.debug:
                 LOG.exception(err)
+            else:
+                LOG.error(err)
             try:
                 self.clean_up(cmd, result, err)
             except Exception as err2:
