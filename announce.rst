@@ -1,5 +1,5 @@
 ======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 0.5
+ cliff -- Command Line Interface Formulation Framework -- version 0.7
 ======================================================================
 
 .. tags: python, cliff, release, DreamHost
@@ -11,9 +11,9 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Asking for help about a command by prefix lists all matching
-  commands.
-- Add formatters for HTML, JSON, and YAML.
+- Clean up interactive mode flag settting.
+- Add support for Python 2.6, contributed by heavenshell.
+- Fix multi-word commands in interactive mode.
 
 Documentation
 =============
