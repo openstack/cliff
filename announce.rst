@@ -2,7 +2,7 @@
  cliff -- Command Line Interface Formulation Framework -- version 0.7
 ======================================================================
 
-.. tags: python, cliff, release, DreamHost
+.. tags:: python cliff release DreamHost
 
 cliff is a framework for building command line programs. It uses
 setuptools entry points to provide subcommands, output formatters, and
