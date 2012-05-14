@@ -2,6 +2,11 @@
  Release History
 =================
 
+dev
+
+  - Clean up interactive mode flag settting.
+  - Add support for Python 2.6, contributed by heavenshell.
+
 0.6
 
   - Pass the non-global argument list to :func:`initialize_app` to be
