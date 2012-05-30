@@ -2,6 +2,11 @@
  Release History
 =================
 
+dev
+
+  - Add trailing newlines after output from tablib-based formatters
+    (JSON, YAML, and HTML). Contributed by Matt Joyce.
+
 0.7
 
   - Clean up interactive mode flag settting.
