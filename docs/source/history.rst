@@ -6,6 +6,7 @@ dev
 
   - Add trailing newlines after output from tablib-based formatters
     (JSON, YAML, and HTML). Contributed by Matt Joyce.
+  - Some :pep:`8` fixes.
 
 0.7
 

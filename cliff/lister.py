@@ -51,5 +51,8 @@ class Lister(DisplayCommandBase):
             data_gen = (list(itertools.compress(row, selector))
                         for row in data)
         formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_list(columns_to_include, data_gen, self.app.stdout, parsed_args)
+        formatter.emit_list(columns_to_include,
+                            data_gen,
+                            self.app.stdout,
+                            parsed_args)
         return 0

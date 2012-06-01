@@ -41,5 +41,8 @@ class ShowOne(DisplayCommandBase):
                         for c in column_names]
             data = list(itertools.compress(data, selector))
         formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_one(columns_to_include, data, self.app.stdout, parsed_args)
+        formatter.emit_one(columns_to_include,
+                           data,
+                           self.app.stdout,
+                           parsed_args)
         return 0
