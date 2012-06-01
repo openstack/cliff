@@ -39,7 +39,10 @@ class HelpCommand(Command):
     def run(self, parsed_args):
         if parsed_args.cmd:
             try:
-                cmd_factory, cmd_name, search_args = self.app.command_manager.find_command(parsed_args.cmd)
+                the_cmd = self.app.command_manager.find_command(
+                    parsed_args.cmd,
+                    )
+                cmd_factory, cmd_name, search_args = the_cmd
             except ValueError:
                 # Did not find an exact match
                 cmd = parsed_args.cmd[0]

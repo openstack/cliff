@@ -55,7 +55,7 @@ class DisplayCommandBase(Command):
             action='store',
             choices=formatter_choices,
             default=formatter_default,
-            help='the output format to use, defaults to %s' % formatter_default,
+            help='the output format, defaults to %s' % formatter_default,
             )
         formatter_group.add_argument(
             '-c', '--column',

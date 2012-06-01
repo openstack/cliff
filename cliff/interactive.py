@@ -22,7 +22,8 @@ class InteractiveApp(cmd2.Cmd):
 
     :param parent_app: The calling application (expected to be derived
                        from :class:`cliff.main.App`).
-    :param command_manager: A :class:`cliff.commandmanager.CommandManager` instance.
+    :param command_manager: A :class:`cliff.commandmanager.CommandManager`
+                            instance.
     :param stdin: Standard input stream
     :param stdout: Standard output stream
     """
@@ -67,10 +68,11 @@ class InteractiveApp(cmd2.Cmd):
             # coming from the command manager
             arg_parts = shlex.split(arg)
             method_name = '_'.join(
-                itertools.chain(['do'],
-                                itertools.takewhile(lambda x: not x.startswith('-'),
-                                                    arg_parts)
-                                )
+                itertools.chain(
+                    ['do'],
+                    itertools.takewhile(lambda x: not x.startswith('-'),
+                                        arg_parts)
+                    )
                 )
             # Have the command manager version of the help
             # command produce the help text since cmd and
@@ -102,7 +104,8 @@ class InteractiveApp(cmd2.Cmd):
         # command names by default.
         line_parts = shlex.split(statement.parsed.raw)
         try:
-            cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(line_parts)
+            the_cmd = self.command_manager.find_command(line_parts)
+            cmd_factory, cmd_name, sub_argv = the_cmd
         except ValueError:
             # Not a plugin command
             pass

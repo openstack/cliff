@@ -28,14 +28,16 @@ class App(object):
     :paramtype stdout: writable I/O stream
     :param stderr: Standard error output stream
     :paramtype stderr: writable I/O stream
-    :param interactive_app_factory: callable to create an interactive application
+    :param interactive_app_factory: callable to create an
+                                    interactive application
     :paramtype interactive_app_factory: cliff.interactive.InteractiveApp
     """
 
     NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 
     CONSOLE_MESSAGE_FORMAT = '%(message)s'
-    LOG_FILE_MESSAGE_FORMAT = '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
+    LOG_FILE_MESSAGE_FORMAT = \
+        '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
     DEFAULT_VERBOSE_LEVEL = 1
 
     def __init__(self, description, version, command_manager,
@@ -187,18 +189,26 @@ class App(object):
         return
 
     def interact(self):
-        interpreter = self.interactive_app_factory(self, self.command_manager, self.stdin, self.stdout)
+        interpreter = self.interactive_app_factory(self,
+                                                   self.command_manager,
+                                                   self.stdin,
+                                                   self.stdout,
+                                                   )
         interpreter.cmdloop()
         return 0
 
     def run_subcommand(self, argv):
-        cmd_factory, cmd_name, sub_argv = self.command_manager.find_command(argv)
+        subcommand = self.command_manager.find_command(argv)
+        cmd_factory, cmd_name, sub_argv = subcommand
         cmd = cmd_factory(self, self.options)
         err = None
         result = 1
         try:
             self.prepare_to_run_command(cmd)
-            full_name = cmd_name if self.interactive_mode else ' '.join([self.NAME, cmd_name])
+            full_name = (cmd_name
+                         if self.interactive_mode
+                         else ' '.join([self.NAME, cmd_name])
+                         )
             cmd_parser = cmd.get_parser(full_name)
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)

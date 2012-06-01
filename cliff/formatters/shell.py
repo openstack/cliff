@@ -9,7 +9,7 @@ class ShellFormatter(SingleFormatter):
     def add_argument_group(self, parser):
         group = parser.add_argument_group(
             title='shell formatter',
-            description='Print values in a format a UNIX shell can parse (variable="value")',
+            description='a format a UNIX shell can parse (variable="value")',
             )
         group.add_argument(
             '--variable',

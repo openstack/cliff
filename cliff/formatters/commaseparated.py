@@ -26,7 +26,9 @@ class CSVLister(ListFormatter):
             )
 
     def emit_list(self, column_names, data, stdout, parsed_args):
-        writer = csv.writer(stdout, quoting=self.QUOTE_MODES[parsed_args.quote_mode])
+        writer = csv.writer(stdout,
+                            quoting=self.QUOTE_MODES[parsed_args.quote_mode],
+                            )
         writer.writerow(column_names)
         for row in data:
             writer.writerow(row)
