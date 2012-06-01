@@ -12,7 +12,7 @@ class Files(Lister):
 
     log = logging.getLogger(__name__)
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         return (('Name', 'Size'),
                 ((n, os.stat(n).st_size) for n in os.listdir('.'))
                 )

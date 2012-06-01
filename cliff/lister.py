@@ -24,13 +24,12 @@ class Lister(DisplayCommandBase):
         return 'table'
 
     @abc.abstractmethod
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         """Return a tuple containing the column names and an iterable
         containing the data to be listed.
         """
 
-    def run(self, parsed_args):
-        column_names, data = self.get_data(parsed_args)
+    def produce_output(self, parsed_args, column_names, data):
         if not parsed_args.columns:
             columns_to_include = column_names
             data_gen = data
@@ -50,6 +49,8 @@ class Lister(DisplayCommandBase):
             # list so the table formatter can ask for its length.
             data_gen = (list(itertools.compress(row, selector))
                         for row in data)
-        formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_list(columns_to_include, data_gen, self.app.stdout, parsed_args)
+        self.formatter.emit_list(columns_to_include,
+                                 data_gen,
+                                 self.app.stdout,
+                                 parsed_args)
         return 0

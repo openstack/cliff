@@ -14,7 +14,7 @@ class File(ShowOne):
         parser.add_argument('filename', nargs='?', default='.')
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         stat_data = os.stat(parsed_args.filename)
         columns = ('Name',
                    'Size',

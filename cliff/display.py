@@ -70,14 +70,23 @@ class DisplayCommandBase(Command):
         return parser
 
     @abc.abstractmethod
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         """Return a two-part tuple with a tuple of column names
         and a tuple of values.
         """
 
     @abc.abstractmethod
+    def produce_output(self, parsed_args, column_names, data):
+        """Use the formatter to generate the output.
+
+        :param parsed_args: argparse.Namespace instance with argument values
+        :param column_names: sequence of strings containing names
+                             of output columns
+        :param data: iterable with values matching the column names
+        """
+
     def run(self, parsed_args):
-        column_names, data = self.get_data(parsed_args)
-        formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_one(column_names, data, self.app.stdout, parsed_args)
+        column_names, data = self.take_action(parsed_args)
+        self.formatter = self.formatters[parsed_args.formatter]
+        self.produce_output(parsed_args, column_names, data)
         return 0
