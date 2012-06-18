@@ -36,7 +36,7 @@ class HelpCommand(Command):
                             )
         return parser
 
-    def run(self, parsed_args):
+    def take_action(self, parsed_args):
         if parsed_args.cmd:
             try:
                 the_cmd = self.app.command_manager.find_command(

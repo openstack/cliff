@@ -24,13 +24,12 @@ class ShowOne(DisplayCommandBase):
         return 'table'
 
     @abc.abstractmethod
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         """Return a two-part tuple with a tuple of column names
         and a tuple of values.
         """
 
-    def run(self, parsed_args):
-        column_names, data = self.get_data(parsed_args)
+    def produce_output(self, parsed_args, column_names, data):
         if not parsed_args.columns:
             columns_to_include = column_names
         else:
@@ -40,10 +39,8 @@ class ShowOne(DisplayCommandBase):
             selector = [(c in columns_to_include)
                         for c in column_names]
             data = list(itertools.compress(data, selector))
-        formatter = self.formatters[parsed_args.formatter]
-        formatter.emit_one(columns_to_include,
-                           data,
-                           self.app.stdout,
-                           parsed_args,
-                           )
+        self.formatter.emit_one(columns_to_include,
+                                data,
+                                self.app.stdout,
+                                parsed_args)
         return 0
