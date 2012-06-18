@@ -54,5 +54,6 @@ class Lister(DisplayCommandBase):
         formatter.emit_list(columns_to_include,
                             data_gen,
                             self.app.stdout,
-                            parsed_args)
+                            parsed_args,
+                            )
         return 0

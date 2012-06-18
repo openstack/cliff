@@ -44,5 +44,6 @@ class ShowOne(DisplayCommandBase):
         formatter.emit_one(columns_to_include,
                            data,
                            self.app.stdout,
-                           parsed_args)
+                           parsed_args,
+                           )
         return 0
