@@ -32,6 +32,13 @@ class Command(object):
         return parser
 
     @abc.abstractmethod
+    def take_action(self, parsed_args):
+        """Return a two-part tuple with a tuple of column names
+        and a tuple of values.
+        """
+
     def run(self, parsed_args):
         """Do something useful.
         """
+        self.take_action(parsed_args)
+        return 0
