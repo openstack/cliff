@@ -28,7 +28,7 @@ class TestCommand(Command):
         # so parse_args() is called.
         return TestParser()
 
-    def run(self, args):
+    def take_action(self, args):
         return
 
 

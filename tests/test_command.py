@@ -6,7 +6,7 @@ class TestCommand(Command):
     """Description of command.
     """
 
-    def run(self, parsed_args):
+    def take_action(self, parsed_args):
         return
 
 
