@@ -155,19 +155,25 @@ features of cliff.
     causing error
     this is the expected exception
     Traceback (most recent call last):
-      File ".../cliff/app.py", line 148, in run
+      File ".../cliff/app.py", line 218, in run_subcommand
         result = cmd.run(parsed_args)
-      File ".../demoapp/cliffdemo/simple.py", line 24, in run
+      File ".../cliff/command.py", line 43, in run
+        self.take_action(parsed_args)
+      File ".../demoapp/cliffdemo/simple.py", line 24, in take_action
         raise RuntimeError('this is the expected exception')
     RuntimeError: this is the expected exception
     Traceback (most recent call last):
       File "/Users/dhellmann/Envs/cliff/bin/cliffdemo", line 9, in <module>
         load_entry_point('cliffdemo==0.1', 'console_scripts', 'cliffdemo')()
-      File ".../demoapp/cliffdemo/main.py", line 30, in main
+      File ".../demoapp/cliffdemo/main.py", line 33, in main
         return myapp.run(argv)
-      File ".../cliff/app.py", line 148, in run
+      File ".../cliff/app.py", line 160, in run
+        result = self.run_subcommand(remainder)
+      File ".../cliff/app.py", line 218, in run_subcommand
         result = cmd.run(parsed_args)
-      File ".../demoapp/cliffdemo/simple.py", line 24, in run
+      File ".../cliff/command.py", line 43, in run
+        self.take_action(parsed_args)
+      File ".../demoapp/cliffdemo/simple.py", line 24, in take_action
         raise RuntimeError('this is the expected exception')
     RuntimeError: this is the expected exception
 

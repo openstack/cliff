@@ -12,10 +12,11 @@ ShowOne
 =======
 
 The :class:`cliff.show.ShowOne` base class API extends
-:class:`Command` to add a :func:`get_data` method. Subclasses should
-provide a :func:`get_data` implementation that returns a two member
-tuple containing a tuple with the names of the columns in the dataset
-and an iterable that contains the data values associated with those
+:class:`Command` to allow :func:`take_action` to return data to be
+formatted using a user-selectable formatter. Subclasses should provide
+a :func:`take_action` implementation that returns a two member tuple
+containing a tuple with the names of the columns in the dataset and an
+iterable that contains the data values associated with those
 names. See the description of :ref:`the file command in the demoapp
 <demoapp-show>` for details.
 

@@ -11,9 +11,15 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Clean up interactive mode flag settting.
-- Add support for Python 2.6, contributed by heavenshell.
-- Fix multi-word commands in interactive mode.
+- Add trailing newlines after output from tablib-based formatters
+  (JSON, YAML, and HTML). Contributed by Matt Joyce.
+- Some PEP-8 fixes.
+- Refactor the API in ``Command`` to add ``take_action()``
+  and make ``run()`` a concrete method. Existing users should only
+  need to rename ``run()`` to ``take_action()`` since the function
+  signatures have not changed.
+- In ``Lister`` and ``ShowOne`` use ``take_action()`` instead of
+  ``get_data()``.
 
 Documentation
 =============

@@ -2,11 +2,17 @@
  Release History
 =================
 
-dev
+1.0
 
   - Add trailing newlines after output from tablib-based formatters
     (JSON, YAML, and HTML). Contributed by Matt Joyce.
   - Some :pep:`8` fixes.
+  - Refactor the API in :class:`Command` to add :func:`take_action`
+    and make :func:`run` a concrete method. Existing users should only
+    need to rename :func:`run()` to :func:`take_action()` since the
+    function signatures have not changed.
+  - In :class:`Lister` and :class:`ShowOne` use :func:`take_action`
+    instead of :func:`get_data`.
 
 0.7
 

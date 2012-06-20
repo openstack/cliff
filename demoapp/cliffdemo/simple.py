@@ -8,7 +8,7 @@ class Simple(Command):
 
     log = logging.getLogger(__name__)
 
-    def run(self, parsed_args):
+    def take_action(self, parsed_args):
         self.log.info('sending greeting')
         self.log.debug('debugging')
         self.app.stdout.write('hi!\n')
@@ -19,6 +19,6 @@ class Error(Command):
 
     log = logging.getLogger(__name__)
 
-    def run(self, parsed_args):
+    def take_action(self, parsed_args):
         self.log.info('causing error')
         raise RuntimeError('this is the expected exception')

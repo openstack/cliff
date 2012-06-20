@@ -12,12 +12,12 @@ Lister
 ======
 
 The :class:`cliff.lister.Lister` base class API extends
-:class:`Command` to add a :func:`get_data` method. Subclasses should
-provide a :func:`get_data` implementation that returns a two member
-tuple containing a tuple with the names of the columns in the dataset
-and an iterable that will yield the data to be output. See the
-description of :ref:`the files command in the demoapp <demoapp-list>`
-for details.
+:class:`Command` to allow :func:`take_action` to return data to be
+formatted using a user-selectable formatter. Subclasses should provide
+a :func:`take_action` implementation that returns a two member tuple
+containing a tuple with the names of the columns in the dataset and an
+iterable that will yield the data to be output. See the description of
+:ref:`the files command in the demoapp <demoapp-list>` for details.
 
 List Output Formatters
 ======================

@@ -1,4 +1,5 @@
 import argparse
+import logging
 import sys
 
 from .command import Command
@@ -12,13 +13,22 @@ class HelpAction(argparse.Action):
     instance, passed in as the "default" value for the action.
     """
     def __call__(self, parser, namespace, values, option_string=None):
+        log = logging.getLogger(__name__)
         app = self.default
         parser.print_help(app.stdout)
         app.stdout.write('\nCommands:\n')
         command_manager = app.command_manager
         for name, ep in sorted(command_manager):
-            factory = ep.load()
-            cmd = factory(self, None)
+            try:
+                factory = ep.load()
+            except Exception as err:
+                app.stdout.write('Could not load %r\n' % ep)
+                continue
+            try:
+                cmd = factory(self, None)
+            except Exception as err:
+                app.stdout.write('Could not instantiate %r: %s\n' % (ep, err))
+                continue
             one_liner = cmd.get_description().split('\n')[0]
             app.stdout.write('  %-13s  %s\n' % (name, one_liner))
         sys.exit(0)

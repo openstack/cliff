@@ -143,7 +143,11 @@ class App(object):
             self.interactive_mode = not remainder
             self.initialize_app(remainder)
         except Exception as err:
-            if self.options.debug:
+            if hasattr(self, 'options'):
+                debug = self.options.debug
+            else:
+                debug = True
+            if debug:
                 LOG.exception(err)
                 raise
             else:

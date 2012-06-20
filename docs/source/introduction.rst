@@ -48,7 +48,7 @@ discover the command plugins and invoke them, and to provide runtime
 support for those plugins. Each :class:`Command` subclass is
 responsible for taking action based on instructions from the user. It
 defines its own local argument parser (usually using argparse_) and a
-:func:`run` method that does the appropriate work.
+:func:`take_action` method that does the appropriate work.
 
 The Interactive Application
 ---------------------------

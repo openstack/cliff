@@ -23,7 +23,7 @@ class Command(object):
         return inspect.getdoc(self.__class__) or ''
 
     def get_parser(self, prog_name):
-        """Return an argparse.ArgumentParser.
+        """Return an :class:`argparse.ArgumentParser`.
         """
         parser = argparse.ArgumentParser(
             description=self.get_description(),
@@ -33,12 +33,18 @@ class Command(object):
 
     @abc.abstractmethod
     def take_action(self, parsed_args):
-        """Return a two-part tuple with a tuple of column names
-        and a tuple of values.
+        """Override to do something useful.
         """
 
     def run(self, parsed_args):
-        """Do something useful.
+        """Invoked by the application when the command is run.
+
+        Developers implementing commands should override
+        :meth:`take_action`.
+
+        Developers creating new command base classes (such as
+        :class:`Lister` and :class:`ShowOne`) should override this
+        method to wrap :meth:`take_action`.
         """
         self.take_action(parsed_args)
         return 0
