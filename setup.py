@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/source/conf.py too!
-VERSION = '1.0'
+VERSION = '1.1'
 
 # Bootstrap installation of Distribute
 import distribute_setup
@@ -24,7 +24,6 @@ except IOError:
 install_requires = ['distribute',
                     'PrettyTable',
                     'cmd2',
-                    'tablib',
                     ]
 try:
     import argparse

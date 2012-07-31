@@ -2,6 +2,12 @@
  Release History
 =================
 
+1.1
+
+  - Move tablib support (JSON, YAML, and HTML formatters) to a
+    separate project to comply with Ubuntu packaging requirements. See
+    https://github.com/dreamhost/cliff-tablib
+
 1.0
 
   - Add trailing newlines after output from tablib-based formatters
