@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/source/conf.py too!
-VERSION = '1.0'
+VERSION = '1.1'
 
 # Bootstrap installation of Distribute
 import distribute_setup
@@ -24,7 +24,6 @@ except IOError:
 install_requires = ['distribute',
                     'PrettyTable',
                     'cmd2',
-                    'tablib',
                     ]
 try:
     import argparse
@@ -140,7 +139,7 @@ setup(
     url='https://github.com/dreamhost/cliff',
     download_url='https://github.com/dreamhost/cliff/tarball/master',
 
-    classifiers=['Development Status :: 3 - Alpha',
+    classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 2',

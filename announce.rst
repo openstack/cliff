@@ -1,5 +1,5 @@
 ======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.0
+ cliff -- Command Line Interface Formulation Framework -- version 1.1
 ======================================================================
 
 .. tags:: python cliff release DreamHost
@@ -11,15 +11,10 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Add trailing newlines after output from tablib-based formatters
-  (JSON, YAML, and HTML). Contributed by Matt Joyce.
-- Some PEP-8 fixes.
-- Refactor the API in ``Command`` to add ``take_action()``
-  and make ``run()`` a concrete method. Existing users should only
-  need to rename ``run()`` to ``take_action()`` since the function
-  signatures have not changed.
-- In ``Lister`` and ``ShowOne`` use ``take_action()`` instead of
-  ``get_data()``.
+- Moves the tablib formatters for JSON, YAML, and HTML out
+  of the core project and into a separate package to comply
+  with Ubuntu packaging requirements. See
+  https://github.com/dreamhost/cliff-tablib
 
 Documentation
 =============
