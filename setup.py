@@ -173,16 +173,10 @@ setup(
         'cliff.formatter.list': [
             'table = cliff.formatters.table:TableFormatter',
             'csv = cliff.formatters.commaseparated:CSVLister',
-            'yaml = cliff.formatters.tablibformatters:YamlFormatter',
-            'html = cliff.formatters.tablibformatters:HtmlFormatter',
-            'json = cliff.formatters.tablibformatters:JsonFormatter',
             ],
         'cliff.formatter.show': [
             'table = cliff.formatters.table:TableFormatter',
             'shell = cliff.formatters.shell:ShellFormatter',
-            'yaml = cliff.formatters.tablibformatters:YamlFormatter',
-            'html = cliff.formatters.tablibformatters:HtmlFormatter',
-            'json = cliff.formatters.tablibformatters:JsonFormatter',
             ],
         },
 
