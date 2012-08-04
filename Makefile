@@ -5,6 +5,7 @@ help:
 	@echo "clean   - remove build artifacts"
 
 release: docs
+	rm -rf dist build
 	python setup.py sdist upload
 
 sdist: docs

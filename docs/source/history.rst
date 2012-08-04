@@ -2,6 +2,10 @@
  Release History
 =================
 
+1.1.1
+
+  - Fix a packaging problem introduced in version 1.1.
+
 1.1
 
   - Move tablib support (JSON, YAML, and HTML formatters) to a

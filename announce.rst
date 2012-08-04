@@ -1,6 +1,6 @@
-======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.1
-======================================================================
+========================================================================
+ cliff -- Command Line Interface Formulation Framework -- version 1.1.1
+========================================================================
 
 .. tags:: python cliff release DreamHost
 
@@ -11,10 +11,8 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Moves the tablib formatters for JSON, YAML, and HTML out
-  of the core project and into a separate package to comply
-  with Ubuntu packaging requirements. See
-  https://github.com/dreamhost/cliff-tablib
+- This point release fixes a packaging problem introduced
+  by removing several formatters in version 1.1.
 
 Documentation
 =============
