@@ -1,5 +1,5 @@
 ========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.1.1
+ cliff -- Command Line Interface Formulation Framework -- version 1.1.2
 ========================================================================
 
 .. tags:: python cliff release DreamHost

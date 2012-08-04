@@ -2,7 +2,7 @@
  Release History
 =================
 
-1.1.1
+1.1.2
 
   - Fix a packaging problem introduced in version 1.1.
 
