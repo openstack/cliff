@@ -82,7 +82,7 @@ class InteractiveApp(cmd2.Cmd):
             # Dispatch to the underlying help command,
             # which knows how to provide help for extension
             # commands.
-            self.default('help ' + arg)
+            self.default(self.parsed('help ' + arg))
         else:
             cmd2.Cmd.do_help(self, arg)
             cmd_names = [n for n, v in self.command_manager]

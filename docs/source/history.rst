@@ -2,6 +2,10 @@
  Release History
 =================
 
+dev
+
+  - Fix problem with interactive mode ``help`` command.
+
 1.1.2
 
   - Fix a packaging problem introduced in version 1.1.
