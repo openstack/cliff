@@ -121,7 +121,6 @@ class App(object):
 
         # Set up logging to a file
         if self.options.log_file:
-            print 'configuring logging to', self.options.log_file
             file_handler = logging.FileHandler(
                 filename=self.options.log_file,
                 )
