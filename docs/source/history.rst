@@ -5,6 +5,8 @@
 dev
 
   - Fix problem with interactive mode ``help`` command.
+  - Disable logging by default but add a ``--log-file`` option to
+    re-enable it at runtime.
 
 1.1.2
 

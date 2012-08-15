@@ -10,6 +10,10 @@ import sys
 from .help import HelpAction, HelpCommand
 from .interactive import InteractiveApp
 
+# Make sure the cliff library has a logging handler
+# in case the app developer doesn't set up logging.
+logging.getLogger('cliff').addHandler(logging.NullHandler())
+
 LOG = logging.getLogger(__name__)
 
 
@@ -82,6 +86,12 @@ class App(object):
             help='Increase verbosity of output. Can be repeated.',
             )
         parser.add_argument(
+            '--log-file',
+            action='store',
+            default=None,
+            help='Specify a file to log output. Disabled by default.',
+            )
+        parser.add_argument(
             '-q', '--quiet',
             action='store_const',
             dest='verbose_level',
@@ -107,19 +117,18 @@ class App(object):
         """Create logging handlers for any log output.
         """
         root_logger = logging.getLogger('')
+        root_logger.setLevel(logging.DEBUG)
 
         # Set up logging to a file
-        root_logger.setLevel(logging.DEBUG)
-        file_handler = logging.handlers.RotatingFileHandler(
-            self.NAME + '.log',
-            maxBytes=10240,
-            backupCount=1,
-            )
-        formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
-        file_handler.setFormatter(formatter)
-        root_logger.addHandler(file_handler)
+        if self.options.log_file:
+            file_handler = logging.FileHandler(
+                filename=self.options.log_file,
+                )
+            formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
+            file_handler.setFormatter(formatter)
+            root_logger.addHandler(file_handler)
 
-        # Send higher-level messages to the console via stderr
+        # Always send higher-level messages to the console via stderr
         console = logging.StreamHandler(self.stderr)
         console_level = {0: logging.WARNING,
                          1: logging.INFO,
