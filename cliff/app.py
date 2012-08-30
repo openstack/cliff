@@ -12,7 +12,23 @@ from .interactive import InteractiveApp
 
 # Make sure the cliff library has a logging handler
 # in case the app developer doesn't set up logging.
-logging.getLogger('cliff').addHandler(logging.NullHandler())
+# For py26 compat, create a NullHandler
+
+if hasattr(logging, 'NullHandler'):
+    NullHandler = logging.NullHandler
+else:
+    class NullHandler(logging.Handler):
+        def handle(self, record):
+            pass
+
+        def emit(self, record):
+            pass
+
+        def createLock(self):
+            self.lock = None
+
+logging.getLogger('cliff').addHandler(NullHandler())
+
 
 LOG = logging.getLogger(__name__)
 
