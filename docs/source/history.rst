@@ -2,11 +2,13 @@
  Release History
 =================
 
-dev
+1.2
 
   - Fix problem with interactive mode ``help`` command.
   - Disable logging by default but add a ``--log-file`` option to
     re-enable it at runtime.
+  - Add support for python 2.6. (contributed by Mark McClain for
+    OpenStack Quantum)
 
 1.1.2
 
