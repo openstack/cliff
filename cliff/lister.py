@@ -6,6 +6,8 @@ try:
     from itertools import compress
 except ImportError:
     # for py26 compat
+    from itertools import izip
+
     def compress(data, selectors):
         return (d for d, s in izip(data, selectors) if s)
 
