@@ -2,6 +2,11 @@
  Release History
 =================
 
+1.2.1
+
+  - Fix problem with documentation packaging.
+  - Fix problem with missing ``izip`` import in ``lister.py``.
+
 1.2
 
   - Fix problem with interactive mode ``help`` command.

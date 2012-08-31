@@ -1,5 +1,5 @@
 ========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.2
+ cliff -- Command Line Interface Formulation Framework -- version 1.2.1
 ========================================================================
 
 .. tags:: python cliff release DreamHost
@@ -11,11 +11,8 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Fix problem with interactive mode ``help`` command.
-- Disable logging by default but add a ``--log-file`` option to
-  re-enable it at runtime.
-- Add support for python 2.6. (contributed by Mark McClain for
-  OpenStack Quantum)
+- Fix problem with documentation packaging.
+- Fix problem with missing ``izip`` import in ``lister.py``.
 
 Documentation
 =============
