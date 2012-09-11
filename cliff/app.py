@@ -74,7 +74,8 @@ class App(object):
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
 
-    def build_option_parser(self, description, version):
+    def build_option_parser(self, description, version,
+                            argparse_kwargs=None):
         """Return an argparse option parser for this application.
 
         Subclasses may override this method to extend
@@ -84,10 +85,15 @@ class App(object):
         :paramtype description: str
         :param version: version number for the application
         :paramtype version: str
+        :param argparse_kwargs: extra keyword argument passed to the
+        ArgumentParser constructor
+        :paramtype extra_kwargs: dict
         """
+        argparse_kwargs = argparse_kwargs or {}
         parser = argparse.ArgumentParser(
             description=description,
             add_help=False,
+            **argparse_kwargs
             )
         parser.add_argument(
             '--version',
