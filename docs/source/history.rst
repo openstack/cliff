@@ -2,6 +2,13 @@
  Release History
 =================
 
+in development
+
+  - Allow user to pass ``argparse_kwargs`` argument to the
+    ``build_option_parser`` method. This argument can contain extra
+    keyword argument which get passed to the ``ArgumentParser`` constructor.
+    (contributed by Tomaz Muraus)
+
 1.2.1
 
   - Fix problem with documentation packaging.
