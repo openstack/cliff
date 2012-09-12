@@ -1,3 +1,5 @@
+from argparse import ArgumentError
+
 from cliff.app import App
 from cliff.command import Command
 from cliff.commandmanager import CommandManager
@@ -168,3 +170,51 @@ def test_normal_clean_up_raises_exception_debug():
     app.clean_up.assert_called_once()
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 0, None)
+
+def test_build_option_parser_conflicting_option_should_throw():
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+        def build_option_parser(self, description, version):
+            parser = super(MyApp, self).build_option_parser(description,
+                                                             version)
+            parser.add_argument(
+                '-h', '--help',
+                default=self,  # tricky
+                help="show this help message and exit",
+                )
+
+    # TODO: tests should really use unittest2.
+    try:
+        MyApp()
+    except ArgumentError:
+        pass
+    else:
+        raise Exception('Exception was not thrown')
+
+def test_build_option_parser_conflicting_option_custom_arguments_should_not_throw():
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+        def build_option_parser(self, description, version):
+            argparse_kwargs = {'conflict_handler': 'resolve'}
+            parser = super(MyApp, self).build_option_parser(description,
+                                                            version,
+                                           argparse_kwargs=argparse_kwargs)
+            parser.add_argument(
+                '-h', '--help',
+                default=self,  # tricky
+                help="show this help message and exit",
+                )
+
+    MyApp()
