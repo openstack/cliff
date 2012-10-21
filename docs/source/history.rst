@@ -8,6 +8,7 @@
     ``build_option_parser`` method. This argument can contain extra
     keyword arguments which are passed to the ``ArgumentParser`` constructor.
     (contributed by Tomaz Muraus)
+  - Updated documentation to include dependency on distribute.
 
 1.2.1
 

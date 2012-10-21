@@ -1,6 +1,6 @@
-========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.2.1
-========================================================================
+======================================================================
+ cliff -- Command Line Interface Formulation Framework -- version 1.3
+======================================================================
 
 .. tags:: python cliff release DreamHost
 
@@ -11,8 +11,11 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Fix problem with documentation packaging.
-- Fix problem with missing ``izip`` import in ``lister.py``.
+- Allow user to pass ``argparse_kwargs`` argument to the
+  ``build_option_parser`` method. This argument can contain extra
+  keyword arguments which are passed to the ``ArgumentParser`` constructor.
+  (contributed by Tomaz Muraus)
+- Document the dependency on using distribute.
 
 Documentation
 =============
