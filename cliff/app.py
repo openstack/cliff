@@ -86,7 +86,7 @@ class App(object):
         :param version: version number for the application
         :paramtype version: str
         :param argparse_kwargs: extra keyword argument passed to the
-        ArgumentParser constructor
+                                ArgumentParser constructor
         :paramtype extra_kwargs: dict
         """
         argparse_kwargs = argparse_kwargs or {}
