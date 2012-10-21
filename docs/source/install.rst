@@ -7,6 +7,20 @@ Python Versions
 
 cliff is being developed under Python 2.7 and tested with Python 3.2.
 
+Dependencies
+============
+
+cliff depends on distribute_, the updated replacement for
+setuptools. If you have an older version of setuptools installed, `you
+may have trouble installing cliff`_ until you upgrade or set up a
+virtualenv_ using distribute instead (by using ``--use-distribute``).
+
+.. _distribute: http://pypi.python.org/pypi/distribute
+
+.. _you may have trouble installing cliff: https://bitbucket.org/tarek/distribute/issue/91/install-glitch-when-using-pip-virtualenv
+
+.. _virtualenv: http://pypi.python.org/pypi/virtualenv
+
 .. _install-basic:
 
 Basic Installation
