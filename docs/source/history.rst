@@ -2,6 +2,11 @@
  Release History
 =================
 
+dev
+
+  - Sort list of commands in interactive help mode. (contributed by
+    Ilya Shakhat)
+
 1.3
 
   - Allow user to pass ``argparse_kwargs`` argument to the
