@@ -85,7 +85,7 @@ class InteractiveApp(cmd2.Cmd):
             self.default(self.parsed('help ' + arg))
         else:
             cmd2.Cmd.do_help(self, arg)
-            cmd_names = [n for n, v in self.command_manager]
+            cmd_names = sorted([n for n, v in self.command_manager])
             self.print_topics(self.app_cmd_header, cmd_names, 15, 80)
         return
 
