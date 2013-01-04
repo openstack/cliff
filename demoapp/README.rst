@@ -32,7 +32,7 @@ Usage
 
 With cliff and the demo setup up, you can now play with it.
 
-To see a list of commands availble, run::
+To see a list of commands available, run::
 
   (.venv)$ cliffdemo --help
 
