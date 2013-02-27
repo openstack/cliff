@@ -2,7 +2,7 @@
  Release History
 =================
 
-dev
+1.3.1
 
   - Sort list of commands in interactive help mode. (contributed by
     Ilya Shakhat)

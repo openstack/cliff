@@ -1,6 +1,6 @@
-======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.3
-======================================================================
+========================================================================
+ cliff -- Command Line Interface Formulation Framework -- version 1.3.1
+========================================================================
 
 .. tags:: python cliff release DreamHost
 
@@ -11,11 +11,11 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Allow user to pass ``argparse_kwargs`` argument to the
-  ``build_option_parser`` method. This argument can contain extra
-  keyword arguments which are passed to the ``ArgumentParser`` constructor.
-  (contributed by Tomaz Muraus)
-- Document the dependency on using distribute.
+- Sort list of commands in interactive help mode. (contributed by Ilya
+  Shakhat)
+- Fix a dependency issue with PyParsing until the cmd2 package can
+  release an update setting the version of its dependency based on the
+  Python version.
 
 Documentation
 =============
