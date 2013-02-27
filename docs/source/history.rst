@@ -6,6 +6,9 @@ dev
 
   - Sort list of commands in interactive help mode. (contributed by
     Ilya Shakhat)
+  - Fix a dependency issue with PyParsing until the cmd2 package can
+    release an update setting the version of its dependency based on
+    the Python version.
 
 1.3
 

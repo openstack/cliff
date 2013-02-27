@@ -21,10 +21,21 @@ try:
 except IOError:
     long_description = ''
 
-install_requires = ['distribute',
-                    'PrettyTable',
-                    'cmd2',
-                    ]
+install_requires = [
+    'distribute',
+    'PrettyTable>=0.6,<0.7',
+    'cmd2==0.6.4',
+]
+
+# We need a different version of PyParsing, depending on which version
+# of Python we're using. cmd2 should have this set properly, but until
+# there is a release declare the dependency ourselves.
+# http://trac-hg.assembla.com/python-cmd2/rev/a5f3d5a89d6c
+if sys.version_info[0] < 3:
+    install_requires.append('pyparsing==1.5.7')
+else:
+    install_requires.append('pyparsing>=2.0.0')
+
 try:
     import argparse
 except ImportError:
