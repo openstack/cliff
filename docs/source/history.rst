@@ -2,6 +2,13 @@
  Release History
 =================
 
+dev
+
+  - Add ``convert_underscores`` parameter to ``CommandManager`` ``__init__``
+    method to allow underscores to be used in command names. This optional
+    argument is defaulted to True to maintain current behavior.
+    (contributed by Joe Server)
+
 1.3.1
 
   - Sort list of commands in interactive help mode. (contributed by
