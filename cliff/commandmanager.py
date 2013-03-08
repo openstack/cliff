@@ -27,16 +27,20 @@ class CommandManager(object):
     :param namespace: String containing the setuptools entrypoint namespace
                       for the plugins to be loaded. For example,
                       ``'cliff.formatter.list'``.
+    :param convert_underscores: Whether cliff should convert underscores to
+                                to spaces in entry_point commands.
     """
-    def __init__(self, namespace):
+    def __init__(self, namespace, convert_underscores=True):
         self.commands = {}
         self.namespace = namespace
+        self.convert_underscores = convert_underscores
         self._load_commands()
 
     def _load_commands(self):
         for ep in pkg_resources.iter_entry_points(self.namespace):
             LOG.debug('found command %r', ep.name)
-            self.commands[ep.name.replace('_', ' ')] = ep
+            cmd_name = ep.name.replace('_', ' ') if self.convert_underscores else ep.name
+            self.commands[cmd_name] = ep
         return
 
     def __iter__(self):
