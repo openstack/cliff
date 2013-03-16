@@ -93,3 +93,27 @@ def test_load_commands():
         assert iter_entry_points.called_once_with('test')
         names = [n for n, v in mgr]
         assert names == ['test']
+
+
+def test_load_commands_keep_underscores():
+    testcmd = mock.Mock()
+    testcmd.name = 'test_cmd'
+    mock_pkg_resources = mock.Mock(return_value=[testcmd])
+    with mock.patch('pkg_resources.iter_entry_points',
+                    mock_pkg_resources) as iter_entry_points:
+        mgr = CommandManager('test', convert_underscores=False)
+        assert iter_entry_points.called_once_with('test')
+        names = [n for n, v in mgr]
+        assert names == ['test_cmd']
+
+
+def test_load_commands_replace_underscores():
+    testcmd = mock.Mock()
+    testcmd.name = 'test_cmd'
+    mock_pkg_resources = mock.Mock(return_value=[testcmd])
+    with mock.patch('pkg_resources.iter_entry_points',
+                    mock_pkg_resources) as iter_entry_points:
+        mgr = CommandManager('test', convert_underscores=True)
+        assert iter_entry_points.called_once_with('test')
+        names = [n for n, v in mgr]
+        assert names == ['test cmd']
