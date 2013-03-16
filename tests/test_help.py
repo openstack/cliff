@@ -38,7 +38,7 @@ class TestCommandManager(CommandManager):
             'one': TestCommand,
             'two words': TestCommand,
             'three word command': TestCommand,
-            }
+        }
 
 
 def test_show_help_for_command():

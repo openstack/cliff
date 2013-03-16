@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-from cliff.command import Command
-from cliff.commandmanager import CommandManager
-from cliff.formatters.base import ListFormatter
 from cliff.lister import Lister
 
 import mock
@@ -16,19 +13,20 @@ class FauxFormatter(object):
     def emit_list(self, columns, data, stdout, args):
         self.args.append((columns, data))
 
+
 class ExerciseLister(Lister):
 
-	def load_formatter_plugins(self):
-		self.formatters = {
-			'test': FauxFormatter(),
-			}
-		return
+    def load_formatter_plugins(self):
+        self.formatters = {
+            'test': FauxFormatter(),
+        }
+        return
 
-	def take_action(self, parsed_args):
-		return (
-			parsed_args.columns,
-			[('a', 'A'), ('b', 'B')],
-			)
+    def take_action(self, parsed_args):
+        return (
+            parsed_args.columns,
+            [('a', 'A'), ('b', 'B')],
+        )
 
 
 #    def run(self, parsed_args):
@@ -52,4 +50,3 @@ def test_formatter_args():
     assert args[0] == list(parsed_args.columns)
     data = list(args[1])
     assert data == [['a', 'A'], ['b', 'B']]
-

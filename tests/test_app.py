@@ -20,7 +20,9 @@ def make_app():
     # Register a command that fails
     err_command = mock.Mock(name='err_command', spec=Command)
     err_command_inst = mock.Mock(spec=Command)
-    err_command_inst.run = mock.Mock(side_effect=RuntimeError('test exception'))
+    err_command_inst.run = mock.Mock(
+        side_effect=RuntimeError('test exception')
+    )
     err_command.return_value = err_command_inst
     cmd_mgr.add_command('error', err_command)
 
@@ -41,7 +43,9 @@ def test_no_args_triggers_interactive_mode():
 
 def test_interactive_mode_cmdloop():
     app, command = make_app()
-    app.interactive_app_factory = mock.MagicMock(name='interactive_app_factory')
+    app.interactive_app_factory = mock.MagicMock(
+        name='interactive_app_factory'
+    )
     app.run([])
     app.interactive_app_factory.return_value.cmdloop.assert_called_once_with()
 
@@ -106,7 +110,7 @@ def test_error_handling_clean_up_raises_exception():
     app.clean_up = mock.MagicMock(
         name='clean_up',
         side_effect=RuntimeError('within clean_up'),
-        )
+    )
     app.run(['error'])
 
     app.clean_up.assert_called_once()
@@ -123,7 +127,7 @@ def test_error_handling_clean_up_raises_exception_debug():
     app.clean_up = mock.MagicMock(
         name='clean_up',
         side_effect=RuntimeError('within clean_up'),
-        )
+    )
     try:
         app.run(['--debug', 'error'])
     except RuntimeError as err:
@@ -150,7 +154,7 @@ def test_normal_clean_up_raises_exception():
     app.clean_up = mock.MagicMock(
         name='clean_up',
         side_effect=RuntimeError('within clean_up'),
-        )
+    )
     app.run(['mock'])
 
     app.clean_up.assert_called_once()
@@ -164,12 +168,13 @@ def test_normal_clean_up_raises_exception_debug():
     app.clean_up = mock.MagicMock(
         name='clean_up',
         side_effect=RuntimeError('within clean_up'),
-        )
+    )
     app.run(['--debug', 'mock'])
 
     app.clean_up.assert_called_once()
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 0, None)
+
 
 def test_build_option_parser_conflicting_option_should_throw():
     class MyApp(App):
@@ -182,12 +187,12 @@ def test_build_option_parser_conflicting_option_should_throw():
 
         def build_option_parser(self, description, version):
             parser = super(MyApp, self).build_option_parser(description,
-                                                             version)
+                                                            version)
             parser.add_argument(
                 '-h', '--help',
                 default=self,  # tricky
                 help="show this help message and exit",
-                )
+            )
 
     # TODO: tests should really use unittest2.
     try:
@@ -197,7 +202,8 @@ def test_build_option_parser_conflicting_option_should_throw():
     else:
         raise Exception('Exception was not thrown')
 
-def test_build_option_parser_conflicting_option_custom_arguments_should_not_throw():
+
+def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
     class MyApp(App):
         def __init__(self):
             super(MyApp, self).__init__(
@@ -208,13 +214,14 @@ def test_build_option_parser_conflicting_option_custom_arguments_should_not_thro
 
         def build_option_parser(self, description, version):
             argparse_kwargs = {'conflict_handler': 'resolve'}
-            parser = super(MyApp, self).build_option_parser(description,
-                                                            version,
-                                           argparse_kwargs=argparse_kwargs)
+            parser = super(MyApp, self).build_option_parser(
+                description,
+                version,
+                argparse_kwargs=argparse_kwargs)
             parser.add_argument(
                 '-h', '--help',
                 default=self,  # tricky
                 help="show this help message and exit",
-                )
+            )
 
     MyApp()
