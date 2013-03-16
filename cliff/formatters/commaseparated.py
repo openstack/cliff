@@ -13,7 +13,7 @@ class CSVLister(ListFormatter):
         'minimal': csv.QUOTE_MINIMAL,
         'nonnumeric': csv.QUOTE_NONNUMERIC,
         'none': csv.QUOTE_NONE,
-        }
+    }
 
     def add_argument_group(self, parser):
         group = parser.add_argument_group('CSV Formatter')
@@ -23,7 +23,7 @@ class CSVLister(ListFormatter):
             dest='quote_mode',
             default='nonnumeric',
             help='when to include quotes, defaults to nonnumeric',
-            )
+        )
 
     def emit_list(self, column_names, data, stdout, parsed_args):
         writer = csv.writer(stdout,

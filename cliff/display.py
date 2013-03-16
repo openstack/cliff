@@ -44,7 +44,7 @@ class DisplayCommandBase(Command):
         formatter_group = parser.add_argument_group(
             title='output formatters',
             description='output formatter options',
-            )
+        )
         formatter_choices = sorted(self.formatters.keys())
         formatter_default = self.formatter_default
         if formatter_default not in formatter_choices:
@@ -56,7 +56,7 @@ class DisplayCommandBase(Command):
             choices=formatter_choices,
             default=formatter_default,
             help='the output format, defaults to %s' % formatter_default,
-            )
+        )
         formatter_group.add_argument(
             '-c', '--column',
             action='append',
@@ -64,7 +64,7 @@ class DisplayCommandBase(Command):
             dest='columns',
             metavar='COLUMN',
             help='specify the column(s) to include, can be repeated',
-            )
+        )
         for name, formatter in sorted(self.formatters.items()):
             formatter.add_argument_group(parser)
         return parser

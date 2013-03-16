@@ -72,8 +72,8 @@ class InteractiveApp(cmd2.Cmd):
                     ['do'],
                     itertools.takewhile(lambda x: not x.startswith('-'),
                                         arg_parts)
-                    )
                 )
+            )
             # Have the command manager version of the help
             # command produce the help text since cmd and
             # cmd2 do not provide help for "help"

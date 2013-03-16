@@ -94,45 +94,45 @@ class App(object):
             description=description,
             add_help=False,
             **argparse_kwargs
-            )
+        )
         parser.add_argument(
             '--version',
             action='version',
             version='%(prog)s {0}'.format(version),
-            )
+        )
         parser.add_argument(
             '-v', '--verbose',
             action='count',
             dest='verbose_level',
             default=self.DEFAULT_VERBOSE_LEVEL,
             help='Increase verbosity of output. Can be repeated.',
-            )
+        )
         parser.add_argument(
             '--log-file',
             action='store',
             default=None,
             help='Specify a file to log output. Disabled by default.',
-            )
+        )
         parser.add_argument(
             '-q', '--quiet',
             action='store_const',
             dest='verbose_level',
             const=0,
             help='suppress output except warnings and errors',
-            )
+        )
         parser.add_argument(
             '-h', '--help',
             action=HelpAction,
             nargs=0,
             default=self,  # tricky
             help="show this help message and exit",
-            )
+        )
         parser.add_argument(
             '--debug',
             default=False,
             action='store_true',
             help='show tracebacks on errors',
-            )
+        )
         return parser
 
     def configure_logging(self):
@@ -145,7 +145,7 @@ class App(object):
         if self.options.log_file:
             file_handler = logging.FileHandler(
                 filename=self.options.log_file,
-                )
+            )
             formatter = logging.Formatter(self.LOG_FILE_MESSAGE_FORMAT)
             file_handler.setFormatter(formatter)
             root_logger.addHandler(file_handler)

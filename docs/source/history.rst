@@ -8,6 +8,9 @@ dev
     method to allow underscores to be used in command names. This optional
     argument is defaulted to True to maintain current behavior.
     (contributed by Joe Server)
+  - Use flake8_ for style checking.
+
+.. _flake8: https://pypi.python.org/pypi/flake8
 
 1.3.1
 

@@ -12,7 +12,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
         int: 'r',
         str: 'l',
         float: 'r',
-        }
+    }
     try:
         ALIGNMENTS[unicode] = 'l'
     except NameError:

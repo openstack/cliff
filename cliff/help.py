@@ -49,7 +49,7 @@ class HelpCommand(Command):
             try:
                 the_cmd = self.app.command_manager.find_command(
                     parsed_args.cmd,
-                    )
+                )
                 cmd_factory, cmd_name, search_args = the_cmd
             except ValueError:
                 # Did not find an exact match

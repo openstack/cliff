@@ -28,7 +28,7 @@ class Command(object):
         parser = argparse.ArgumentParser(
             description=self.get_description(),
             prog=prog_name,
-            )
+        )
         return parser
 
     @abc.abstractmethod
