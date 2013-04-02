@@ -23,7 +23,7 @@ except IOError:
 
 install_requires = [
     'distribute',
-    'PrettyTable>=0.6,<0.7',
+    'PrettyTable>=0.6,<0.8',
     'cmd2==0.6.4',
 ]
 
