@@ -2,13 +2,15 @@
  Release History
 =================
 
-dev
+1.3.2
 
   - Add ``convert_underscores`` parameter to ``CommandManager`` ``__init__``
     method to allow underscores to be used in command names. This optional
     argument is defaulted to True to maintain current behavior.
     (contributed by Joe Server)
   - Use flake8_ for style checking.
+  - Relax version requirement for PrettyTable dependency to allow
+    point releases of 0.7.
 
 .. _flake8: https://pypi.python.org/pypi/flake8
 
