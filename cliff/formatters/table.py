@@ -22,7 +22,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
         pass
 
     def emit_list(self, column_names, data, stdout, parsed_args):
-        x = prettytable.PrettyTable(column_names)
+        x = prettytable.PrettyTable(column_names, print_empty=False)
         x.padding_width = 1
         # Figure out the types of the columns in the
         # first row and set the alignment of the
@@ -46,7 +46,8 @@ class TableFormatter(ListFormatter, SingleFormatter):
         return
 
     def emit_one(self, column_names, data, stdout, parsed_args):
-        x = prettytable.PrettyTable(field_names=('Field', 'Value'))
+        x = prettytable.PrettyTable(field_names=('Field', 'Value'),
+                                    print_empty=False)
         x.padding_width = 1
         # Align all columns left because the values are
         # not all the same type.
