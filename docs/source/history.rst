@@ -2,6 +2,13 @@
  Release History
 =================
 
+1.3.3
+
+  - Restore compatibility with prettytable < 0.7.2 by forcing no
+    output if there is no data (instead of printing an empty
+    table). Contributed by Dirk Mueller.
+  - Update to allow cmd2 version 0.6.5.1. Contributed by Dirk Mueller.
+
 1.3.2
 
   - Add ``convert_underscores`` parameter to ``CommandManager`` ``__init__``
