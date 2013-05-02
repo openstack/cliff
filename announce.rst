@@ -1,5 +1,5 @@
 ========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.3.2
+ cliff -- Command Line Interface Formulation Framework -- version 1.3.3
 ========================================================================
 
 .. tags:: python cliff release DreamHost
@@ -11,15 +11,10 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Add ``convert_underscores`` parameter to ``CommandManager``
-  ``__init__`` method to allow underscores to be used in command
-  names. This optional argument is defaulted to True to maintain
-  current behavior.  (contributed by Joe Server)
-- Use flake8_ for style checking.
-- Relax version requirement for PrettyTable dependency to allow point
-  releases of 0.7.
-
-.. _flake8: https://pypi.python.org/pypi/flake8
+- Restore compatibility with prettytable < 0.7.2 by forcing no
+  output if there is no data (instead of printing an empty
+  table). Contributed by Dirk Mueller.
+- Update to allow cmd2 version 0.6.5.1. Contributed by Dirk Mueller.
 
 Documentation
 =============
