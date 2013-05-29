@@ -73,6 +73,7 @@ class App(object):
         self.interactive_app_factory = interactive_app_factory
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
+        self.interpreter = None
 
     def build_option_parser(self, description, version,
                             argparse_kwargs=None):
@@ -224,12 +225,12 @@ class App(object):
         return
 
     def interact(self):
-        interpreter = self.interactive_app_factory(self,
-                                                   self.command_manager,
-                                                   self.stdin,
-                                                   self.stdout,
-                                                   )
-        interpreter.cmdloop()
+        self.interpreter = self.interactive_app_factory(self,
+                                                        self.command_manager,
+                                                        self.stdin,
+                                                        self.stdout,
+                                                        )
+        self.interpreter.cmdloop()
         return 0
 
     def run_subcommand(self, argv):

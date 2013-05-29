@@ -46,7 +46,9 @@ def test_interactive_mode_cmdloop():
     app.interactive_app_factory = mock.MagicMock(
         name='interactive_app_factory'
     )
+    assert app.interpreter is None
     app.run([])
+    assert app.interpreter is not None
     app.interactive_app_factory.return_value.cmdloop.assert_called_once_with()
 
 
