@@ -2,6 +2,12 @@
  Release History
 =================
 
+dev
+
+- Store a reference to the InteractiveApp on the App while in
+  interactive mode to allow commands to update the interactive
+  state. (Contributed by Tomaz Muraus)
+
 1.3.3
 
   - Restore compatibility with prettytable < 0.7.2 by forcing no
