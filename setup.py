@@ -32,7 +32,7 @@ else:
     install_requires.append('pyparsing>=2.0.0')
 
 try:
-    import argparse
+    import argparse  # noqa
 except ImportError:
     install_requires.append('argparse')
 
@@ -47,13 +47,11 @@ standard_exclude_directories = ('.*', 'CVS', '_darcs', './build',
                                 './dist', 'EGG-INFO', '*.egg-info')
 
 
-def find_package_data(
-    where='.', package='',
-    exclude=standard_exclude,
-    exclude_directories=standard_exclude_directories,
-    only_in_packages=True,
-    show_ignored=False,
-    ):
+def find_package_data(where='.', package='',
+                      exclude=standard_exclude,
+                      exclude_directories=standard_exclude_directories,
+                      only_in_packages=True,
+                      show_ignored=False):
     """
     Return a dictionary suitable for use in ``package_data``
     in a distutils ``setup.py`` file.
@@ -93,7 +91,7 @@ def find_package_data(
                 bad_name = False
                 for pattern in exclude_directories:
                     if (fnmatchcase(name, pattern)
-                        or fn.lower() == pattern.lower()):
+                            or fn.lower() == pattern.lower()):
                         bad_name = True
                         if show_ignored:
                             print >> sys.stderr, (
@@ -118,7 +116,7 @@ def find_package_data(
                 bad_name = False
                 for pattern in exclude:
                     if (fnmatchcase(name, pattern)
-                        or fn.lower() == pattern.lower()):
+                            or fn.lower() == pattern.lower()):
                         bad_name = True
                         if show_ignored:
                             print >> sys.stderr, (
@@ -180,12 +178,12 @@ setup(
         'cliff.formatter.list': [
             'table = cliff.formatters.table:TableFormatter',
             'csv = cliff.formatters.commaseparated:CSVLister',
-            ],
+        ],
         'cliff.formatter.show': [
             'table = cliff.formatters.table:TableFormatter',
             'shell = cliff.formatters.shell:ShellFormatter',
-            ],
-        },
+        ],
+    },
 
     zip_safe=False,
-    )
+)
