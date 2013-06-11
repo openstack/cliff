@@ -3,7 +3,7 @@
 PROJECT = 'cliff'
 
 # Change docs/source/conf.py too!
-VERSION = '1.3.3'
+VERSION = '1.4'
 
 from setuptools import setup, find_packages
 

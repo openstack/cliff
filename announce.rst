@@ -1,6 +1,6 @@
-========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.3.3
-========================================================================
+======================================================================
+ cliff -- Command Line Interface Formulation Framework -- version 1.4
+======================================================================
 
 .. tags:: python cliff release DreamHost
 
@@ -11,10 +11,12 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Restore compatibility with prettytable < 0.7.2 by forcing no
-  output if there is no data (instead of printing an empty
-  table). Contributed by Dirk Mueller.
-- Update to allow cmd2 version 0.6.5.1. Contributed by Dirk Mueller.
+- Store a reference to the InteractiveApp on the App while in
+  interactive mode to allow commands to update the interactive
+  state. (Contributed by Tomaz Muraus)
+- Remove reliance on distribute, now that it has merged with
+  setuptools 0.7. Providing an explicit dependency on setuptools
+  breaks updates in some cases, so just fail if it isn't there.
 
 Documentation
 =============

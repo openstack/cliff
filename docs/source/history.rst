@@ -2,7 +2,7 @@
  Release History
 =================
 
-dev
+1.4
 
 - Store a reference to the InteractiveApp on the App while in
   interactive mode to allow commands to update the interactive
