@@ -5,10 +5,6 @@ PROJECT = 'cliff'
 # Change docs/source/conf.py too!
 VERSION = '1.3.3'
 
-# Bootstrap installation of Distribute
-import distribute_setup
-distribute_setup.use_setuptools()
-
 from setuptools import setup, find_packages
 
 from distutils.util import convert_path

@@ -7,6 +7,9 @@ dev
 - Store a reference to the InteractiveApp on the App while in
   interactive mode to allow commands to update the interactive
   state. (Contributed by Tomaz Muraus)
+- Remove reliance on distribute, now that it has merged with
+  setuptools 0.7. Providing an explicit dependency on setuptools
+  breaks updates in some cases, so just fail if it isn't there.
 
 1.3.3
 
