@@ -44,3 +44,12 @@ class ShowOne(DisplayCommandBase):
                                 self.app.stdout,
                                 parsed_args)
         return 0
+
+    def dict2columns(self, data):
+        """Implement the common task of converting a dict-based object
+        to the two-column output that ShowOne expects.
+        """
+        if not data:
+            return ({}, {})
+        else:
+            return zip(*sorted(data.items()))
