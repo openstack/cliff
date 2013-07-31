@@ -68,6 +68,7 @@ setup(
             'files = cliffdemo.list:Files',
             'file = cliffdemo.show:File',
             'show file = cliffdemo.show:File',
+            'unicode = cliffdemo.encoding:Encoding',
             ],
         },
 

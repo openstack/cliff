@@ -1,10 +1,18 @@
+# -*- encoding: utf-8 -*-
 from argparse import ArgumentError
+try:
+    from StringIO import StringIO
+except ImportError:
+    # Probably python 3, that test won't be run so ignore the error
+    pass
+import sys
+
+import nose
+import mock
 
 from cliff.app import App
 from cliff.command import Command
 from cliff.commandmanager import CommandManager
-
-import mock
 
 
 def make_app():
@@ -227,3 +235,115 @@ def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
             )
 
     MyApp()
+
+
+def test_output_encoding_default():
+    # The encoding should come from getdefaultlocale() because
+    # stdout has no encoding set.
+    if sys.version_info[:2] != (2, 6):
+        raise nose.SkipTest('only needed for python 2.6')
+    data = '\xc3\xa9'
+    u_data = data.decode('utf-8')
+
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+    stdout = StringIO()
+    getdefaultlocale = lambda: ('ignored', 'utf-8')
+
+    with mock.patch('sys.stdout', stdout):
+        with mock.patch('locale.getdefaultlocale', getdefaultlocale):
+            app = MyApp()
+            app.stdout.write(u_data)
+            actual = stdout.getvalue()
+            assert data == actual
+
+
+def test_output_encoding_sys():
+    # The encoding should come from sys.stdout because it is set
+    # there.
+    if sys.version_info[:2] != (2, 6):
+        raise nose.SkipTest('only needed for python 2.6')
+    data = '\xc3\xa9'
+    u_data = data.decode('utf-8')
+
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+    stdout = StringIO()
+    stdout.encoding = 'utf-8'
+    getdefaultlocale = lambda: ('ignored', 'utf-16')
+
+    with mock.patch('sys.stdout', stdout):
+        with mock.patch('locale.getdefaultlocale', getdefaultlocale):
+            app = MyApp()
+            app.stdout.write(u_data)
+            actual = stdout.getvalue()
+            assert data == actual
+
+
+def test_error_encoding_default():
+    # The encoding should come from getdefaultlocale() because
+    # stdout has no encoding set.
+    if sys.version_info[:2] != (2, 6):
+        raise nose.SkipTest('only needed for python 2.6')
+    data = '\xc3\xa9'
+    u_data = data.decode('utf-8')
+
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+    stderr = StringIO()
+    getdefaultlocale = lambda: ('ignored', 'utf-8')
+
+    with mock.patch('sys.stderr', stderr):
+        with mock.patch('locale.getdefaultlocale', getdefaultlocale):
+            app = MyApp()
+            app.stderr.write(u_data)
+            actual = stderr.getvalue()
+            assert data == actual
+
+
+def test_error_encoding_sys():
+    # The encoding should come from sys.stdout (not sys.stderr)
+    # because it is set there.
+    if sys.version_info[:2] != (2, 6):
+        raise nose.SkipTest('only needed for python 2.6')
+    data = '\xc3\xa9'
+    u_data = data.decode('utf-8')
+
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+    stdout = StringIO()
+    stdout.encoding = 'utf-8'
+    stderr = StringIO()
+    getdefaultlocale = lambda: ('ignored', 'utf-16')
+
+    with mock.patch('sys.stdout', stdout):
+        with mock.patch('sys.stderr', stderr):
+            with mock.patch('locale.getdefaultlocale', getdefaultlocale):
+                app = MyApp()
+                app.stderr.write(u_data)
+                actual = stderr.getvalue()
+                assert data == actual

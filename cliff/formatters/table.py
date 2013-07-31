@@ -22,7 +22,10 @@ class TableFormatter(ListFormatter, SingleFormatter):
         pass
 
     def emit_list(self, column_names, data, stdout, parsed_args):
-        x = prettytable.PrettyTable(column_names, print_empty=False)
+        x = prettytable.PrettyTable(
+            column_names,
+            print_empty=False,
+        )
         x.padding_width = 1
         # Figure out the types of the columns in the
         # first row and set the alignment of the
