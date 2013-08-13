@@ -19,7 +19,9 @@ except IOError:
 
 install_requires = [
     'PrettyTable>=0.6,<0.8',
-    'cmd2>=0.6.4',
+    # Restrict cliff from bringing in cmd2 0.6.6 until the problem
+    # with the Python 3-only code is resolved.
+    'cmd2>=0.6.4,<0.6.6',
 ]
 
 # We need a different version of PyParsing, depending on which version
