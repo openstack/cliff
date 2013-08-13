@@ -2,10 +2,11 @@
  Release History
 =================
 
-dev
+1.4.1
 
 - Add ``dict2columns`` method to ``ShowOne``. (Contributed by Dean
   Troyer)
+- Pin the requirement for cmd2 more tightly.
 
 1.4
 

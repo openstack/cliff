@@ -1,6 +1,6 @@
-======================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.4
-======================================================================
+========================================================================
+ cliff -- Command Line Interface Formulation Framework -- version 1.4.1
+========================================================================
 
 .. tags:: python cliff release DreamHost
 
@@ -11,12 +11,9 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Store a reference to the InteractiveApp on the App while in
-  interactive mode to allow commands to update the interactive
-  state. (Contributed by Tomaz Muraus)
-- Remove reliance on distribute, now that it has merged with
-  setuptools 0.7. Providing an explicit dependency on setuptools
-  breaks updates in some cases, so just fail if it isn't there.
+- Add ``dict2columns`` method to ``ShowOne``. (Contributed by Dean
+  Troyer)
+- Pin the requirement for cmd2 more tightly.
 
 Documentation
 =============
