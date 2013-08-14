@@ -1,5 +1,5 @@
 ========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.4.1
+ cliff -- Command Line Interface Formulation Framework -- version 1.4.2
 ========================================================================
 
 .. tags:: python cliff release DreamHost
@@ -11,9 +11,8 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Add ``dict2columns`` method to ``ShowOne``. (Contributed by Dean
-  Troyer)
-- Pin the requirement for cmd2 more tightly.
+- Fix an issue with unicode output under Python 2.6. See
+  https://github.com/dreamhost/cliff/pull/40 for details.
 
 Documentation
 =============

@@ -2,6 +2,11 @@
  Release History
 =================
 
+1.4.2
+
+- Fix an issue with unicode output under Python 2.6. See
+  https://github.com/dreamhost/cliff/pull/40 for details.
+
 1.4.1
 
 - Add ``dict2columns`` method to ``ShowOne``. (Contributed by Dean

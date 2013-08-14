@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 PROJECT = 'cliff'
-
-# Change docs/source/conf.py too!
-VERSION = '1.4.1'
+VERSION = '1.4.2'
 
 from setuptools import setup, find_packages
 
