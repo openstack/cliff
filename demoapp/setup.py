@@ -5,16 +5,7 @@ PROJECT = 'cliffdemo'
 # Change docs/sphinx/conf.py too!
 VERSION = '0.1'
 
-# Bootstrap installation of Distribute
-import distribute_setup
-distribute_setup.use_setuptools()
-
 from setuptools import setup, find_packages
-
-from distutils.util import convert_path
-from fnmatch import fnmatchcase
-import os
-import sys
 
 try:
     long_description = open('README.rst', 'rt').read()
@@ -59,7 +50,7 @@ setup(
     entry_points={
         'console_scripts': [
             'cliffdemo = cliffdemo.main:main'
-            ],
+        ],
         'cliff.demo': [
             'simple = cliffdemo.simple:Simple',
             'two_part = cliffdemo.simple:Simple',
@@ -68,8 +59,9 @@ setup(
             'files = cliffdemo.list:Files',
             'file = cliffdemo.show:File',
             'show file = cliffdemo.show:File',
-            ],
-        },
+            'unicode = cliffdemo.encoding:Encoding',
+        ],
+    },
 
     zip_safe=False,
-    )
+)

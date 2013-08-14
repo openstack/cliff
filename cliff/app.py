@@ -2,6 +2,8 @@
 """
 
 import argparse
+import codecs
+import locale
 import logging
 import logging.handlers
 import os
@@ -67,13 +69,30 @@ class App(object):
         """
         self.command_manager = command_manager
         self.command_manager.add_command('help', HelpCommand)
-        self.stdin = stdin or sys.stdin
-        self.stdout = stdout or sys.stdout
-        self.stderr = stderr or sys.stderr
+        self._set_streams(stdin, stdout, stderr)
         self.interactive_app_factory = interactive_app_factory
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
         self.interpreter = None
+
+    def _set_streams(self, stdin, stdout, stderr):
+        locale.setlocale(locale.LC_ALL, '')
+        if sys.version_info[:2] == (2, 6):
+            # Configure the input and output streams. If a stream is
+            # provided, it must be configured correctly by the
+            # caller. If not, make sure the versions of the standard
+            # streams used by default are wrapped with encodings. This
+            # works around a problem with Python 2.6 fixed in 2.7 and
+            # later (http://hg.python.org/cpython/rev/e60ef17561dc/).
+            lang, encoding = locale.getdefaultlocale()
+            encoding = getattr(sys.stdout, 'encoding', None) or encoding
+            self.stdin = stdin or codecs.getreader(encoding)(sys.stdin)
+            self.stdout = stdout or codecs.getwriter(encoding)(sys.stdout)
+            self.stderr = stderr or codecs.getwriter(encoding)(sys.stderr)
+        else:
+            self.stdin = stdin or sys.stdin
+            self.stdout = stdout or sys.stdout
+            self.stderr = stderr or sys.stderr
 
     def build_option_parser(self, description, version,
                             argparse_kwargs=None):
