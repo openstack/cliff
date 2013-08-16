@@ -1,5 +1,5 @@
 ========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.4.2
+ cliff -- Command Line Interface Formulation Framework -- version 1.4.3
 ========================================================================
 
 .. tags:: python cliff release DreamHost
@@ -11,8 +11,7 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Fix an issue with unicode output under Python 2.6. See
-  https://github.com/dreamhost/cliff/pull/40 for details.
+- More stdout encoding issues with Python 2.6.
 
 Documentation
 =============
