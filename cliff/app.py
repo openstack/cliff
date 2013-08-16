@@ -61,6 +61,7 @@ class App(object):
     LOG_FILE_MESSAGE_FORMAT = \
         '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
     DEFAULT_VERBOSE_LEVEL = 1
+    DEFAULT_OUTPUT_ENCODING = 'utf-8'
 
     def __init__(self, description, version, command_manager,
                  stdin=None, stdout=None, stderr=None,
@@ -85,7 +86,10 @@ class App(object):
             # works around a problem with Python 2.6 fixed in 2.7 and
             # later (http://hg.python.org/cpython/rev/e60ef17561dc/).
             lang, encoding = locale.getdefaultlocale()
-            encoding = getattr(sys.stdout, 'encoding', None) or encoding
+            encoding = (getattr(sys.stdout, 'encoding', None)
+                        or encoding
+                        or self.DEFAULT_OUTPUT_ENCODING
+                        )
             self.stdin = stdin or codecs.getreader(encoding)(sys.stdin)
             self.stdout = stdout or codecs.getwriter(encoding)(sys.stdout)
             self.stderr = stderr or codecs.getwriter(encoding)(sys.stderr)

@@ -264,6 +264,33 @@ def test_output_encoding_default():
             assert data == actual
 
 
+def test_output_encoding_cliff_default():
+    # The encoding should come from cliff.App.DEFAULT_OUTPUT_ENCODING
+    # because the other values are missing or None
+    if sys.version_info[:2] != (2, 6):
+        raise nose.SkipTest('only needed for python 2.6')
+    data = '\xc3\xa9'
+    u_data = data.decode('utf-8')
+
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=CommandManager('tests'),
+            )
+
+    stdout = StringIO()
+    getdefaultlocale = lambda: ('ignored', None)
+
+    with mock.patch('sys.stdout', stdout):
+        with mock.patch('locale.getdefaultlocale', getdefaultlocale):
+            app = MyApp()
+            app.stdout.write(u_data)
+            actual = stdout.getvalue()
+            assert data == actual
+
+
 def test_output_encoding_sys():
     # The encoding should come from sys.stdout because it is set
     # there.
