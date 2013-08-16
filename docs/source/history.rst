@@ -2,6 +2,10 @@
  Release History
 =================
 
+1.4.3
+
+- More stdout encoding issues with Python 2.6.
+
 1.4.2
 
 - Fix an issue with unicode output under Python 2.6. See

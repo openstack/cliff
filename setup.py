@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 PROJECT = 'cliff'
-VERSION = '1.4.2'
+VERSION = '1.4.3'
 
 from setuptools import setup, find_packages
 
