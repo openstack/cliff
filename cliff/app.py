@@ -260,7 +260,10 @@ class App(object):
         try:
             subcommand = self.command_manager.find_command(argv)
         except ValueError as err:
-            LOG.error(err)
+            if self.options.debug:
+                LOG.exception(err)
+            else:
+                LOG.error(err)
             return 1
         cmd_factory, cmd_name, sub_argv = subcommand
         cmd = cmd_factory(self, self.options)
