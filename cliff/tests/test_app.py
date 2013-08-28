@@ -374,3 +374,8 @@ def test_error_encoding_sys():
                 app.stderr.write(u_data)
                 actual = stderr.getvalue()
                 assert data == actual
+
+
+def test_unknown_cmd():
+    app, command = make_app()
+    assert app.run(['hell']) == 2
