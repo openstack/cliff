@@ -264,7 +264,7 @@ class App(object):
                 LOG.exception(err)
             else:
                 LOG.error(err)
-            return 1
+            return 2
         cmd_factory, cmd_name, sub_argv = subcommand
         cmd = cmd_factory(self, self.options)
         err = None
