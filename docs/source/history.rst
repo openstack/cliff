@@ -2,6 +2,11 @@
  Release History
 =================
 
+1.4.4
+
+- Provide better error handling for unknown commands run from the
+  command line. (Contributed by Christophe Chauvet.)
+
 1.4.3
 
 - More stdout encoding issues with Python 2.6.
