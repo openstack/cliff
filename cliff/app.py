@@ -257,7 +257,14 @@ class App(object):
         return 0
 
     def run_subcommand(self, argv):
-        subcommand = self.command_manager.find_command(argv)
+        try:
+            subcommand = self.command_manager.find_command(argv)
+        except ValueError as err:
+            if self.options.debug:
+                raise
+            else:
+                LOG.error(err)
+            return 2
         cmd_factory, cmd_name, sub_argv = subcommand
         cmd = cmd_factory(self, self.options)
         err = None

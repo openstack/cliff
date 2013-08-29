@@ -374,3 +374,16 @@ def test_error_encoding_sys():
                 app.stderr.write(u_data)
                 actual = stderr.getvalue()
                 assert data == actual
+
+
+def test_unknown_cmd():
+    app, command = make_app()
+    assert app.run(['hell']) == 2
+
+
+def test_unknown_cmd_debug():
+    app, command = make_app()
+    try:
+        app.run(['--debug', 'hell']) == 2
+    except ValueError as err:
+        assert "['hell']" in ('%s' % err)
