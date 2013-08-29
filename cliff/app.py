@@ -261,7 +261,7 @@ class App(object):
             subcommand = self.command_manager.find_command(argv)
         except ValueError as err:
             if self.options.debug:
-                LOG.exception(err)
+                raise
             else:
                 LOG.error(err)
             return 2
