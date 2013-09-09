@@ -41,7 +41,7 @@ setup(
     scripts=[],
 
     provides=[],
-    install_requires=['distribute', 'cliff'],
+    install_requires=['cliff'],
 
     namespace_packages=[],
     packages=find_packages(),

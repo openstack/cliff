@@ -17,19 +17,9 @@ except IOError:
 
 install_requires = [
     'PrettyTable>=0.6,<0.8',
-    # Restrict cliff from bringing in cmd2 0.6.6 until the problem
-    # with the Python 3-only code is resolved.
-    'cmd2>=0.6.4,<0.6.6',
+    'pyparsing>=2.0.1',
+    'cmd2>=0.6.7',
 ]
-
-# We need a different version of PyParsing, depending on which version
-# of Python we're using. cmd2 should have this set properly, but until
-# there is a release declare the dependency ourselves.
-# http://trac-hg.assembla.com/python-cmd2/rev/a5f3d5a89d6c
-if sys.version_info[0] < 3:
-    install_requires.append('pyparsing==1.5.7')
-else:
-    install_requires.append('pyparsing>=2.0.0')
 
 try:
     import argparse  # noqa
