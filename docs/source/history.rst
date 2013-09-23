@@ -2,10 +2,11 @@
  Release History
 =================
 
-dev
+1.4.5
 
 - Update the pyparsing dependency to a version that supports both
   Python 2 and Python 3.
+- Add PyPy testing.
 
 1.4.4
 
