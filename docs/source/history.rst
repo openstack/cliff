@@ -2,6 +2,12 @@
  Release History
 =================
 
+dev
+
+- Fix the arguments passed to commands when they are instantiated to
+  pull out help. See https://github.com/dreamhost/cliff/issues/52 for
+  details.
+
 1.4.5
 
 - Update the pyparsing dependency to a version that supports both

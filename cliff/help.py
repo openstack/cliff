@@ -23,7 +23,7 @@ class HelpAction(argparse.Action):
                 app.stdout.write('Could not load %r\n' % ep)
                 continue
             try:
-                cmd = factory(self, None)
+                cmd = factory(app, None)
             except Exception as err:
                 app.stdout.write('Could not instantiate %r: %s\n' % (ep, err))
                 continue
