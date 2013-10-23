@@ -1,5 +1,6 @@
 import argparse
 import sys
+import traceback
 
 from .command import Command
 
@@ -21,11 +22,15 @@ class HelpAction(argparse.Action):
                 factory = ep.load()
             except Exception as err:
                 app.stdout.write('Could not load %r\n' % ep)
+                if namespace.debug:
+                    traceback.print_exc(file=app.stdout)
                 continue
             try:
                 cmd = factory(app, None)
             except Exception as err:
                 app.stdout.write('Could not instantiate %r: %s\n' % (ep, err))
+                if namespace.debug:
+                    traceback.print_exc(file=app.stdout)
                 continue
             one_liner = cmd.get_description().split('\n')[0]
             app.stdout.write('  %-13s  %s\n' % (name, one_liner))
