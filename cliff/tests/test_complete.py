@@ -2,12 +2,14 @@
 """
 
 import mock
-import os
 
+from cliff.app import App
+from cliff.command import Command
+from cliff.commandmanager import CommandManager
 from cliff import complete
 
 
-def test_add_command():
+def test_complete_dictionary():
     sot = complete.CompleteDictionary()
     sot.add_command("image delete".split(),
                          [mock.Mock(option_strings=["1"])])
@@ -43,48 +45,38 @@ class FakeStdout:
             result = result + line
         return result
 
-def create_complete_command_mocks():
-    app = mock.Mock(name="app")
-    app_args = mock.Mock(name="app_args")
-    # actions
-    action_one = mock.Mock(name="action_one")
-    action_one.option_strings = ["Eolus"]
-    action_two = mock.Mock(name="action_two")
-    action_two.option_strings = ["Wilson", "Sunlight"]
-    actions = [action_one, action_two]
-    # get_optional_actions
-    get_optional_actions = mock.Mock(name="get_optional_actions")
-    get_optional_actions.return_value = actions
-    # cmd_parser
-    cmd_parser = mock.Mock(name="cmd_parser")
-    cmd_parser._get_optional_actions = get_optional_actions
-    # get_parser
-    get_parser = mock.Mock(name="get_parser")
-    get_parser.return_value = cmd_parser
-    # cmd_factory_init
-    cmd_factory_init = mock.Mock("cmd_factory_init")
-    cmd_factory_init.get_parser = get_parser
-    # cmd_factory
-    cmd_factory = mock.Mock(name="cmd_factory")
-    cmd_factory.return_value = cmd_factory_init
-    # find_command
-    cmd_name = "yale"
-    search_args = "search_args"
-    find_command = mock.Mock(name="find_command")
-    find_command.return_value = (cmd_factory, cmd_name, search_args)
-    # command_manager
-    commands = [["image create"], ["server meta delete"], ["server ssh"]]
-    command_manager = mock.MagicMock()
-    command_manager.__iter__.return_value = iter(commands)
-    command_manager.find_command = find_command
-    app.command_manager = command_manager
-    app.NAME = "openstack"
-    app.interactive_mode = False
-    app.stdout = FakeStdout()
-    return (complete.CompleteCommand(app, app_args), app, actions, cmd_factory_init)
+def given_cmdo_data():
+    cmdo = "image server"
+    data = [("image", "create"),
+            ("image_create", "--eolus"),
+            ("server", "meta ssh"),
+            ("server_meta_delete", "--wilson"),
+            ("server_ssh", "--sunlight")]
+    return cmdo, data
 
-def check_parser(cmd, args, verify_args):
-    cmd_parser = cmd.get_parser('check_parser')
+def then_data(content):
+    assert "  cmds='image server'\n" in content
+    assert "  cmds_image='create'\n" in content
+    assert "  cmds_image_create='--eolus'\n" in content
+    assert "  cmds_server='meta ssh'\n" in content
+    assert "  cmds_server_meta_delete='--wilson'\n" in content
+    assert "  cmds_server_ssh='--sunlight'\n" in content
+
+def test_complete_no_code():
+    output = FakeStdout()
+    sot = complete.CompleteNoCode("doesNotMatter", output)
+    sot.write(*given_cmdo_data())
+    then_data(output.content)
+
+def test_complete_bash():
+    output = FakeStdout()
+    sot = complete.CompleteBash("openstack", output)
+    sot.write(*given_cmdo_data())
+    then_data(output.content)
+    assert "_openstack()\n" in output.content[0]
+    assert "complete -F _openstack openstack\n" in output.content[-1]
+
+def then_parser(cmd, args, verify_args):
     parsed_args = cmd_parser.parse_args(args)
     for av in verify_args:
         attr, value = av
@@ -92,48 +84,44 @@ def check_parser(cmd, args, verify_args):
             assert attr in parsed_args
             assert getattr(parsed_args, attr) == value
 
-def test_parser_nothing():
-    sot, app, actions, cmd_factory_init = create_complete_command_mocks()
-    check_parser(sot, [], [('name', None), ('shell', 'bash')])
+def test_complete_command_parser():
+    sot = complete.CompleteCommand(mock.Mock(), mock.Mock())
+    parser = sot.get_parser('nothing')
+    assert "nothing" == parser.prog
+    assert "print bash completion command\n    " == parser.description
 
-def test_parser_no_code():
-    sot, app, actions, cmd_factory_init = create_complete_command_mocks()
-    check_parser(sot, ["--shell", "none", "--name", "foo"],
-                      [('name', 'foo'), ('shell', 'none')])
+def given_complete_command():
+    cmd_mgr = CommandManager('cliff.tests')
+    app = App('testing', '1', cmd_mgr, stdout=FakeStdout())
+    sot = complete.CompleteCommand(app, mock.Mock())
+    cmd_mgr.add_command('complete', complete.CompleteCommand)
+    return sot, app, cmd_mgr
 
-def test_get_actions():
-    sot, app, actions, cmd_factory_init = create_complete_command_mocks()
-    result = sot.get_actions("yale")
-    cmd_factory_init.get_parser.assert_called_with('openstack yale')
-    assert actions == result
+def then_actions_equal(actions):
+    optstr = ' '.join(opt for action in actions
+                              for opt in action.option_strings)
+    assert '-h --help --name --shell' == optstr
 
-def test_get_actions_interactive():
-    sot, app, actions, cmd_factory_init = create_complete_command_mocks()
+def test_complete_command_get_actions():
+    sot, app, cmd_mgr = given_complete_command()
+    app.interactive_mode = False
+    actions = sot.get_actions(["complete"])
+    then_actions_equal(actions)
+
+def test_complete_command_get_actions_interactive():
+    sot, app, cmd_mgr = given_complete_command()
     app.interactive_mode = True
-    result = sot.get_actions("yale")
-    cmd_factory_init.get_parser.assert_called_with('yale')
-    assert actions == result
+    actions = sot.get_actions(["complete"])
+    then_actions_equal(actions)
 
-def verify_data(content):
-    assert "  cmds='image server'\n" in content
-    assert "  cmds_image='create'\n" in content
-    assert "  cmds_image_create='Eolus Wilson Sunlight'\n" in content
-    assert "  cmds_server='meta ssh'\n" in content
-    assert "  cmds_server_meta_delete='Eolus Wilson Sunlight'\n" in content
-    assert "  cmds_server_ssh='Eolus Wilson Sunlight'\n" in content
-
-def test_take_action_nocode():
-    sot, app, actions, cmd_factory_init = create_complete_command_mocks()
+def test_complete_command_take_action():
+    sot, app, cmd_mgr = given_complete_command()
     parsed_args = mock.Mock()
-    parsed_args.shell = "none"
-    sot.take_action(parsed_args)
-    verify_data(app.stdout.content)
-
-def test_take_action_code():
-    sot, app, actions, cmd_factory_init = create_complete_command_mocks()
-    parsed_args = mock.Mock()
-    parsed_args.name = "openstack"
-    sot.take_action(parsed_args)
-    verify_data(app.stdout.content)
-    assert "_openstack()\n" in app.stdout.content[0]
-    assert "complete -F _openstack openstack\n" in app.stdout.content[-1]
+    parsed_args.name = "test_take"
+    content = app.stdout.content
+    assert 0 == sot.take_action(parsed_args)
+    assert "_test_take()\n" in content[0]
+    assert "complete -F _test_take test_take\n" in content[-1]
+    assert "  cmds='complete help'\n" in content
+    assert "  cmds_complete='-h --help --name --shell'\n" in content
+    assert "  cmds_help='-h --help'\n" in content

@@ -15,42 +15,26 @@ class CompleteDictionary:
         self._dictionary = {}
 
     def add_command(self, command, actions):
-        optstr = ""
+        optstr = ' '.join(opt for action in actions
+                                  for opt in action.option_strings)
         dicto = self._dictionary
-        for action in actions:
-            for opt in action.option_strings:
-                if optstr:
-                    optstr += " " + opt
-                else:
-                    optstr += opt
         last = None
         lastsubcmd = None
-        for subcmd in command:
-            if subcmd not in dicto:
-                dicto[subcmd] = {}
-            last = dicto
-            lastsubcmd = subcmd
-            dicto = dicto[subcmd]
-        last[lastsubcmd] = optstr
+        for subcmd in command[:-1]:
+            dicto = dicto.setdefault(subcmd, {})
+        dicto[command[-1]] = optstr
 
     def get_commands(self):
-        cmdo = ""
-        keys = sorted(self._dictionary.keys())
-        for cmd in keys:
-            if cmdo == "":
-                cmdo += cmd
-            else:
-                cmdo += " " + cmd
-        return cmdo
+        return ' '.join(k for k in sorted(self._dictionary.keys()))
 
     def _get_data_recurse(self, dictionary, path):
         ray = []
         keys = sorted(dictionary.keys())
         for cmd in keys:
             if path == "":
-                name = str(cmd)
+                name = cmd
             else:
-                name = path + "_" + str(cmd)
+                name = path + "_" + cmd
             value = dictionary[cmd]
             if isinstance(value, str):
                 ray.append((name, value))
@@ -64,11 +48,25 @@ class CompleteDictionary:
         return sorted(self._get_data_recurse(self._dictionary, ""))
 
 
-class CompleteNoCode:
+class CompleteShellBase(object):
+    """ base class for bash completion generation
+    """
+    def __init__(self, name, output):
+        self.name = str(name)
+        self.output = output
+
+    def write(self, cmdo, data):
+        self.output.write(self.get_header())
+        self.output.write("  cmds='{0}'\n".format(cmdo))
+        for datum in data:
+            self.output.write('  cmds_{0}=\'{1}\'\n'.format(*datum))
+        self.output.write(self.get_trailer())
+
+class CompleteNoCode(CompleteShellBase):
     """completion with no code
     """
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name, output):
+        super(CompleteNoCode, self).__init__(name, output)
 
     def get_header(self):
         return ''
@@ -77,60 +75,62 @@ class CompleteNoCode:
         return ''
 
 
-class CompleteBash:
+class CompleteBash(CompleteShellBase):
     """completion for bash
     """
-    def __init__(self, name):
-        self.name = str(name)
+    def __init__(self, name, output):
+        super(CompleteBash, self).__init__(name, output)
 
     def get_header(self):
-        return ('_' + self.name + '()\n\
-{\n\
-  local cur prev words\n\
-  COMPREPLY=()\n\
-  _get_comp_words_by_ref -n : cur prev words\n\
-\n\
-  # Command data:\n')
+        return ('_' + self.name + """()
+{
+  local cur prev words
+  COMPREPLY=()
+  _get_comp_words_by_ref -n : cur prev words
+
+  # Command data:
+""")
 
     def get_trailer(self):
-        return ('\
-\n\
-  cmd=""\n\
-  words[0]=""\n\
-  completed="${cmds}" \n\
-  for var in "${words[@]:1}"\n\
-  do\n\
-    if [[ ${var} == -* ]] ; then\n\
-      break\n\
-    fi\n\
-    if [ -z "${cmd}" ] ; then\n\
-      proposed="${var}"\n\
-    else\n\
-      proposed="${cmd}_${var}"\n\
-    fi\n\
-    local i="cmds_${proposed}"\n\
-    local comp="${!i}"\n\
-    if [ -z "${comp}" ] ; then\n\
-      break\n\
-    fi\n\
-    if [[ ${comp} == -* ]] ; then\n\
-      if [[ ${cur} != -* ]] ; then\n\
-        completed=""\n\
-        break\n\
-      fi\n\
-    fi\n\
-    cmd="${proposed}"\n\
-    completed="${comp}"\n\
-  done\n\
-\n\
-  if [ -z "${completed}" ] ; then\n\
-    COMPREPLY=( $( compgen -f -- "$cur" ) $( compgen -d -- "$cur" ) )\n\
-  else\n\
-    COMPREPLY=( $(compgen -W "${completed}" -- ${cur}) )\n\
-  fi\n\
-  return 0\n\
-}\n\
-complete -F _' + self.name + ' ' + self.name + '\n')
+        return (
+"""
+
+  cmd=""
+  words[0]=""
+  completed="${cmds}"
+  for var in "${words[@]:1}"
+  do
+    if [[ ${var} == -* ]] ; then
+      break
+    fi
+    if [ -z "${cmd}" ] ; then
+      proposed="${var}"
+    else
+      proposed="${cmd}_${var}"
+    fi
+    local i="cmds_${proposed}"
+    local comp="${!i}"
+    if [ -z "${comp}" ] ; then
+      break
+    fi
+    if [[ ${comp} == -* ]] ; then
+      if [[ ${cur} != -* ]] ; then
+        completed=""
+        break
+      fi
+    fi
+    cmd="${proposed}"
+    completed="${comp}"
+  done
+
+  if [ -z "${completed}" ] ; then
+    COMPREPLY=( $( compgen -f -- "$cur" ) $( compgen -d -- "$cur" ) )
+  else
+    COMPREPLY=( $(compgen -W "${completed}" -- ${cur}) )
+  fi
+  return 0
+}
+complete -F _""" + self.name + ' ' + self.name + '\n')
 
 
 class CompleteCommand(command.Command):
@@ -175,22 +175,15 @@ class CompleteCommand(command.Command):
         else:
             name = self.app.NAME
         if parsed_args.shell == "none":
-            shell = CompleteNoCode(name)
+            shell = CompleteNoCode(name, self.app.stdout)
         else:
-            shell = CompleteBash(name)
-
-        self.app.stdout.write(shell.get_header())
+            shell = CompleteBash(name, self.app.stdout)
 
         dicto = CompleteDictionary()
         for cmd in self.app.command_manager:
             command = cmd[0].split()
             dicto.add_command(command, self.get_actions(command))
 
-        cmdo = dicto.get_commands()
-        self.app.stdout.write("  cmds='{0}'\n".format(cmdo))
-        for datum in dicto.get_data():
-            self.app.stdout.write('  cmds_{0}=\'{1}\'\n'.format(*datum))
-
-        self.app.stdout.write(shell.get_trailer())
+        shell.write(dicto.get_commands(), dicto.get_data())
 
         return 0
