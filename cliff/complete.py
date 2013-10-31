@@ -16,10 +16,8 @@ class CompleteDictionary:
 
     def add_command(self, command, actions):
         optstr = ' '.join(opt for action in actions
-                                  for opt in action.option_strings)
+                          for opt in action.option_strings)
         dicto = self._dictionary
-        last = None
-        lastsubcmd = None
         for subcmd in command[:-1]:
             dicto = dicto.setdefault(subcmd, {})
         dicto[command[-1]] = optstr
@@ -49,7 +47,7 @@ class CompleteDictionary:
 
 
 class CompleteShellBase(object):
-    """ base class for bash completion generation
+    """base class for bash completion generation
     """
     def __init__(self, name, output):
         self.name = str(name)
@@ -61,6 +59,7 @@ class CompleteShellBase(object):
         for datum in data:
             self.output.write('  cmds_{0}=\'{1}\'\n'.format(*datum))
         self.output.write(self.get_trailer())
+
 
 class CompleteNoCode(CompleteShellBase):
     """completion with no code
@@ -92,9 +91,7 @@ class CompleteBash(CompleteShellBase):
 """)
 
     def get_trailer(self):
-        return (
-"""
-
+        return ("""
   cmd=""
   words[0]=""
   completed="${cmds}"
