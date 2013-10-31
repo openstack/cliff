@@ -4,7 +4,6 @@
 import mock
 
 from cliff.app import App
-from cliff.command import Command
 from cliff.commandmanager import CommandManager
 from cliff import complete
 
@@ -12,15 +11,15 @@ from cliff import complete
 def test_complete_dictionary():
     sot = complete.CompleteDictionary()
     sot.add_command("image delete".split(),
-                         [mock.Mock(option_strings=["1"])])
+                    [mock.Mock(option_strings=["1"])])
     sot.add_command("image list".split(),
-                         [mock.Mock(option_strings=["2"])])
+                    [mock.Mock(option_strings=["2"])])
     sot.add_command("image create".split(),
-                         [mock.Mock(option_strings=["3"])])
+                    [mock.Mock(option_strings=["3"])])
     sot.add_command("volume type create".split(),
-                         [mock.Mock(option_strings=["4"])])
+                    [mock.Mock(option_strings=["4"])])
     sot.add_command("volume type delete".split(),
-                         [mock.Mock(option_strings=["5"])])
+                    [mock.Mock(option_strings=["5"])])
     assert "image volume" == sot.get_commands()
     result = sot.get_data()
     assert "image" == result[0][0]
@@ -31,6 +30,7 @@ def test_complete_dictionary():
     assert "1" == result[2][1]
     assert "image_list" == result[3][0]
     assert "2" == result[3][1]
+
 
 class FakeStdout:
     def __init__(self):
@@ -45,6 +45,7 @@ class FakeStdout:
             result = result + line
         return result
 
+
 def given_cmdo_data():
     cmdo = "image server"
     data = [("image", "create"),
@@ -54,6 +55,7 @@ def given_cmdo_data():
             ("server_ssh", "--sunlight")]
     return cmdo, data
 
+
 def then_data(content):
     assert "  cmds='image server'\n" in content
     assert "  cmds_image='create'\n" in content
@@ -62,11 +64,13 @@ def then_data(content):
     assert "  cmds_server_meta_delete='--wilson'\n" in content
     assert "  cmds_server_ssh='--sunlight'\n" in content
 
+
 def test_complete_no_code():
     output = FakeStdout()
     sot = complete.CompleteNoCode("doesNotMatter", output)
     sot.write(*given_cmdo_data())
     then_data(output.content)
+
 
 def test_complete_bash():
     output = FakeStdout()
@@ -76,19 +80,13 @@ def test_complete_bash():
     assert "_openstack()\n" in output.content[0]
     assert "complete -F _openstack openstack\n" in output.content[-1]
 
-def then_parser(cmd, args, verify_args):
-    parsed_args = cmd_parser.parse_args(args)
-    for av in verify_args:
-        attr, value = av
-        if attr:
-            assert attr in parsed_args
-            assert getattr(parsed_args, attr) == value
 
 def test_complete_command_parser():
     sot = complete.CompleteCommand(mock.Mock(), mock.Mock())
     parser = sot.get_parser('nothing')
     assert "nothing" == parser.prog
     assert "print bash completion command\n    " == parser.description
+
 
 def given_complete_command():
     cmd_mgr = CommandManager('cliff.tests')
@@ -97,10 +95,12 @@ def given_complete_command():
     cmd_mgr.add_command('complete', complete.CompleteCommand)
     return sot, app, cmd_mgr
 
+
 def then_actions_equal(actions):
     optstr = ' '.join(opt for action in actions
-                              for opt in action.option_strings)
+                      for opt in action.option_strings)
     assert '-h --help --name --shell' == optstr
+
 
 def test_complete_command_get_actions():
     sot, app, cmd_mgr = given_complete_command()
@@ -108,11 +108,13 @@ def test_complete_command_get_actions():
     actions = sot.get_actions(["complete"])
     then_actions_equal(actions)
 
+
 def test_complete_command_get_actions_interactive():
     sot, app, cmd_mgr = given_complete_command()
     app.interactive_mode = True
     actions = sot.get_actions(["complete"])
     then_actions_equal(actions)
+
 
 def test_complete_command_take_action():
     sot, app, cmd_mgr = given_complete_command()
