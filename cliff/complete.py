@@ -4,6 +4,7 @@
 
 import logging
 
+import six
 from cliff import command
 
 
@@ -29,12 +30,9 @@ class CompleteDictionary:
         ray = []
         keys = sorted(dictionary.keys())
         for cmd in keys:
-            if path == "":
-                name = cmd
-            else:
-                name = path + "_" + cmd
+            name = path + "_" + cmd if path else cmd
             value = dictionary[cmd]
-            if isinstance(value, str):
+            if isinstance(value, six.string_types):
                 ray.append((name, value))
             else:
                 cmdlist = ' '.join(sorted(value.keys()))
