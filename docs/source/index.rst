@@ -15,6 +15,7 @@ Contents:
    demoapp
    list_commands
    show_commands
+   complete
    interactive_mode
    classes
    install
