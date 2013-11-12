@@ -9,6 +9,7 @@ import logging.handlers
 import os
 import sys
 
+from .complete import CompleteCommand
 from .help import HelpAction, HelpCommand
 from .interactive import InteractiveApp
 
@@ -70,6 +71,7 @@ class App(object):
         """
         self.command_manager = command_manager
         self.command_manager.add_command('help', HelpCommand)
+        self.command_manager.add_command('complete', CompleteCommand)
         self._set_streams(stdin, stdout, stderr)
         self.interactive_app_factory = interactive_app_factory
         self.parser = self.build_option_parser(description, version)
