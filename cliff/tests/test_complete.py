@@ -120,6 +120,7 @@ def test_complete_command_take_action():
     sot, app, cmd_mgr = given_complete_command()
     parsed_args = mock.Mock()
     parsed_args.name = "test_take"
+    parsed_args.shell = "bash"
     content = app.stdout.content
     assert 0 == sot.take_action(parsed_args)
     assert "_test_take()\n" in content[0]

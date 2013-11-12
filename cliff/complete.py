@@ -5,6 +5,8 @@
 import logging
 
 import six
+import stevedore
+
 from cliff import command
 
 
@@ -134,6 +136,12 @@ class CompleteCommand(command.Command):
 
     log = logging.getLogger(__name__ + '.CompleteCommand')
 
+    def __init__(self, app, app_args):
+        super(CompleteCommand, self).__init__(app, app_args)
+        self._formatters = stevedore.ExtensionManager(
+            namespace='cliff.formatter.completion',
+        )
+
     def get_parser(self, prog_name):
         parser = super(CompleteCommand, self).get_parser(prog_name)
         parser.add_argument(
@@ -146,7 +154,7 @@ class CompleteCommand(command.Command):
             "--shell",
             default='bash',
             metavar='<shell>',
-            choices=['bash', 'none'],
+            choices=sorted(self._formatters.names()),
             help="Shell being used. Use none for data only (default: bash)"
         )
         return parser
@@ -165,14 +173,12 @@ class CompleteCommand(command.Command):
     def take_action(self, parsed_args):
         self.log.debug('take_action(%s)' % parsed_args)
 
-        if parsed_args.name:
-            name = parsed_args.name
-        else:
-            name = self.app.NAME
-        if parsed_args.shell == "none":
-            shell = CompleteNoCode(name, self.app.stdout)
-        else:
-            shell = CompleteBash(name, self.app.stdout)
+        name = parsed_args.name or self.app.NAME
+        try:
+            shell_factory = self._formatters[parsed_args.shell].plugin
+        except KeyError:
+            raise RuntimeError('Unknown shell syntax %r' % parsed_args.shell)
+        shell = shell_factory(name, self.app.stdout)
 
         dicto = CompleteDictionary()
         for cmd in self.app.command_manager:
