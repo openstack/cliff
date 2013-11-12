@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import weakref
+
 from cliff.lister import Lister
 
 import mock
@@ -9,6 +11,7 @@ class FauxFormatter(object):
 
     def __init__(self):
         self.args = []
+        self.obj = weakref.proxy(self)
 
     def emit_list(self, columns, data, stdout, args):
         self.args.append((columns, data))
@@ -16,8 +19,8 @@ class FauxFormatter(object):
 
 class ExerciseLister(Lister):
 
-    def load_formatter_plugins(self):
-        self.formatters = {
+    def _load_formatter_plugins(self):
+        return {
             'test': FauxFormatter(),
         }
         return
