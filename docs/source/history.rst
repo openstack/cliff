@@ -7,6 +7,7 @@ dev
 - Fix the arguments passed to commands when they are instantiated to
   pull out help. See https://github.com/dreamhost/cliff/issues/52 for
   details.
+- Add bash command completion. (Contributed by Terry Howe)
 
 1.4.5
 
