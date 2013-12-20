@@ -3,11 +3,19 @@
 ================
 
 If you would like to contribute to cliff directly, these instructions
-should help you get started.  Patches, bug reports, and feature
-requests are all welcome through the `GitHub project
-<https://github.com/dreamhost/cliff>`_.  Contributions in the form of
-patches or pull requests are easier to integrate and will receive
-priority attention.
+should help you get started.  Bug reports, and feature requests are
+all welcome through the `Launchpad project`_.
+
+.. _Launchpad project: https://launchpad.net/python-cliff
+
+Changes to cliff should be submitted for review via the Gerrit tool,
+following the workflow documented at
+http://wiki.openstack.org/GerritWorkflow
+
+Pull requests submitted through GitHub will be ignored.
+
+Bugs should be filed under the `Launchpad project`_.
+
 
 .. note::
 
@@ -56,13 +64,11 @@ The output version of the documentation ends up in
 Running Tests
 =============
 
-.. image:: https://secure.travis-ci.org/dhellmann/cliff.png?branch=master
-
 The test suite for clif uses tox_, which must be installed separately
 (``pip install tox``).
 
-To run the tests under Python 2.7 and 3.2, run ``tox`` from the top
-level directory of the git repository.
+To run the tests under Python 2.7 and 3.3 as well as PyPy, run ``tox``
+from the top level directory of the git repository.
 
 To run tests under a single version of Python, specify the appropriate
 environment when running tox::

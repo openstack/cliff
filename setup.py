@@ -132,8 +132,7 @@ setup(
     author='Doug Hellmann',
     author_email='doug.hellmann@gmail.com',
 
-    url='https://github.com/dreamhost/cliff',
-    download_url='https://github.com/dreamhost/cliff/tarball/master',
+    url='https://launchpad.net/python-cliff',
 
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
