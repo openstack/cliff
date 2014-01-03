@@ -30,3 +30,7 @@ pip-log.txt
 #sample output
 *.log
 *.log.*
+
+# pbr output
+AUTHORS
+ChangeLog

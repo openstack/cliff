@@ -16,6 +16,7 @@ What's New In This Release?
   details.
 - Add bash command completion. (Contributed by Terry Howe)
 - Use stevedore to load formatter plugins.
+- Use pbr for packaging.
 
 Documentation
 =============

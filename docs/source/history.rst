@@ -2,13 +2,14 @@
  Release History
 =================
 
-1.5
+1.5.2
 
 - Fix the arguments passed to commands when they are instantiated to
   pull out help. See https://github.com/dreamhost/cliff/issues/52 for
   details.
 - Add bash command completion. (Contributed by Terry Howe)
 - Use stevedore to load formatter plugins.
+- Use pbr for packaging.
 
 1.4.5
 
