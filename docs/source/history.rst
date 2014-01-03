@@ -2,6 +2,12 @@
  Release History
 =================
 
+dev
+
+- Change the formatters attribute of display commands to reflect the
+  fact that it is meant to be an implementation detail of the base
+  class, and not used or modified by outsiders.
+
 1.5.2
 
 - Fix the arguments passed to commands when they are instantiated to
