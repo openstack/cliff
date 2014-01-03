@@ -32,12 +32,6 @@ class ExerciseLister(Lister):
         )
 
 
-#    def run(self, parsed_args):
-#        self.formatter = self.formatters[parsed_args.formatter]
-#        column_names, data = self.take_action(parsed_args)
-#        self.produce_output(parsed_args, column_names, data)
-#        return 0
-
 def test_formatter_args():
     app = mock.Mock()
     test_lister = ExerciseLister(app, [])
@@ -47,7 +41,7 @@ def test_formatter_args():
     parsed_args.formatter = 'test'
 
     test_lister.run(parsed_args)
-    f = test_lister.formatters['test']
+    f = test_lister._formatters['test']
     assert len(f.args) == 1
     args = f.args[0]
     assert args[0] == list(parsed_args.columns)
