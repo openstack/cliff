@@ -1,5 +1,5 @@
 ========================================================================
- cliff -- Command Line Interface Formulation Framework -- version 1.4.5
+ cliff -- Command Line Interface Formulation Framework -- version 1.5.0
 ========================================================================
 
 .. tags:: python cliff release DreamHost
@@ -11,9 +11,11 @@ other extensions.
 What's New In This Release?
 ===========================
 
-- Update the pyparsing dependency to a version that supports both
-  Python 2 and Python 3.
-- Add PyPy testing.
+- Fix the arguments passed to commands when they are instantiated to
+  pull out help. See https://github.com/dreamhost/cliff/issues/52 for
+  details.
+- Add bash command completion. (Contributed by Terry Howe)
+- Use stevedore to load formatter plugins.
 
 Documentation
 =============
