@@ -34,5 +34,6 @@ class ShellFormatter(SingleFormatter):
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):
             if name in desired_columns or not desired_columns:
-                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
+                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name,
+                                              value.replace('"', '\\"')))
         return

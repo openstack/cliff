@@ -8,12 +8,12 @@ import mock
 
 def test_shell_formatter():
     sf = shell.ShellFormatter()
-    c = ('a', 'b', 'c')
-    d = ('A', 'B', 'C')
-    expected = 'a="A"\nb="B"\n'
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', '"escape me"')
+    expected = 'a="A"\nb="B"\nd="\\"escape me\\""\n'
     output = StringIO()
     args = mock.Mock()
-    args.variables = ['a', 'b']
+    args.variables = ['a', 'b', 'd']
     args.prefix = ''
     sf.emit_one(c, d, output, args)
     actual = output.getvalue()
