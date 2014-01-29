@@ -18,7 +18,7 @@ class DisplayCommandBase(Command):
 
     def __init__(self, app, app_args):
         super(DisplayCommandBase, self).__init__(app, app_args)
-        self._formatters = self._load_formatter_plugins()
+        self._formatter_plugins = self._load_formatter_plugins()
 
     @abc.abstractproperty
     def formatter_namespace(self):
@@ -41,7 +41,7 @@ class DisplayCommandBase(Command):
             title='output formatters',
             description='output formatter options',
         )
-        formatter_choices = sorted(self._formatters.names())
+        formatter_choices = sorted(self._formatter_plugins.names())
         formatter_default = self.formatter_default
         if formatter_default not in formatter_choices:
             formatter_default = formatter_choices[0]
@@ -61,7 +61,7 @@ class DisplayCommandBase(Command):
             metavar='COLUMN',
             help='specify the column(s) to include, can be repeated',
         )
-        for formatter in self._formatters:
+        for formatter in self._formatter_plugins:
             formatter.obj.add_argument_group(parser)
         return parser
 
@@ -76,7 +76,7 @@ class DisplayCommandBase(Command):
         """
 
     def run(self, parsed_args):
-        self.formatter = self._formatters[parsed_args.formatter].obj
+        self.formatter = self._formatter_plugins[parsed_args.formatter].obj
         column_names, data = self.take_action(parsed_args)
         self.produce_output(parsed_args, column_names, data)
         return 0

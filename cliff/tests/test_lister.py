@@ -41,7 +41,7 @@ def test_formatter_args():
     parsed_args.formatter = 'test'
 
     test_lister.run(parsed_args)
-    f = test_lister._formatters['test']
+    f = test_lister._formatter_plugins['test']
     assert len(f.args) == 1
     args = f.args[0]
     assert args[0] == list(parsed_args.columns)
