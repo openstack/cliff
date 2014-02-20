@@ -113,3 +113,6 @@ class InteractiveApp(cmd2.Cmd):
             statement.parsed.command = cmd_name
             statement.parsed.args = ' '.join(sub_argv)
         return statement
+
+    def cmdloop(self):
+        self._cmdloop()
