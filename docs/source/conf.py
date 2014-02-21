@@ -51,10 +51,8 @@ copyright = u'2012-%s, Doug Hellmann' % datetime.datetime.today().year
 # built documents.
 #
 # The short X.Y version.
-version = subprocess.check_output([
-    'sh', '-c',
-    'cd ../..; python setup.py --version',
-])
+version = subprocess.Popen(['cd ../..; python setup.py --version'],
+                           shell=True, stdout=subprocess.PIPE).stdout.read()
 version = version.strip()
 # The full version, including alpha/beta/rc tags.
 release = version
