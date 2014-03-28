@@ -19,7 +19,14 @@ class TableFormatter(ListFormatter, SingleFormatter):
         pass
 
     def add_argument_group(self, parser):
-        pass
+        group = parser.add_argument_group('table formatter')
+        group.add_argument(
+            '--max-width',
+            metavar='<integer>',
+            default=0,
+            type=int,
+            help='Maximum display width, 0 to disable',
+        )
 
     def emit_list(self, column_names, data, stdout, parsed_args):
         x = prettytable.PrettyTable(
@@ -27,6 +34,8 @@ class TableFormatter(ListFormatter, SingleFormatter):
             print_empty=False,
         )
         x.padding_width = 1
+        if parsed_args.max_width > 0:
+            x.max_width = int(parsed_args.max_width)
         # Figure out the types of the columns in the
         # first row and set the alignment of the
         # output accordingly.
@@ -52,6 +61,8 @@ class TableFormatter(ListFormatter, SingleFormatter):
         x = prettytable.PrettyTable(field_names=('Field', 'Value'),
                                     print_empty=False)
         x.padding_width = 1
+        if parsed_args.max_width > 0:
+            x.max_width = int(parsed_args.max_width)
         # Align all columns left because the values are
         # not all the same type.
         x.align['Field'] = 'l'
