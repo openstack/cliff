@@ -3,6 +3,8 @@
 
 from .base import SingleFormatter
 
+import six
+
 
 class ShellFormatter(SingleFormatter):
 
@@ -34,6 +36,7 @@ class ShellFormatter(SingleFormatter):
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):
             if name in desired_columns or not desired_columns:
-                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name,
-                                              value.replace('"', '\\"')))
+                if isinstance(value, six.string_types):
+                    value = value.replace('"', '\\"')
+                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
         return
