@@ -37,7 +37,12 @@ class CommandManager(object):
         self._load_commands()
 
     def _load_commands(self):
-        for ep in pkg_resources.iter_entry_points(self.namespace):
+        # NOTE(jamielennox): kept for compatability.
+        self.load_commands(self.namespace)
+
+    def load_commands(self, namespace):
+        """Load all the commands from an entrypoint"""
+        for ep in pkg_resources.iter_entry_points(namespace):
             LOG.debug('found command %r', ep.name)
             cmd_name = (ep.name.replace('_', ' ')
                         if self.convert_underscores
