@@ -3,6 +3,7 @@
 
 from .base import SingleFormatter
 
+import argparse
 import six
 
 
@@ -19,7 +20,7 @@ class ShellFormatter(SingleFormatter):
             default=[],
             dest='variables',
             metavar='VARIABLE',
-            help='specify the variable(s) to include, can be repeated',
+            help=argparse.SUPPRESS,
         )
         group.add_argument(
             '--prefix',
