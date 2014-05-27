@@ -1,7 +1,6 @@
 """Application base class for displaying data about a single object.
 """
 import abc
-import itertools
 import logging
 
 from .display import DisplayCommandBase
@@ -38,7 +37,7 @@ class ShowOne(DisplayCommandBase):
             # Set up argument to compress()
             selector = [(c in columns_to_include)
                         for c in column_names]
-            data = list(itertools.compress(data, selector))
+            data = list(self._compress_iterable(data, selector))
         self.formatter.emit_one(columns_to_include,
                                 data,
                                 self.app.stdout,

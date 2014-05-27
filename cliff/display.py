@@ -1,6 +1,16 @@
 """Application base class for displaying data.
 """
 import abc
+
+try:
+    from itertools import compress
+except ImportError:
+    # for py26 compat
+    from itertools import izip
+
+    def compress(data, selectors):
+        return (d for d, s in izip(data, selectors) if s)
+
 import logging
 
 import stevedore
@@ -80,3 +90,7 @@ class DisplayCommandBase(Command):
         column_names, data = self.take_action(parsed_args)
         self.produce_output(parsed_args, column_names, data)
         return 0
+
+    @staticmethod
+    def _compress_iterable(iterable, selectors):
+        return compress(iterable, selectors)

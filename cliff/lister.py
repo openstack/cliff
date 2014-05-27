@@ -1,16 +1,6 @@
 """Application base class for providing a list of data as output.
 """
 import abc
-
-try:
-    from itertools import compress
-except ImportError:
-    # for py26 compat
-    from itertools import izip
-
-    def compress(data, selectors):
-        return (d for d, s in izip(data, selectors) if s)
-
 import logging
 
 from .display import DisplayCommandBase
@@ -56,7 +46,7 @@ class Lister(DisplayCommandBase):
             # of data that the user has expressed interest in
             # seeing. We have to convert the compress() output to a
             # list so the table formatter can ask for its length.
-            data_gen = (list(compress(row, selector))
+            data_gen = (list(self._compress_iterable(row, selector))
                         for row in data)
         self.formatter.emit_list(columns_to_include,
                                  data_gen,
