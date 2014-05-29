@@ -28,7 +28,7 @@ class CommandManager(object):
                       for the plugins to be loaded. For example,
                       ``'cliff.formatter.list'``.
     :param convert_underscores: Whether cliff should convert underscores to
-                                to spaces in entry_point commands.
+                                spaces in entry_point commands.
     """
     def __init__(self, namespace, convert_underscores=True):
         self.commands = {}
