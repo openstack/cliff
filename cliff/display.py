@@ -3,6 +3,7 @@
 import abc
 import logging
 
+import six
 import stevedore
 
 from .command import Command
@@ -11,10 +12,10 @@ from .command import Command
 LOG = logging.getLogger(__name__)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class DisplayCommandBase(Command):
     """Command base class for displaying data about a single object.
     """
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, app, app_args):
         super(DisplayCommandBase, self).__init__(app, app_args)

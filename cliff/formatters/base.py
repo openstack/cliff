@@ -3,9 +3,11 @@
 
 import abc
 
+import six
 
+
+@six.add_metaclass(abc.ABCMeta)
 class Formatter(object):
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def add_argument_group(self, parser):
@@ -15,10 +17,10 @@ class Formatter(object):
         """
 
 
+@six.add_metaclass(abc.ABCMeta)
 class ListFormatter(Formatter):
     """Base class for formatters that know how to deal with multiple objects.
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def emit_list(self, column_names, data, stdout, parsed_args):
@@ -32,10 +34,10 @@ class ListFormatter(Formatter):
         """
 
 
+@six.add_metaclass(abc.ABCMeta)
 class SingleFormatter(Formatter):
     """Base class for formatters that work with single objects.
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def emit_one(self, column_names, data, stdout, parsed_args):
