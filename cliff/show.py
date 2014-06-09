@@ -3,16 +3,18 @@
 import abc
 import logging
 
+import six
+
 from .display import DisplayCommandBase
 
 
 LOG = logging.getLogger(__name__)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class ShowOne(DisplayCommandBase):
     """Command base class for displaying data about a single object.
     """
-    __metaclass__ = abc.ABCMeta
 
     @property
     def formatter_namespace(self):
