@@ -106,7 +106,7 @@ def test_clean_up_error_debug():
     else:
         assert False, 'Should have had an exception'
 
-    app.clean_up.assert_called_once()
+    assert app.clean_up.called
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 1, mock.ANY)
     args, kwargs = call_args
@@ -123,7 +123,7 @@ def test_error_handling_clean_up_raises_exception():
     )
     app.run(['error'])
 
-    app.clean_up.assert_called_once()
+    assert app.clean_up.called
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 1, mock.ANY)
     args, kwargs = call_args
@@ -150,7 +150,7 @@ def test_error_handling_clean_up_raises_exception_debug():
     else:
         assert False, 'Should have had an exception'
 
-    app.clean_up.assert_called_once()
+    assert app.clean_up.called
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 1, mock.ANY)
     args, kwargs = call_args
@@ -167,7 +167,7 @@ def test_normal_clean_up_raises_exception():
     )
     app.run(['mock'])
 
-    app.clean_up.assert_called_once()
+    assert app.clean_up.called
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 0, None)
 
@@ -181,7 +181,7 @@ def test_normal_clean_up_raises_exception_debug():
     )
     app.run(['--debug', 'mock'])
 
-    app.clean_up.assert_called_once()
+    assert app.clean_up.called
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 0, None)
 
