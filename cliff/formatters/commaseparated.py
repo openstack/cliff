@@ -2,6 +2,7 @@
 """
 
 import csv
+import os
 
 from .base import ListFormatter
 
@@ -28,6 +29,7 @@ class CSVLister(ListFormatter):
     def emit_list(self, column_names, data, stdout, parsed_args):
         writer = csv.writer(stdout,
                             quoting=self.QUOTE_MODES[parsed_args.quote_mode],
+                            lineterminator=os.linesep,
                             )
         writer.writerow(column_names)
         for row in data:
