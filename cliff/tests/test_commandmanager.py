@@ -2,24 +2,7 @@
 import mock
 
 from cliff.commandmanager import CommandManager
-
-
-class TestCommand(object):
-    @classmethod
-    def load(cls):
-        return cls
-
-    def __init__(self):
-        return
-
-
-class TestCommandManager(CommandManager):
-    def _load_commands(self):
-        self.commands = {
-            'one': TestCommand,
-            'two words': TestCommand,
-            'three word command': TestCommand,
-        }
+from cliff.tests import utils
 
 
 def test_lookup_and_find():
@@ -28,7 +11,7 @@ def test_lookup_and_find():
         assert cmd
         assert name == ' '.join(argv)
         assert not remaining
-    mgr = TestCommandManager('test')
+    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
     for expected in [['one'],
                      ['two', 'words'],
                      ['three', 'word', 'command'],
@@ -42,7 +25,7 @@ def test_lookup_with_remainder():
         cmd, name, remaining = mgr.find_command(argv)
         assert cmd
         assert remaining == ['--opt']
-    mgr = TestCommandManager('test')
+    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
     for expected in [['one', '--opt'],
                      ['two', 'words', '--opt'],
                      ['three', 'word', 'command', '--opt'],
@@ -52,7 +35,7 @@ def test_lookup_with_remainder():
 
 
 def test_find_invalid_command():
-    mgr = TestCommandManager('test')
+    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
 
     def check_one(argv):
         try:
@@ -68,7 +51,7 @@ def test_find_invalid_command():
 
 
 def test_find_unknown_command():
-    mgr = TestCommandManager('test')
+    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
     try:
         mgr.find_command(['a', 'b'])
     except ValueError as err:
@@ -78,7 +61,7 @@ def test_find_unknown_command():
 
 
 def test_add_command():
-    mgr = TestCommandManager('test')
+    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
     mock_cmd = mock.Mock()
     mgr.add_command('mock', mock_cmd)
     found_cmd, name, args = mgr.find_command(['mock'])
