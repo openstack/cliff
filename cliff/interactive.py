@@ -39,7 +39,7 @@ class InteractiveApp(cmd2.Cmd):
         cmd2.Cmd.__init__(self, 'tab', stdin=stdin, stdout=stdout)
 
     def default(self, line):
-        # Tie in the the default command processor to
+        # Tie in the default command processor to
         # dispatch commands known to the command manager.
         # We send the message through our parent app,
         # since it already has the logic for executing

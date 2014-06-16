@@ -124,7 +124,7 @@ dev
 
 0.7
 
-  - Clean up interactive mode flag settting.
+  - Clean up interactive mode flag setting.
   - Add support for Python 2.6, contributed by heavenshell.
   - Fix multi-word commands in interactive mode.
 
