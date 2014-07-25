@@ -6,7 +6,7 @@ envdir=$1
 
 # Manually download the source from PyPI and build it with the --editable flag.
 # This gives us access to run the tests.
-pip install --pre --no-deps --no-install --no-clean python-neutronclient
+pip install --pre --no-deps --no-install --no-clean --no-use-wheel python-neutronclient
 
 # This is where the source will end up after pip is done downloading and building it
 srcdir=$envdir/build/python-neutronclient/
