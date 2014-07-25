@@ -33,9 +33,6 @@ else:
 logging.getLogger('cliff').addHandler(NullHandler())
 
 
-LOG = logging.getLogger(__name__)
-
-
 class App(object):
     """Application base class.
 
@@ -57,6 +54,7 @@ class App(object):
     """
 
     NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+    LOG = logging.getLogger(NAME)
 
     CONSOLE_MESSAGE_FORMAT = '%(message)s'
     LOG_FILE_MESSAGE_FORMAT = \
@@ -205,10 +203,10 @@ class App(object):
             else:
                 debug = True
             if debug:
-                LOG.exception(err)
+                self.LOG.exception(err)
                 raise
             else:
-                LOG.error(err)
+                self.LOG.error(err)
             return 1
         result = 1
         if self.interactive_mode:
@@ -265,7 +263,7 @@ class App(object):
             if self.options.debug:
                 raise
             else:
-                LOG.error(err)
+                self.LOG.error(err)
             return 2
         cmd_factory, cmd_name, sub_argv = subcommand
         cmd = cmd_factory(self, self.options)
@@ -282,16 +280,16 @@ class App(object):
             result = cmd.run(parsed_args)
         except Exception as err:
             if self.options.debug:
-                LOG.exception(err)
+                self.LOG.exception(err)
             else:
-                LOG.error(err)
+                self.LOG.error(err)
             try:
                 self.clean_up(cmd, result, err)
             except Exception as err2:
                 if self.options.debug:
-                    LOG.exception(err2)
+                    self.LOG.exception(err2)
                 else:
-                    LOG.error('Could not clean up: %s', err2)
+                    self.LOG.error('Could not clean up: %s', err2)
             if self.options.debug:
                 raise
         else:
@@ -299,7 +297,7 @@ class App(object):
                 self.clean_up(cmd, result, None)
             except Exception as err3:
                 if self.options.debug:
-                    LOG.exception(err3)
+                    self.LOG.exception(err3)
                 else:
-                    LOG.error('Could not clean up: %s', err3)
+                    self.LOG.error('Could not clean up: %s', err3)
         return result
