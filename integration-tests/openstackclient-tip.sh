@@ -11,4 +11,8 @@ cd $envdir/src/openstackclient/
 
 pip install -r test-requirements.txt
 
+# Force a known hash seed value to avoid sorting errors from tox
+# giving us a random one.
+export PYTHONHASHSEED=0
+
 python setup.py testr

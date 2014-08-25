@@ -18,5 +18,9 @@ pip install --no-clean -ve .
 # Install the test requirements
 pip install --no-clean -r $srcdir/test-requirements.txt
 
+# Force a known hash seed value to avoid sorting errors from tox
+# giving us a random one.
+export PYTHONHASHSEED=0
+
 # Run testr
 python setup.py testr
