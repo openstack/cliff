@@ -87,7 +87,7 @@ def test_clean_up_error():
     app.clean_up = mock.MagicMock(name='clean_up')
     app.run(['error'])
 
-    app.clean_up.assert_called_once()
+    app.clean_up.assert_called_once_with(mock.ANY, mock.ANY, mock.ANY)
     call_args = app.clean_up.call_args_list[0]
     assert call_args == mock.call(mock.ANY, 1, mock.ANY)
     args, kwargs = call_args
