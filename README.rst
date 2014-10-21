@@ -9,6 +9,6 @@ other extensions.
 .. _setuptools entry points: http://packages.python.org/setuptools/pkg_resources.html#convenience-api
 
 * Free software: Apache license
-* Documentation: http://cliff.readthedocs.org
+* Documentation: http://docs.openstack.org/developer/cliff
 * Source: http://git.openstack.org/cgit/openstack/cliff
 * Bugs: https://bugs.launchpad.net/python-cliff
