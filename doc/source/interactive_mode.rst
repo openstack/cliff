@@ -13,8 +13,6 @@ the shell.
 
 .. _cmd2: http://packages.python.org/cmd2/index.html
 
-.. todo:: Add details about configuring and interacting with the shell (copy from cmd2 docs)
-
 Example
 =======
 
