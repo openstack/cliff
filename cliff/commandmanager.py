@@ -64,7 +64,8 @@ class CommandManager(object):
         name = ''
         while search_args:
             if search_args[0].startswith('-'):
-                raise ValueError('Invalid command %r' % search_args[0])
+                name = '%s %s' % (name, search_args[0])
+                raise ValueError('Invalid command %r' % name)
             next_val = search_args.pop(0)
             name = '%s %s' % (name, next_val) if name else next_val
             if name in self.commands:

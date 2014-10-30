@@ -41,6 +41,8 @@ def test_find_invalid_command():
         try:
             mgr.find_command(argv)
         except ValueError as err:
+            # make sure err include 'a' when ['a', '-b']
+            assert argv[0] in ('%s' % err)
             assert '-b' in ('%s' % err)
         else:
             assert False, 'expected a failure'
