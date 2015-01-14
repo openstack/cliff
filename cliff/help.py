@@ -27,6 +27,8 @@ class HelpAction(argparse.Action):
                 continue
             try:
                 cmd = factory(app, None)
+                if cmd.deprecated:
+                    continue
             except Exception as err:
                 app.stdout.write('Could not instantiate %r: %s\n' % (ep, err))
                 if namespace.debug:

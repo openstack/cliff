@@ -13,6 +13,9 @@ class Command(object):
     :param app: Application instance invoking the command.
     :paramtype app: cliff.app.App
     """
+
+    deprecated = False
+
     def __init__(self, app, app_args):
         self.app = app
         self.app_args = app_args
