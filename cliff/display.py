@@ -27,8 +27,9 @@ class DisplayCommandBase(Command):
     """Command base class for displaying data about a single object.
     """
 
-    def __init__(self, app, app_args):
-        super(DisplayCommandBase, self).__init__(app, app_args)
+    def __init__(self, app, app_args, cmd_name=None):
+        super(DisplayCommandBase, self).__init__(app, app_args,
+                                                 cmd_name=cmd_name)
         self._formatter_plugins = self._load_formatter_plugins()
 
     @abc.abstractproperty

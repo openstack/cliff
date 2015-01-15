@@ -3,6 +3,7 @@
 
 import argparse
 import codecs
+import inspect
 import locale
 import logging
 import logging.handlers
@@ -281,7 +282,10 @@ class App(object):
                 self.LOG.error(err)
             return 2
         cmd_factory, cmd_name, sub_argv = subcommand
-        cmd = cmd_factory(self, self.options)
+        kwargs = {}
+        if 'cmd_name' in inspect.getargspec(cmd_factory.__init__).args:
+            kwargs['cmd_name'] = cmd_name
+        cmd = cmd_factory(self, self.options, **kwargs)
         err = None
         result = 1
         try:
