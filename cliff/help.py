@@ -68,7 +68,8 @@ class HelpCommand(Command):
                 for fm in fuzzy_matches:
                     self.app.stdout.write('  %s\n' % fm)
                 return
-            cmd = cmd_factory(self.app, search_args)
+            self.app_args.cmd = search_args
+            cmd = cmd_factory(self.app, self.app_args)
             full_name = (cmd_name
                          if self.app.interactive_mode
                          else ' '.join([self.app.NAME, cmd_name])
