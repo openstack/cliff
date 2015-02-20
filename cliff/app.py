@@ -86,10 +86,9 @@ class App(object):
             # works around a problem with Python 2.6 fixed in 2.7 and
             # later (http://hg.python.org/cpython/rev/e60ef17561dc/).
             lang, encoding = locale.getdefaultlocale()
-            encoding = (getattr(sys.stdout, 'encoding', None)
-                        or encoding
-                        or self.DEFAULT_OUTPUT_ENCODING
-                        )
+            encoding = (getattr(sys.stdout, 'encoding', None) or
+                        encoding or
+                        self.DEFAULT_OUTPUT_ENCODING)
             self.stdin = stdin or codecs.getreader(encoding)(sys.stdin)
             self.stdout = stdout or codecs.getwriter(encoding)(sys.stdout)
             self.stderr = stderr or codecs.getwriter(encoding)(sys.stderr)

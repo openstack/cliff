@@ -254,7 +254,8 @@ def test_output_encoding_default():
             )
 
     stdout = StringIO()
-    getdefaultlocale = lambda: ('ignored', 'utf-8')
+
+    getdefaultlocale = mock.Mock(return_value=('ignored', 'utf-8'))
 
     with mock.patch('sys.stdout', stdout):
         with mock.patch('locale.getdefaultlocale', getdefaultlocale):
@@ -281,7 +282,7 @@ def test_output_encoding_cliff_default():
             )
 
     stdout = StringIO()
-    getdefaultlocale = lambda: ('ignored', None)
+    getdefaultlocale = mock.Mock(return_value=('ignored', None))
 
     with mock.patch('sys.stdout', stdout):
         with mock.patch('locale.getdefaultlocale', getdefaultlocale):
@@ -309,7 +310,7 @@ def test_output_encoding_sys():
 
     stdout = StringIO()
     stdout.encoding = 'utf-8'
-    getdefaultlocale = lambda: ('ignored', 'utf-16')
+    getdefaultlocale = mock.Mock(return_value=('ignored', 'utf-16'))
 
     with mock.patch('sys.stdout', stdout):
         with mock.patch('locale.getdefaultlocale', getdefaultlocale):
@@ -336,7 +337,7 @@ def test_error_encoding_default():
             )
 
     stderr = StringIO()
-    getdefaultlocale = lambda: ('ignored', 'utf-8')
+    getdefaultlocale = mock.Mock(return_value=('ignored', 'utf-8'))
 
     with mock.patch('sys.stderr', stderr):
         with mock.patch('locale.getdefaultlocale', getdefaultlocale):
@@ -365,7 +366,7 @@ def test_error_encoding_sys():
     stdout = StringIO()
     stdout.encoding = 'utf-8'
     stderr = StringIO()
-    getdefaultlocale = lambda: ('ignored', 'utf-16')
+    getdefaultlocale = mock.Mock(return_value=('ignored', 'utf-16'))
 
     with mock.patch('sys.stdout', stdout):
         with mock.patch('sys.stderr', stderr):
