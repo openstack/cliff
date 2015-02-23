@@ -15,7 +15,7 @@ from cliff.command import Command
 from cliff.commandmanager import CommandManager
 
 
-def make_app():
+def make_app(**kwargs):
     cmd_mgr = CommandManager('cliff.tests')
 
     # Register a command that succeeds
@@ -38,6 +38,7 @@ def make_app():
               '1',
               cmd_mgr,
               stderr=mock.Mock(),  # suppress warning messages
+              **kwargs
               )
     return app, command
 
@@ -374,6 +375,29 @@ def test_error_encoding_sys():
                 app.stderr.write(u_data)
                 actual = stderr.getvalue()
                 assert data == actual
+
+
+def _test_help(deferred_help):
+    app, _ = make_app(deferred_help=deferred_help)
+    with mock.patch.object(app, 'initialize_app') as init:
+        with mock.patch('cliff.help.HelpAction.__call__',
+                        side_effect=SystemExit(0)) as helper:
+            try:
+                app.run(['--help'])
+            except SystemExit:
+                pass
+            else:
+                raise Exception('Exception was not thrown')
+            assert helper.called
+        assert init.called == deferred_help
+
+
+def test_help():
+    _test_help(False)
+
+
+def test_deferred_help():
+    _test_help(True)
 
 
 def test_unknown_cmd():

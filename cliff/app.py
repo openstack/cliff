@@ -64,7 +64,8 @@ class App(object):
 
     def __init__(self, description, version, command_manager,
                  stdin=None, stdout=None, stderr=None,
-                 interactive_app_factory=InteractiveApp):
+                 interactive_app_factory=InteractiveApp,
+                 deferred_help=False):
         """Initialize the application.
         """
         self.command_manager = command_manager
@@ -72,6 +73,7 @@ class App(object):
         self.command_manager.add_command('complete', CompleteCommand)
         self._set_streams(stdin, stdout, stderr)
         self.interactive_app_factory = interactive_app_factory
+        self.deferred_help = deferred_help
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
         self.interpreter = None
@@ -144,13 +146,21 @@ class App(object):
             const=0,
             help='suppress output except warnings and errors',
         )
-        parser.add_argument(
-            '-h', '--help',
-            action=HelpAction,
-            nargs=0,
-            default=self,  # tricky
-            help="show this help message and exit",
-        )
+        if self.deferred_help:
+            parser.add_argument(
+                '-h', '--help',
+                dest='deferred_help',
+                action='store_true',
+                help="show this help message and exit",
+            )
+        else:
+            parser.add_argument(
+                '-h', '--help',
+                action=HelpAction,
+                nargs=0,
+                default=self,  # tricky
+                help="show this help message and exit",
+            )
         parser.add_argument(
             '--debug',
             default=False,
@@ -186,6 +196,11 @@ class App(object):
         root_logger.addHandler(console)
         return
 
+    def print_help_if_requested(self):
+        if self.deferred_help and self.options.deferred_help:
+            action = HelpAction(None, None, default=self)
+            action(self.parser, self.parser, None, None)
+
     def run(self, argv):
         """Equivalent to the main program for the application.
 
@@ -197,6 +212,7 @@ class App(object):
             self.configure_logging()
             self.interactive_mode = not remainder
             self.initialize_app(remainder)
+            self.print_help_if_requested()
         except Exception as err:
             if hasattr(self, 'options'):
                 debug = self.options.debug
