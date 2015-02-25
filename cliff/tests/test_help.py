@@ -91,3 +91,22 @@ def test_show_help_for_help():
         pass
     help_text = stdout.getvalue()
     assert 'usage: test help [-h]' in help_text
+
+
+def test_list_deprecated_commands():
+    # FIXME(dhellmann): Are commands tied too closely to the app? Or
+    # do commands know too much about apps by using them to get to the
+    # command manager?
+    stdout = StringIO()
+    app = App('testing', '1',
+              utils.TestCommandManager(utils.TEST_NAMESPACE),
+              stdout=stdout)
+    app.NAME = 'test'
+    try:
+        app.run(['--help'])
+    except SystemExit:
+        pass
+    help_output = stdout.getvalue()
+    assert 'two words' in help_output
+    assert 'three word command' in help_output
+    assert 'old cmd' not in help_output
