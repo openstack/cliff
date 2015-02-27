@@ -196,6 +196,14 @@ class App(object):
         return
 
     def print_help_if_requested(self):
+        """Print help and exits if deferred help is enabled and requested.
+
+        '--help' shows the help message and exits:
+         * without calling initialize_app if not self.deferred_help (default),
+         * after initialize_app call if self.deferred_help,
+         * during initialize_app call if self.deferred_help and subclass calls
+           explicitly this method in initialize_app.
+        """
         if self.deferred_help and self.options.deferred_help:
             action = HelpAction(None, None, default=self)
             action(self.parser, self.parser, None, None)
