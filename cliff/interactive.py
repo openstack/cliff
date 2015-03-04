@@ -52,16 +52,32 @@ class InteractiveApp(cmd2.Cmd):
         line_parts = shlex.split(line.parsed.raw)
         self.parent_app.run_subcommand(line_parts)
 
-    def completedefault(self, text, line, begidx, endidx):
-        # Tab-completion for commands known to the command manager.
-        # Does not handle options on the commands.
-        if not text:
-            completions = sorted(n for n, v in self.command_manager)
-        else:
-            completions = sorted(n for n, v in self.command_manager
-                                 if n.startswith(text)
-                                 )
+    def completenames(self, text, *ignored):
+        """Tab-completion for command prefix without completer delimiter.
+
+        This method returns cmd style and cliff style commands matching
+        provided command prefix (text).
+        """
+        completions = cmd2.Cmd.completenames(self, text, *ignored)
+        completions += self._complete_prefix(text)
         return completions
+
+    def completedefault(self, text, line, begidx, endidx):
+        """Default tab-completion for command prefix with completer delimiter.
+
+        This method filters only cliff style commands matching provided
+        command prefix (line) as cmd2 style commands cannot contain spaces.
+        This method returns text + missing command part of matching commands.
+        This method does not handle options in cmd2/cliff style commands, you
+        must define complete_$method to handle them.
+        """
+        return [x[begidx:] for x in self._complete_prefix(line)]
+
+    def _complete_prefix(self, prefix):
+        """Returns cliff style commands with a specific prefix."""
+        if not prefix:
+            return [n for n, v in self.command_manager]
+        return [n for n, v in self.command_manager if n.startswith(prefix)]
 
     def help_help(self):
         # Use the command manager to get instructions for "help"
