@@ -16,9 +16,10 @@ class Command(object):
 
     deprecated = False
 
-    def __init__(self, app, app_args):
+    def __init__(self, app, app_args, cmd_name=None):
         self.app = app
         self.app_args = app_args
+        self.cmd_name = cmd_name
         return
 
     def get_description(self):

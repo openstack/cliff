@@ -20,3 +20,8 @@ def test_get_parser():
     cmd = TestCommand(None, None)
     parser = cmd.get_parser('NAME')
     assert parser.prog == 'NAME'
+
+
+def test_get_name():
+    cmd = TestCommand(None, None, cmd_name='object action')
+    assert cmd.cmd_name == 'object action'
