@@ -11,7 +11,6 @@ import sys
 
 from .complete import CompleteCommand
 from .help import HelpAction, HelpCommand
-from .interactive import InteractiveApp
 
 # Make sure the cliff library has a logging handler
 # in case the app developer doesn't set up logging.
@@ -64,7 +63,7 @@ class App(object):
 
     def __init__(self, description, version, command_manager,
                  stdin=None, stdout=None, stderr=None,
-                 interactive_app_factory=InteractiveApp,
+                 interactive_app_factory=None,
                  deferred_help=False):
         """Initialize the application.
         """
@@ -271,6 +270,11 @@ class App(object):
         return
 
     def interact(self):
+        # Defer importing .interactive as cmd2 is a slow import
+        from .interactive import InteractiveApp
+
+        if self.interactive_app_factory is None:
+            self.interactive_app_factory = InteractiveApp
         self.interpreter = self.interactive_app_factory(self,
                                                         self.command_manager,
                                                         self.stdin,
