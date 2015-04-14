@@ -47,8 +47,7 @@ def test_list_matching_commands():
         pass
     help_output = stdout.getvalue()
     assert 'Command "t" matches:' in help_output
-    assert 'two' in help_output
-    assert 'three' in help_output
+    assert 'three word command\n  two words\n' in help_output
 
 
 def test_list_matching_commands_no_match():

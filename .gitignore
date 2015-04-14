@@ -34,3 +34,7 @@ pip-log.txt
 # pbr output
 AUTHORS
 ChangeLog
+
+# Editors
+*~
+.*.swp
