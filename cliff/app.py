@@ -80,7 +80,10 @@ class App(object):
         self.interpreter = None
 
     def _set_streams(self, stdin, stdout, stderr):
-        locale.setlocale(locale.LC_ALL, '')
+        try:
+            locale.setlocale(locale.LC_ALL, '')
+        except locale.Error:
+            pass
         if sys.version_info[:2] == (2, 6):
             # Configure the input and output streams. If a stream is
             # provided, it must be configured correctly by the
