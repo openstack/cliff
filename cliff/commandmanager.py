@@ -1,6 +1,7 @@
 """Discover and lookup command plugins.
 """
 
+import inspect
 import logging
 
 import pkg_resources
@@ -17,7 +18,7 @@ class EntryPointWrapper(object):
         self.name = name
         self.command_class = command_class
 
-    def load(self):
+    def load(self, require=False):
         return self.command_class
 
 
@@ -70,7 +71,16 @@ class CommandManager(object):
             name = '%s %s' % (name, next_val) if name else next_val
             if name in self.commands:
                 cmd_ep = self.commands[name]
-                cmd_factory = cmd_ep.load()
+                if hasattr(cmd_ep, 'resolve'):
+                    cmd_factory = cmd_ep.resolve()
+                else:
+                    # NOTE(dhellmann): Some fake classes don't take
+                    # require as an argument. Yay?
+                    arg_spec = inspect.getargspec(cmd_ep.load)
+                    if 'require' in arg_spec[0]:
+                        cmd_factory = cmd_ep.load(require=False)
+                    else:
+                        cmd_factory = cmd_ep.load()
                 return (cmd_factory, name, search_args)
         else:
             raise ValueError('Unknown command %r' %
