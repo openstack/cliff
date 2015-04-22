@@ -78,6 +78,7 @@ class HelpCommand(Command):
                          )
             cmd_parser = cmd.get_parser(full_name)
         else:
-            cmd_parser = self.get_parser(' '.join([self.app.NAME, 'help']))
+            action = HelpAction(None, None, default=self.app)
+            action(self.app.parser, self.app.parser, None, None)
         cmd_parser.print_help(self.app.stdout)
         return 0
