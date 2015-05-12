@@ -67,7 +67,7 @@ class HelpCommand(Command):
                 if not fuzzy_matches:
                     raise
                 self.app.stdout.write('Command "%s" matches:\n' % cmd)
-                for fm in fuzzy_matches:
+                for fm in sorted(fuzzy_matches):
                     self.app.stdout.write('  %s\n' % fm)
                 return
             self.app_args.cmd = search_args
