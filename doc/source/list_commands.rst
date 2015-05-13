@@ -63,6 +63,33 @@ for human consumption.
     | source        |  408 |
     +---------------+------+
 
+value
+-----
+
+The ``value`` formatter produces a space separated output with no headers.
+
+::
+    
+    (.venv)$ cliffdemo files -f value
+    build 136
+    cliffdemo.log 2690
+    Makefile 5569
+    source 408
+
+This format can be very convenient when you want to pipe the output to
+a script.
+
+::
+    
+    (.venv)$ cliffdemo files -f value | while read NAME SIZE
+    do
+      echo $NAME is $SIZE bytes
+    done
+    build is 136 bytes
+    cliffdemo.log is 2690 bytes
+    Makefile is 5569 bytes
+    source is 408 bytes
+
 Other Formatters
 ----------------
 
