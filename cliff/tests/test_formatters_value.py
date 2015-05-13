@@ -13,3 +13,16 @@ def test_value_formatter():
     sf.emit_one(c, d, output, None)
     actual = output.getvalue()
     assert expected == actual
+
+
+def test_value_list_formatter():
+    sf = value.ValueFormatter()
+    c = ('a', 'b', 'c')
+    d1 = ('A', 'B', 'C')
+    d2 = ('D', 'E', 'F')
+    data = [d1, d2]
+    expected = 'A B C\nD E F\n'
+    output = StringIO()
+    sf.emit_list(c, data, output, None)
+    actual = output.getvalue()
+    assert expected == actual
