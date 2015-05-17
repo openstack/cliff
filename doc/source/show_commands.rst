@@ -28,6 +28,27 @@ commands. :class:`ShowOne` adds a command line switch to let the user
 specify the formatter they want, so you don't have to do any extra
 work in your application.
 
+table
+-----
+
+The ``table`` formatter uses PrettyTable_ to produce output
+formatted for human consumption.  This is the default formatter.
+
+.. _PrettyTable: http://code.google.com/p/prettytable/
+
+::
+
+    (.venv)$ cliffdemo file setup.py
+    +---------------+--------------+
+    |     Field     |    Value     |
+    +---------------+--------------+
+    | Name          | setup.py     |
+    | Size          | 5825         |
+    | UID           | 502          |
+    | GID           | 20           |
+    | Modified Time | 1335569964.0 |
+    +---------------+--------------+
+
 shell
 -----
 
@@ -48,26 +69,19 @@ parsing overhead in shell scripts.
     (.venv)$ echo $example_size
     5916
 
-table
+value
 -----
 
-The ``table`` formatter uses PrettyTable_ to produce output
-formatted for human consumption.
-
-.. _PrettyTable: http://code.google.com/p/prettytable/
+The ``value`` formatter produces output that only contains the
+value of the field or fields.
 
 ::
 
-    (.venv)$ cliffdemo file setup.py
-    +---------------+--------------+
-    |     Field     |    Value     |
-    +---------------+--------------+
-    | Name          | setup.py     |
-    | Size          | 5825         |
-    | UID           | 502          |
-    | GID           | 20           |
-    | Modified Time | 1335569964.0 |
-    +---------------+--------------+
+    (.venv)$ cliffdemo file -f value -c Size setup.py
+    5916
+    (.venv)$ SIZE="$(cliffdemo file -f value -c Size setup.py)"
+    (.venv)$ echo $SIZE
+    5916
 
 Other Formatters
 ----------------
