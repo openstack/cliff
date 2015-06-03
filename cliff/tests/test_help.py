@@ -89,7 +89,9 @@ def test_show_help_for_help():
     except SystemExit:
         pass
     help_text = stdout.getvalue()
-    assert 'usage: test help [-h]' in help_text
+    assert 'usage: nosetests [--version]' in help_text
+    assert 'optional arguments:\n  --version' in help_text
+    assert 'one            \n  three word command  \n' in help_text
 
 
 def test_list_deprecated_commands():
