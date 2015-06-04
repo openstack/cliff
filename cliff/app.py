@@ -209,7 +209,7 @@ class App(object):
         """
         if self.deferred_help and self.options.deferred_help:
             action = HelpAction(None, None, default=self)
-            action(self.parser, self.parser, None, None)
+            action(self.parser, self.options, None, None)
 
     def run(self, argv):
         """Equivalent to the main program for the application.
