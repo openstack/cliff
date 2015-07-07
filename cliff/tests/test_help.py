@@ -2,6 +2,8 @@ try:
     from StringIO import StringIO
 except:
     from io import StringIO
+import os
+import sys
 
 import mock
 
@@ -89,7 +91,8 @@ def test_show_help_for_help():
     except SystemExit:
         pass
     help_text = stdout.getvalue()
-    assert 'usage: nosetests [--version]' in help_text
+    basecommand = os.path.split(sys.argv[0])[1]
+    assert 'usage: %s [--version]' % basecommand in help_text
     assert 'optional arguments:\n  --version' in help_text
     assert 'one            \n  three word command  \n' in help_text
 
