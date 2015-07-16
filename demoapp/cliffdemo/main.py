@@ -11,6 +11,7 @@ class DemoApp(App):
             description='cliff demo app',
             version='0.1',
             command_manager=CommandManager('cliff.demo'),
+            deferred_help=True,
             )
 
     def initialize_app(self, argv):

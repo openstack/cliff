@@ -66,6 +66,10 @@ To see help for an individual command, use the ``help`` command::
 
   (.venv)$ cliffdemo help files
 
+or the ``--help`` option::
+
+  (.venv)$ cliffdemo files --help
+
 The Source
 ==========
 
