@@ -221,6 +221,18 @@ class App(object):
             self.options, remainder = self.parser.parse_known_args(argv)
             self.configure_logging()
             self.interactive_mode = not remainder
+            if self.deferred_help and self.options.deferred_help and remainder:
+                # When help is requested and `remainder` has any values disable
+                # `deferred_help` and instead allow the help subcommand to
+                # handle the request during run_subcommand(). This turns
+                # "app foo bar --help" into "app help foo bar". However, when
+                # `remainder` is empty use print_help_if_requested() to allow
+                # for an early exit.
+                # Disabling `deferred_help` here also ensures that
+                # print_help_if_requested will not fire if called by a subclass
+                # during its initialize_app().
+                self.options.deferred_help = False
+                remainder.insert(0, "help")
             self.initialize_app(remainder)
             self.print_help_if_requested()
         except Exception as err:

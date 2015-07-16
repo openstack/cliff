@@ -401,6 +401,26 @@ def test_deferred_help():
     _test_help(True)
 
 
+def test_subcommand_help():
+    app, _ = make_app(deferred_help=False)
+
+    # Help is called immediately
+    with mock.patch('cliff.help.HelpAction.__call__') as helper:
+        app.run(['show', 'files', '--help'])
+
+    assert helper.called
+
+
+def test_subcommand_deferred_help():
+    app, _ = make_app(deferred_help=True)
+
+    # Show that provide_help_if_requested() did not show help and exit
+    with mock.patch.object(app, 'run_subcommand') as helper:
+        app.run(['show', 'files', '--help'])
+
+    helper.assert_called_once_with(['help', 'show', 'files'])
+
+
 def test_unknown_cmd():
     app, command = make_app()
     assert app.run(['hell']) == 2
