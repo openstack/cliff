@@ -2,6 +2,7 @@
 """
 
 import prettytable
+import six
 
 from .base import ListFormatter, SingleFormatter
 
@@ -51,6 +52,9 @@ class TableFormatter(ListFormatter, SingleFormatter):
             # Now iterate over the data and add the rows.
             x.add_row(first_row)
             for row in data_iter:
+                row = [r.replace('\r\n', '\n').replace('\r', ' ')
+                       if isinstance(r, six.string_types) else r
+                       for r in row]
                 x.add_row(row)
         formatted = x.get_string(fields=column_names)
         stdout.write(formatted)
@@ -68,6 +72,8 @@ class TableFormatter(ListFormatter, SingleFormatter):
         x.align['Field'] = 'l'
         x.align['Value'] = 'l'
         for name, value in zip(column_names, data):
+            value = (value.replace('\r\n', '\n').replace('\r', ' ') if
+                     isinstance(value, six.string_types) else value)
             x.add_row((name, value))
         formatted = x.get_string(fields=('Field', 'Value'))
         stdout.write(formatted)
