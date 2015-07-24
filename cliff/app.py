@@ -9,9 +9,11 @@ import logging
 import logging.handlers
 import os
 import sys
+import operator
 
 from .complete import CompleteCommand
 from .help import HelpAction, HelpCommand
+from .utils import damerau_levenshtein, COST
 
 # Make sure the cliff library has a logging handler
 # in case the app developer doesn't set up logging.
@@ -299,14 +301,60 @@ class App(object):
         self.interpreter.cmdloop()
         return 0
 
+    def get_fuzzy_matches(self, cmd):
+        """return fuzzy matches of unknown command
+        """
+
+        sep = '_'
+        if self.command_manager.convert_underscores:
+            sep = ' '
+        all_cmds = [k[0] for k in self.command_manager]
+        dist = []
+        for candidate in sorted(all_cmds):
+            prefix = candidate.split(sep)[0]
+            # Give prefix match a very good score
+            if candidate.startswith(cmd):
+                dist.append((candidate, 0))
+                continue
+            # Levenshtein distance
+            dist.append((candidate, damerau_levenshtein(cmd, prefix, COST)+1))
+        dist = sorted(dist, key=operator.itemgetter(1, 0))
+        matches = []
+        i = 0
+        # Find the best similarity
+        while (not dist[i][1]):
+            matches.append(dist[i][0])
+            i += 1
+        best_similarity = dist[i][1]
+        while (dist[i][1] == best_similarity):
+            matches.append(dist[i][0])
+            i += 1
+
+        return matches
+
     def run_subcommand(self, argv):
         try:
             subcommand = self.command_manager.find_command(argv)
         except ValueError as err:
-            if self.options.debug:
-                raise
+            # If there was no exact match, try to find a fuzzy match
+            the_cmd = argv[0]
+            fuzzy_matches = self.get_fuzzy_matches(the_cmd)
+            if fuzzy_matches:
+                article = 'a'
+                if self.NAME[0] in 'aeiou':
+                    article = 'an'
+                self.stdout.write('%s: \'%s\' is not %s %s command. '
+                                  'See \'%s --help\'.\n'
+                                  % (self.NAME, the_cmd, article,
+                                      self.NAME, self.NAME))
+                self.stdout.write('Did you mean one of these?\n')
+                for match in fuzzy_matches:
+                    self.stdout.write('  %s\n' % match)
             else:
-                self.LOG.error(err)
+                if self.options.debug:
+                    raise
+                else:
+                    self.LOG.error(err)
             return 2
         cmd_factory, cmd_name, sub_argv = subcommand
         kwargs = {}

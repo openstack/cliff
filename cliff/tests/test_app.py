@@ -3,8 +3,7 @@ from argparse import ArgumentError
 try:
     from StringIO import StringIO
 except ImportError:
-    # Probably python 3, that test won't be run so ignore the error
-    pass
+    from io import StringIO
 import sys
 
 import nose
@@ -13,6 +12,7 @@ import mock
 from cliff.app import App
 from cliff.command import Command
 from cliff.commandmanager import CommandManager
+from cliff.tests import utils
 
 
 def make_app(**kwargs):
@@ -432,3 +432,19 @@ def test_unknown_cmd_debug():
         app.run(['--debug', 'hell']) == 2
     except ValueError as err:
         assert "['hell']" in ('%s' % err)
+
+
+def test_list_matching_commands():
+    stdout = StringIO()
+    app = App('testing', '1',
+              utils.TestCommandManager(utils.TEST_NAMESPACE),
+              stdout=stdout)
+    app.NAME = 'test'
+    try:
+        assert app.run(['t']) == 2
+    except SystemExit:
+        pass
+    output = stdout.getvalue()
+    assert "test: 't' is not a test command. See 'test --help'." in output
+    assert 'Did you mean one of these?' in output
+    assert 'three word command\n  two words\n' in output
