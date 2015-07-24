@@ -1,7 +1,7 @@
 """Output formatters using csv format.
 """
 
-import csv
+import unicodecsv as csv
 import os
 
 from .base import ListFormatter
