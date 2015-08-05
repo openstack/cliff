@@ -90,10 +90,34 @@ a script.
     Makefile is 5569 bytes
     source is 408 bytes
 
+yaml
+----
+
+The ``yaml`` formatter uses PyYAML_ to produce a YAML sequence of
+mappings.
+
+.. _PyYAML: http://pyyaml.org/
+
+::
+
+    (.venv)$ cliffdemo files -f yaml
+    - Name: dist
+      Size: 4096
+    - Name: cliffdemo.egg-info
+      Size: 4096
+    - Name: README.rst
+      Size: 960
+    - Name: setup.py
+      Size: 1807
+    - Name: build
+      Size: 4096
+    - Name: cliffdemo
+      Size: 4096
+
 Other Formatters
 ----------------
 
-Formatters using tablib_ to produce JSON, YAML, and HTML are available
+Formatters using tablib_ to produce JSON and HTML are available
 as part of `cliff-tablib`_.
 
 .. _cliff-tablib: https://github.com/dreamhost/cliff-tablib

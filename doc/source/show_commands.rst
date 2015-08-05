@@ -83,10 +83,27 @@ value of the field or fields.
     (.venv)$ echo $SIZE
     5916
 
+yaml
+----
+
+The ``yaml`` formatter uses PyYAML_ to produce a YAML mapping where
+the field name is the key.
+
+.. _PyYAML: http://pyyaml.org/
+
+::
+
+    (.venv)$ cliffdemo file -f yaml setup.py
+    Name: setup.py
+    Size: 1807
+    UID: 1000
+    GID: 1000
+    Modified Time: 1393531476.9587486
+
 Other Formatters
 ----------------
 
-Formatters using tablib_ to produce JSON, YAML, and HTML are available
+Formatters using tablib_ to produce JSON and HTML are available
 as part of `cliff-tablib`_.
 
 .. _cliff-tablib: https://github.com/dreamhost/cliff-tablib
