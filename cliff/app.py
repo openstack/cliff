@@ -148,14 +148,14 @@ class App(object):
             action='store_const',
             dest='verbose_level',
             const=0,
-            help='suppress output except warnings and errors',
+            help='Suppress output except warnings and errors.',
         )
         if self.deferred_help:
             parser.add_argument(
                 '-h', '--help',
                 dest='deferred_help',
                 action='store_true',
-                help="show this help message and exit",
+                help="Show help message and exit.",
             )
         else:
             parser.add_argument(
@@ -163,13 +163,13 @@ class App(object):
                 action=HelpAction,
                 nargs=0,
                 default=self,  # tricky
-                help="show this help message and exit",
+                help="Show this help message and exit.",
             )
         parser.add_argument(
             '--debug',
             default=False,
             action='store_true',
-            help='show tracebacks on errors',
+            help='Show tracebacks on errors.',
         )
         return parser
 

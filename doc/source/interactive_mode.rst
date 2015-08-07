@@ -48,7 +48,7 @@ To obtain instructions for a built-in or application command, use the
     A simple command that prints a message.
     
     optional arguments:
-      -h, --help  show this help message and exit
+      -h, --help  Show help message and exit.
 
 The commands can be run, including options and arguments, as on the
 regular command line:
