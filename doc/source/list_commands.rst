@@ -114,11 +114,35 @@ mappings.
     - Name: cliffdemo
       Size: 4096
 
+json
+----
+
+The ``json`` formatter produces an array of objects in indented JSON
+format.
+
+::
+
+    (.venv)$ cliffdemo files -f json
+    [
+      {
+        "Name": "source", 
+        "Size": 4096
+      }, 
+      {
+        "Name": "Makefile", 
+        "Size": 5569
+      }, 
+      {
+        "Name": "build", 
+        "Size": 4096
+      }
+    ]
+
 Other Formatters
 ----------------
 
-Formatters using tablib_ to produce JSON and HTML are available
-as part of `cliff-tablib`_.
+A formatter using tablib_ to produce HTML is available as part of
+`cliff-tablib`_.
 
 .. _cliff-tablib: https://github.com/dreamhost/cliff-tablib
 

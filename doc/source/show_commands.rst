@@ -100,11 +100,28 @@ the field name is the key.
     GID: 1000
     Modified Time: 1393531476.9587486
 
+json
+----
+
+The ``json`` formatter produces a JSON object where the field name
+is the key.
+
+::
+
+    (.venv)$ cliffdemo file -f json setup.py
+    {
+      "Modified Time": 1438726433.8055942, 
+      "GID": 1000, 
+      "UID": 1000, 
+      "Name": "setup.py", 
+      "Size": 1028
+    }
+
 Other Formatters
 ----------------
 
-Formatters using tablib_ to produce JSON and HTML are available
-as part of `cliff-tablib`_.
+A formatter using tablib_ to produce HTML is available as part of
+`cliff-tablib`_.
 
 .. _cliff-tablib: https://github.com/dreamhost/cliff-tablib
 
