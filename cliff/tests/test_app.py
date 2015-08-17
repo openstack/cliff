@@ -202,7 +202,7 @@ def test_build_option_parser_conflicting_option_should_throw():
             parser.add_argument(
                 '-h', '--help',
                 default=self,  # tricky
-                help="show this help message and exit",
+                help="Show help message and exit.",
             )
 
     # TODO: tests should really use unittest2.
@@ -232,7 +232,7 @@ def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
             parser.add_argument(
                 '-h', '--help',
                 default=self,  # tricky
-                help="show this help message and exit",
+                help="Show this help message and exit.",
             )
 
     MyApp()
