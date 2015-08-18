@@ -129,25 +129,26 @@ class App(object):
             action='version',
             version='%(prog)s {0}'.format(version),
         )
-        parser.add_argument(
+        verbose_group = parser.add_mutually_exclusive_group()
+        verbose_group.add_argument(
             '-v', '--verbose',
             action='count',
             dest='verbose_level',
             default=self.DEFAULT_VERBOSE_LEVEL,
             help='Increase verbosity of output. Can be repeated.',
         )
-        parser.add_argument(
-            '--log-file',
-            action='store',
-            default=None,
-            help='Specify a file to log output. Disabled by default.',
-        )
-        parser.add_argument(
+        verbose_group.add_argument(
             '-q', '--quiet',
             action='store_const',
             dest='verbose_level',
             const=0,
             help='Suppress output except warnings and errors.',
+        )
+        parser.add_argument(
+            '--log-file',
+            action='store',
+            default=None,
+            help='Specify a file to log output. Disabled by default.',
         )
         if self.deferred_help:
             parser.add_argument(

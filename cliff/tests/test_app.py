@@ -488,3 +488,19 @@ def test_fuzzy_no_prefix():
     cmd_mgr.add_command('user', utils.TestCommand)
     matches = app.get_fuzzy_matches('uesr')
     assert matches == ['user']
+
+
+def test_verbose():
+    app, command = make_app()
+    app.clean_up = mock.MagicMock(name='clean_up')
+    app.run(['--verbose', 'mock'])
+    app.clean_up.assert_called_once_with(command.return_value, 0, None)
+    app.clean_up.reset_mock()
+    app.run(['--quiet', 'mock'])
+    app.clean_up.assert_called_once_with(command.return_value, 0, None)
+    try:
+        app.run(['--verbose', '--quiet', 'mock'])
+    except SystemExit:
+        pass
+    else:
+        raise Exception('Exception was not thrown')
