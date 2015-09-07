@@ -4,6 +4,7 @@
 import prettytable
 import six
 
+from cliff import utils
 from .base import ListFormatter, SingleFormatter
 
 
@@ -35,8 +36,6 @@ class TableFormatter(ListFormatter, SingleFormatter):
             print_empty=False,
         )
         x.padding_width = 1
-        if parsed_args.max_width > 0:
-            x.max_width = int(parsed_args.max_width)
         # Figure out the types of the columns in the
         # first row and set the alignment of the
         # output accordingly.
@@ -56,7 +55,15 @@ class TableFormatter(ListFormatter, SingleFormatter):
                        if isinstance(r, six.string_types) else r
                        for r in row]
                 x.add_row(row)
-        formatted = x.get_string(fields=column_names)
+
+        # Choose a reasonable min_width to better handle many columns on a
+        # narrow console. The table will overflow the console width in
+        # preference to wrapping columns smaller than 8 characters.
+        min_width = 8
+        self._assign_max_widths(
+            stdout, x, int(parsed_args.max_width), min_width)
+
+        formatted = x.get_string()
         stdout.write(formatted)
         stdout.write('\n')
         return
@@ -65,8 +72,6 @@ class TableFormatter(ListFormatter, SingleFormatter):
         x = prettytable.PrettyTable(field_names=('Field', 'Value'),
                                     print_empty=False)
         x.padding_width = 1
-        if parsed_args.max_width > 0:
-            x.max_width = int(parsed_args.max_width)
         # Align all columns left because the values are
         # not all the same type.
         x.align['Field'] = 'l'
@@ -75,7 +80,89 @@ class TableFormatter(ListFormatter, SingleFormatter):
             value = (value.replace('\r\n', '\n').replace('\r', ' ') if
                      isinstance(value, six.string_types) else value)
             x.add_row((name, value))
-        formatted = x.get_string(fields=('Field', 'Value'))
+
+        # Choose a reasonable min_width to better handle a narrow
+        # console. The table will overflow the console width in preference
+        # to wrapping columns smaller than 16 characters in an attempt to keep
+        # the Field column readable.
+        min_width = 16
+        self._assign_max_widths(
+            stdout, x, int(parsed_args.max_width), min_width)
+
+        formatted = x.get_string()
         stdout.write(formatted)
         stdout.write('\n')
         return
+
+    @staticmethod
+    def _field_widths(field_names, first_line):
+
+        # use the first line +----+-------+ to infer column widths
+        # accounting for padding and dividers
+        widths = [max(0, len(i) - 2) for i in first_line.split('+')[1:-1]]
+        return dict(zip(field_names, widths))
+
+    @staticmethod
+    def _width_info(term_width, field_count):
+        # remove padding and dividers for width available to actual content
+        usable_total_width = max(0, term_width - 1 - 3 * field_count)
+
+        # calculate width per column if all columns were equal
+        if field_count == 0:
+            optimal_width = 0
+        else:
+            optimal_width = max(0, usable_total_width // field_count)
+
+        return usable_total_width, optimal_width
+
+    @staticmethod
+    def _build_shrink_fields(usable_total_width, optimal_width,
+                             field_widths, field_names):
+        shrink_fields = []
+        shrink_remaining = usable_total_width
+        for field in field_names:
+            w = field_widths[field]
+            if w <= optimal_width:
+                # leave alone columns which are smaller than the optimal width
+                shrink_remaining -= w
+            else:
+                shrink_fields.append(field)
+
+        return shrink_fields, shrink_remaining
+
+    @staticmethod
+    def _assign_max_widths(stdout, x, max_width, min_width=0):
+        if min_width:
+            x.min_width = min_width
+
+        if max_width > 0:
+            x.max_width = max_width
+            return
+
+        term_width = utils.terminal_width(stdout)
+        if not term_width:
+            # not a tty, so do not set any max widths
+            return
+        field_count = len(x.field_names)
+
+        first_line = x.get_string().splitlines()[0]
+        if len(first_line) <= term_width:
+            return
+
+        usable_total_width, optimal_width = TableFormatter._width_info(
+            term_width, field_count)
+
+        field_widths = TableFormatter._field_widths(x.field_names, first_line)
+
+        shrink_fields, shrink_remaining = TableFormatter._build_shrink_fields(
+            usable_total_width, optimal_width, field_widths, x.field_names)
+
+        shrink_to = shrink_remaining // len(shrink_fields)
+        # make all shrinkable fields size shrink_to apart from the last one
+        for field in shrink_fields[:-1]:
+            x.max_width[field] = max(min_width, shrink_to)
+            shrink_remaining -= shrink_to
+
+        # give the last shrinkable column shrink_to plus any remaining
+        field = shrink_fields[-1]
+        x.max_width[field] = max(min_width, shrink_remaining)
