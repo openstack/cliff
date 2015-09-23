@@ -8,5 +8,5 @@ PrettyTable<0.8,>=0.7
 pyparsing>=2.0.1
 six>=1.9.0
 stevedore>=1.5.0 # Apache-2.0
-unicodecsv>=0.8.0
+unicodecsv>=0.8.0;python_version=='2.7' or python_version=='2.6'
 PyYAML>=3.1.0
