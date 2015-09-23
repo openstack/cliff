@@ -1,7 +1,11 @@
 """Output formatters using csv format.
 """
 
-import unicodecsv as csv
+import sys
+if sys.version_info[0] == 3:
+    import csv
+else:
+    import unicodecsv as csv
 import os
 
 from .base import ListFormatter
