@@ -12,6 +12,7 @@ class TestParser(object):
 
 
 class TestCommand(Command):
+    "Test command."
 
     def get_parser(self, ignore):
         # Make it look like this class is the parser

@@ -94,7 +94,11 @@ def test_show_help_for_help():
     basecommand = os.path.split(sys.argv[0])[1]
     assert 'usage: %s [--version]' % basecommand in help_text
     assert 'optional arguments:\n  --version' in help_text
-    assert 'one            \n  three word command  \n' in help_text
+    expected = (
+        '  one            Test command.\n'
+        '  three word command  Test command.\n'
+    )
+    assert expected in help_text
 
 
 def test_list_deprecated_commands():
