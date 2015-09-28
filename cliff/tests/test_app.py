@@ -13,6 +13,7 @@ from cliff.app import App
 from cliff.command import Command
 from cliff.commandmanager import CommandManager
 from cliff.tests import utils
+from cliff.utils import damerau_levenshtein, COST
 
 
 def make_app(**kwargs):
@@ -448,3 +449,42 @@ def test_list_matching_commands():
     assert "test: 't' is not a test command. See 'test --help'." in output
     assert 'Did you mean one of these?' in output
     assert 'three word command\n  two words\n' in output
+
+
+def test_fuzzy_no_commands():
+    cmd_mgr = CommandManager('cliff.fuzzy')
+    app = App('test', '1.0', cmd_mgr)
+    cmd_mgr.commands = {}
+    matches = app.get_fuzzy_matches('foo')
+    assert matches == []
+
+
+def test_fuzzy_common_prefix():
+    # searched string is a prefix of all commands
+    cmd_mgr = CommandManager('cliff.fuzzy')
+    app = App('test', '1.0', cmd_mgr)
+    cmd_mgr.commands = {}
+    cmd_mgr.add_command('user list', utils.TestCommand)
+    cmd_mgr.add_command('user show', utils.TestCommand)
+    matches = app.get_fuzzy_matches('user')
+    assert matches == ['user list', 'user show']
+
+
+def test_fuzzy_same_distance():
+    # searched string has the same distance to all commands
+    cmd_mgr = CommandManager('cliff.fuzzy')
+    app = App('test', '1.0', cmd_mgr)
+    cmd_mgr.add_command('user', utils.TestCommand)
+    for cmd in cmd_mgr.commands.keys():
+        assert damerau_levenshtein('node', cmd, COST) == 8
+    matches = app.get_fuzzy_matches('node')
+    assert matches == ['complete', 'help', 'user']
+
+
+def test_fuzzy_no_prefix():
+    # search by distance, no common prefix with any command
+    cmd_mgr = CommandManager('cliff.fuzzy')
+    app = App('test', '1.0', cmd_mgr)
+    cmd_mgr.add_command('user', utils.TestCommand)
+    matches = app.get_fuzzy_matches('uesr')
+    assert matches == ['user']

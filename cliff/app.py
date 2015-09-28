@@ -9,7 +9,6 @@ import logging
 import logging.handlers
 import os
 import sys
-import operator
 
 from .complete import CompleteCommand
 from .help import HelpAction, HelpCommand
@@ -314,21 +313,22 @@ class App(object):
             prefix = candidate.split(sep)[0]
             # Give prefix match a very good score
             if candidate.startswith(cmd):
-                dist.append((candidate, 0))
+                dist.append((0, candidate))
                 continue
             # Levenshtein distance
-            dist.append((candidate, damerau_levenshtein(cmd, prefix, COST)+1))
-        dist = sorted(dist, key=operator.itemgetter(1, 0))
+            dist.append((damerau_levenshtein(cmd, prefix, COST)+1, candidate))
+
         matches = []
-        i = 0
-        # Find the best similarity
-        while (not dist[i][1]):
-            matches.append(dist[i][0])
-            i += 1
-        best_similarity = dist[i][1]
-        while (dist[i][1] == best_similarity):
-            matches.append(dist[i][0])
-            i += 1
+        match_distance = 0
+        for distance, candidate in sorted(dist):
+            if distance > match_distance:
+                if match_distance:
+                    # we copied all items with minimum distance, we are done
+                    break
+                # we copied all items with distance=0,
+                # now we match all candidates at the minimum distance
+                match_distance = distance
+            matches.append(candidate)
 
         return matches
 
