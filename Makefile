@@ -14,8 +14,8 @@ sdist: docs
 
 clean:
 	rm -rf dist build *.egg-info
-	(cd docs && make clean)
+	(cd doc && make clean)
 
 .PHONY: docs
 docs:
-	(cd docs && make clean html)
+	(cd doc && make clean html)
