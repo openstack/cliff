@@ -57,8 +57,13 @@ class CompleteShellBase(object):
         self.output.write(self.get_header())
         self.output.write("  cmds='{0}'\n".format(cmdo))
         for datum in data:
+            datum = (datum[0].replace('-', '_'), datum[1])
             self.output.write('  cmds_{0}=\'{1}\'\n'.format(*datum))
         self.output.write(self.get_trailer())
+
+    @property
+    def escaped_name(self):
+        return self.name.replace('-', '_')
 
 
 class CompleteNoCode(CompleteShellBase):
@@ -81,7 +86,7 @@ class CompleteBash(CompleteShellBase):
         super(CompleteBash, self).__init__(name, output)
 
     def get_header(self):
-        return ('_' + self.name + """()
+        return ('_' + self.escaped_name + """()
 {
   local cur prev words
   COMPREPLY=()
@@ -92,6 +97,8 @@ class CompleteBash(CompleteShellBase):
 
     def get_trailer(self):
         return ("""
+  dash=-
+  underscore=_
   cmd=""
   words[0]=""
   completed="${cmds}"
@@ -106,6 +113,7 @@ class CompleteBash(CompleteShellBase):
       proposed="${cmd}_${var}"
     fi
     local i="cmds_${proposed}"
+    i=${i//$dash/$underscore}
     local comp="${!i}"
     if [ -z "${comp}" ] ; then
       break
@@ -127,7 +135,7 @@ class CompleteBash(CompleteShellBase):
   fi
   return 0
 }
-complete -F _""" + self.name + ' ' + self.name + '\n')
+complete -F _""" + self.escaped_name + ' ' + self.name + '\n')
 
 
 class CompleteCommand(command.Command):

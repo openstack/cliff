@@ -128,3 +128,14 @@ def test_complete_command_take_action():
     assert "  cmds='complete help'\n" in content
     assert "  cmds_complete='-h --help --name --shell'\n" in content
     assert "  cmds_help='-h --help'\n" in content
+
+
+def test_complete_command_remove_dashes():
+    sot, app, cmd_mgr = given_complete_command()
+    parsed_args = mock.Mock()
+    parsed_args.name = "test-take"
+    parsed_args.shell = "bash"
+    content = app.stdout.content
+    assert 0 == sot.take_action(parsed_args)
+    assert "_test_take()\n" in content[0]
+    assert "complete -F _test_take test-take\n" in content[-1]
