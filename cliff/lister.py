@@ -1,14 +1,9 @@
 """Application base class for providing a list of data as output.
 """
 import abc
-import logging
-
 import six
 
 from .display import DisplayCommandBase
-
-
-LOG = logging.getLogger(__name__)
 
 
 @six.add_metaclass(abc.ABCMeta)

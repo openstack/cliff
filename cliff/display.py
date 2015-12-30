@@ -11,15 +11,10 @@ except ImportError:
     def compress(data, selectors):
         return (d for d, s in izip(data, selectors) if s)
 
-import logging
-
 import six
 import stevedore
 
 from .command import Command
-
-
-LOG = logging.getLogger(__name__)
 
 
 @six.add_metaclass(abc.ABCMeta)
