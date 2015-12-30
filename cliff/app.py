@@ -1,7 +1,6 @@
 """Application base class.
 """
 
-import codecs
 import inspect
 import locale
 import logging
@@ -14,24 +13,8 @@ from .complete import CompleteCommand
 from .help import HelpAction, HelpCommand
 from .utils import damerau_levenshtein, COST
 
-# Make sure the cliff library has a logging handler
-# in case the app developer doesn't set up logging.
-# For py26 compat, create a NullHandler
 
-if hasattr(logging, 'NullHandler'):
-    NullHandler = logging.NullHandler
-else:
-    class NullHandler(logging.Handler):
-        def handle(self, record):
-            pass
-
-        def emit(self, record):
-            pass
-
-        def createLock(self):
-            self.lock = None
-
-logging.getLogger('cliff').addHandler(NullHandler())
+logging.getLogger('cliff').addHandler(logging.NullHandler())
 
 
 class App(object):
@@ -87,24 +70,9 @@ class App(object):
             locale.setlocale(locale.LC_ALL, '')
         except locale.Error:
             pass
-        if sys.version_info[:2] == (2, 6):
-            # Configure the input and output streams. If a stream is
-            # provided, it must be configured correctly by the
-            # caller. If not, make sure the versions of the standard
-            # streams used by default are wrapped with encodings. This
-            # works around a problem with Python 2.6 fixed in 2.7 and
-            # later (http://hg.python.org/cpython/rev/e60ef17561dc/).
-            lang, encoding = locale.getdefaultlocale()
-            encoding = (getattr(sys.stdout, 'encoding', None) or
-                        encoding or
-                        self.DEFAULT_OUTPUT_ENCODING)
-            self.stdin = stdin or codecs.getreader(encoding)(sys.stdin)
-            self.stdout = stdout or codecs.getwriter(encoding)(sys.stdout)
-            self.stderr = stderr or codecs.getwriter(encoding)(sys.stderr)
-        else:
-            self.stdin = stdin or sys.stdin
-            self.stdout = stdout or sys.stdout
-            self.stderr = stderr or sys.stderr
+        self.stdin = stdin or sys.stdin
+        self.stdout = stdout or sys.stdout
+        self.stderr = stderr or sys.stderr
 
     def build_option_parser(self, description, version,
                             argparse_kwargs=None):
