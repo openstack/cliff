@@ -1,9 +1,10 @@
 
 import abc
-import argparse
 import inspect
 
 import six
+
+from cliff import argparse
 
 
 @six.add_metaclass(abc.ABCMeta)

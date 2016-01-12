@@ -1,7 +1,6 @@
 """Application base class.
 """
 
-import argparse
 import codecs
 import inspect
 import locale
@@ -10,6 +9,7 @@ import logging.handlers
 import os
 import sys
 
+from cliff import argparse
 from .complete import CompleteCommand
 from .help import HelpAction, HelpCommand
 from .utils import damerau_levenshtein, COST

@@ -239,6 +239,42 @@ def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
     MyApp()
 
 
+def test_option_parser_abbrev_issue():
+    class MyCommand(Command):
+        def get_parser(self, prog_name):
+            parser = super(MyCommand, self).get_parser(prog_name)
+            parser.add_argument("--end")
+            return parser
+
+        def take_action(self, parsed_args):
+            assert(parsed_args.end == '123')
+
+    class MyCommandManager(CommandManager):
+        def load_commands(self, namespace):
+            self.add_command("mycommand", MyCommand)
+
+    class MyApp(App):
+        def __init__(self):
+            super(MyApp, self).__init__(
+                description='testing',
+                version='0.1',
+                command_manager=MyCommandManager(None),
+            )
+
+        def build_option_parser(self, description, version):
+            parser = super(MyApp, self).build_option_parser(
+                description,
+                version,
+                argparse_kwargs={'allow_abbrev': False})
+            parser.add_argument('--endpoint')
+            return parser
+
+    app = MyApp()
+    # NOTE(jd) --debug is necessary so assert in take_action() raises correctly
+    # here
+    app.run(['--debug', 'mycommand', '--end', '123'])
+
+
 def test_output_encoding_default():
     # The encoding should come from getdefaultlocale() because
     # stdout has no encoding set.
