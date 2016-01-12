@@ -34,6 +34,7 @@ class Command(object):
         parser = argparse.ArgumentParser(
             description=self.get_description(),
             prog=prog_name,
+            allow_abbrev=False,
         )
         return parser
 

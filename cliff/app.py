@@ -122,6 +122,7 @@ class App(object):
         parser = argparse.ArgumentParser(
             description=description,
             add_help=False,
+            allow_abbrev=False,
             **argparse_kwargs
         )
         parser.add_argument(
