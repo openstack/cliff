@@ -73,10 +73,10 @@ def damerau_levenshtein(s1, s2, cost):
             del_cost = row1[j + 1] + cost['d']
 
             # swap
-            swp_condition = ((i > 0)
-                             and (j > 0)
-                             and (s1[i - 1] == s2[j])
-                             and (s1[i] == s2[j - 1])
+            swp_condition = ((i > 0) and
+                             (j > 0) and
+                             (s1[i - 1] == s2[j]) and
+                             (s1[i] == s2[j - 1])
                              )
 
             # min cost
