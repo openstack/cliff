@@ -52,6 +52,9 @@ class App(object):
     :param interactive_app_factory: callable to create an
                                     interactive application
     :paramtype interactive_app_factory: cliff.interactive.InteractiveApp
+    :param deferred_help: True - Allow subcommands to accept --help with
+                          allowing to defer help print after initialize_app
+    :paramtype deferred_help: bool
     """
 
     NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
