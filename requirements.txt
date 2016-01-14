@@ -2,7 +2,6 @@
 # of appearance. Changing the order has an impact on the overall integration
 # process, which may cause wedges in the gate later.
 pbr>=1.6
-argparse
 cmd2>=0.6.7
 PrettyTable<0.8,>=0.7
 pyparsing>=2.0.1
