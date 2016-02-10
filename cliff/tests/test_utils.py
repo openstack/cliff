@@ -31,7 +31,7 @@ def test_utils_terminal_width_get_terminal_size(mock_os):
     assert width is None
 
 
-@mock.patch('cliff.utils.ioctl')
+@mock.patch('fcntl.ioctl')
 def test_utils_terminal_width_ioctl(mock_ioctl):
     if hasattr(os, 'get_terminal_size'):
         raise nose.SkipTest('only needed for python 3.2 and before')
@@ -41,4 +41,27 @@ def test_utils_terminal_width_ioctl(mock_ioctl):
 
     mock_ioctl.side_effect = IOError()
     width = utils.terminal_width(sys.stdout)
+    assert width is None
+
+
+@mock.patch('cliff.utils.ctypes')
+@mock.patch('sys.platform', 'win32')
+def test_utils_terminal_width_windows(mock_ctypes):
+    if hasattr(os, 'get_terminal_size'):
+        raise nose.SkipTest('only needed for python 3.2 and before')
+
+    mock_ctypes.create_string_buffer.return_value.raw = struct.pack(
+        'hhhhHhhhhhh', 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    mock_ctypes.windll.kernel32.GetStdHandle.return_value = -11
+    mock_ctypes.windll.kernel32.GetConsoleScreenBufferInfo.return_value = 1
+
+    width = utils.terminal_width(sys.stdout)
+    assert width == 101
+
+    mock_ctypes.windll.kernel32.GetConsoleScreenBufferInfo.return_value = 0
+
+    width = utils.terminal_width(sys.stdout)
+    assert width is None
+
+    width = utils.terminal_width('foo')
     assert width is None

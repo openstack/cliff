@@ -11,10 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from fcntl import ioctl
+import ctypes
 import os
 import struct
-import termios
+import sys
 
 # Each edit operation is assigned different cost, such as:
 #  'w' means swap operation, the cost is 0;
@@ -100,6 +100,41 @@ def terminal_width(stdout):
             return os.get_terminal_size().columns
         except OSError:
             return None
+
+    if sys.platform == 'win32':
+        return _get_terminal_width_windows(stdout)
+    else:
+        return _get_terminal_width_ioctl(stdout)
+
+
+def _get_terminal_width_windows(stdout):
+    STD_INPUT_HANDLE = -10
+    STD_OUTPUT_HANDLE = -11
+    STD_ERROR_HANDLE = -12
+
+    std_to_win_handle = {
+        sys.stdin: STD_INPUT_HANDLE,
+        sys.stdout: STD_OUTPUT_HANDLE,
+        sys.stderr: STD_ERROR_HANDLE}
+
+    std_handle = std_to_win_handle.get(stdout)
+    if not std_handle:
+        return None
+
+    handle = ctypes.windll.kernel32.GetStdHandle(std_handle)
+    csbi = ctypes.create_string_buffer(22)
+
+    res = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(handle, csbi)
+    if res:
+        (size_x, size_y, cur_pos_x, cur_pos_y, attr,
+         left, top, right, bottom, max_size_x, max_size_y) = struct.unpack(
+            "hhhhHhhhhhh", csbi.raw)
+        return size_x
+
+
+def _get_terminal_width_ioctl(stdout):
+    from fcntl import ioctl
+    import termios
 
     try:
         # winsize structure has 4 unsigned short fields
