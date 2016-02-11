@@ -145,8 +145,11 @@ class TableFormatter(ListFormatter, SingleFormatter):
             return
         field_count = len(x.field_names)
 
-        first_line = x.get_string().splitlines()[0]
-        if len(first_line) <= term_width:
+        try:
+            first_line = x.get_string().splitlines()[0]
+            if len(first_line) <= term_width:
+                return
+        except IndexError:
             return
 
         usable_total_width, optimal_width = TableFormatter._width_info(
