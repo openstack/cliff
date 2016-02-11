@@ -264,7 +264,8 @@ def test_option_parser_abbrev_issue():
         def build_option_parser(self, description, version):
             parser = super(MyApp, self).build_option_parser(
                 description,
-                version)
+                version,
+                argparse_kwargs={'allow_abbrev': False})
             parser.add_argument('--endpoint')
             return parser
 
