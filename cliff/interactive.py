@@ -2,14 +2,10 @@
 """
 
 import itertools
-import logging
-import logging.handlers
 import shlex
 import sys
 
 import cmd2
-
-LOG = logging.getLogger(__name__)
 
 
 class InteractiveApp(cmd2.Cmd):
