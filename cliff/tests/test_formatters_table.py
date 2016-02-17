@@ -227,6 +227,20 @@ def test_table_list_formatter_max_width(tw):
     assert len(actual.splitlines()[0]) == expected_width
 
 
+@mock.patch('cliff.utils.terminal_width')
+def test_table_list_formatter_empty(tw):
+    tw.return_value = 80
+    sf = table.TableFormatter()
+    c = ('a', 'b', 'c')
+    data = []
+    expected = '\n'
+    output = StringIO()
+    parsed_args = args()
+    sf.emit_list(c, data, output, parsed_args)
+    actual = output.getvalue()
+    assert expected == actual
+
+
 def test_field_widths():
     tf = table.TableFormatter
     assert {
