@@ -26,27 +26,17 @@ class Lister(DisplayCommandBase):
         """
 
     def produce_output(self, parsed_args, column_names, data):
-        if not parsed_args.columns:
-            columns_to_include = column_names
-            data_gen = data
-        else:
-            columns_to_include = [c for c in column_names
-                                  if c in parsed_args.columns
-                                  ]
-            if not columns_to_include:
-                raise ValueError('No recognized column names in %s' %
-                                 str(parsed_args.columns))
-            # Set up argument to compress()
-            selector = [(c in columns_to_include)
-                        for c in column_names]
+        (columns_to_include, selector) = self._generate_columns_and_selector(
+            parsed_args, column_names)
+        if selector:
             # Generator expression to only return the parts of a row
             # of data that the user has expressed interest in
             # seeing. We have to convert the compress() output to a
             # list so the table formatter can ask for its length.
-            data_gen = (list(self._compress_iterable(row, selector))
-                        for row in data)
+            data = (list(self._compress_iterable(row, selector))
+                    for row in data)
         self.formatter.emit_list(columns_to_include,
-                                 data_gen,
+                                 data,
                                  self.app.stdout,
                                  parsed_args,
                                  )

@@ -74,6 +74,27 @@ class DisplayCommandBase(Command):
         :param data: iterable with values matching the column names
         """
 
+    def _generate_columns_and_selector(self, parsed_args, column_names):
+        """Generate included columns and selector according to parsed args.
+
+        :param parsed_args: argparse.Namespace instance with argument values
+        :param column_names: sequence of strings containing names
+                             of output columns
+        """
+        if not parsed_args.columns:
+            columns_to_include = column_names
+            selector = None
+        else:
+            columns_to_include = [c for c in column_names
+                                  if c in parsed_args.columns]
+            if not columns_to_include:
+                raise ValueError('No recognized column names in %s' %
+                                 str(parsed_args.columns))
+            # Set up argument to compress()
+            selector = [(c in columns_to_include)
+                        for c in column_names]
+        return columns_to_include, selector
+
     def run(self, parsed_args):
         self.formatter = self._formatter_plugins[parsed_args.formatter].obj
         column_names, data = self.take_action(parsed_args)
