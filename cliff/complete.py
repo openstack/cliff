@@ -21,9 +21,21 @@ class CompleteDictionary:
         optstr = ' '.join(opt for action in actions
                           for opt in action.option_strings)
         dicto = self._dictionary
+        last_cmd = command[-1]
         for subcmd in command[:-1]:
-            dicto = dicto.setdefault(subcmd, {})
-        dicto[command[-1]] = optstr
+            subdata = dicto.get(subcmd)
+            # If there is a string in corresponding dictionary, it means the
+            # verb used for the command exists already.
+            # For example, {'cmd': 'action'}, and we add the command
+            # 'cmd_other'. We want the result to be
+            # {'cmd': 'action other', 'cmd_other': 'sub_action'}
+            if isinstance(subdata, six.string_types):
+                subdata += ' ' + last_cmd
+                dicto[subcmd] = subdata
+                last_cmd = subcmd + '_' + last_cmd
+            else:
+                dicto = dicto.setdefault(subcmd, {})
+        dicto[last_cmd] = optstr
 
     def get_commands(self):
         return ' '.join(k for k in sorted(self._dictionary.keys()))
