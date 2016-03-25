@@ -40,6 +40,8 @@ class Command(object):
     @abc.abstractmethod
     def take_action(self, parsed_args):
         """Override to do something useful.
+
+        The returned value will be returned by the program.
         """
 
     def run(self, parsed_args):
@@ -51,6 +53,7 @@ class Command(object):
         Developers creating new command base classes (such as
         :class:`Lister` and :class:`ShowOne`) should override this
         method to wrap :meth:`take_action`.
+
+        Return the value returned by :method:`take_action` or 0.
         """
-        self.take_action(parsed_args)
-        return 0
+        return self.take_action(parsed_args) or 0

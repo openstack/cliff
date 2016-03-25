@@ -7,7 +7,7 @@ class TestCommand(Command):
     """
 
     def take_action(self, parsed_args):
-        return
+        return 42
 
 
 def test_get_description():
@@ -25,3 +25,8 @@ def test_get_parser():
 def test_get_name():
     cmd = TestCommand(None, None, cmd_name='object action')
     assert cmd.cmd_name == 'object action'
+
+
+def test_run_return():
+    cmd = TestCommand(None, None, cmd_name='object action')
+    assert cmd.run(None) == 42
