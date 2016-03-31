@@ -28,7 +28,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
             metavar='<integer>',
             default=int(os.environ.get('CLIFF_MAX_TERM_WIDTH', 0)),
             type=int,
-            help=('Maximum display width, 0 to disable. You can also '
+            help=('Maximum display width, <1 to disable. You can also '
                   'use the CLIFF_MAX_TERM_WIDTH environment variable, '
                   'but the parameter takes precedence.'),
         )
