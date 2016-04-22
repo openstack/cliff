@@ -231,7 +231,7 @@ def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
             parser.add_argument(
                 '-h', '--help',
                 default=self,  # tricky
-                help="Show this help message and exit.",
+                help="Show help message and exit.",
             )
 
     MyApp()

@@ -134,7 +134,7 @@ class App(object):
                 action=HelpAction,
                 nargs=0,
                 default=self,  # tricky
-                help="Show this help message and exit.",
+                help="Show help message and exit.",
             )
         parser.add_argument(
             '--debug',
