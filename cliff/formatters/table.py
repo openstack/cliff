@@ -136,13 +136,12 @@ class TableFormatter(ListFormatter, SingleFormatter):
             x.min_width = min_width
 
         if max_width > 0:
-            x.max_width = max_width
-            return
-
-        term_width = utils.terminal_width(stdout)
-        if not term_width:
-            # not a tty, so do not set any max widths
-            return
+            term_width = max_width
+        else:
+            term_width = utils.terminal_width(stdout)
+            if not term_width:
+                # not a tty, so do not set any max widths
+                return
         field_count = len(x.field_names)
 
         try:
