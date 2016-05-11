@@ -207,57 +207,49 @@ def test_table_list_formatter(tw):
     assert expected == _table_tester_helper(c, data)
 
 
-@mock.patch('cliff.utils.terminal_width')
-def test_table_list_formatter_max_width(tw):
-    tw.return_value = 80
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
+_col_names = ('one', 'two', 'three')
+_col_data = [(
+    'one one one one one',
+    'two two two two',
+    'three three')]
 
-    # no resize
-    expected = '''\
+_expected_mv = {
+    80: '''\
 +---------------------+-----------------+-------------+
 | one                 | two             | three       |
 +---------------------+-----------------+-------------+
 | one one one one one | two two two two | three three |
 +---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+''',
 
-    # resize 1 column
-    tw.return_value = 50
-    expected = '''\
+    50: '''\
 +----------------+-----------------+-------------+
 | one            | two             | three       |
 +----------------+-----------------+-------------+
 | one one one    | two two two two | three three |
 | one one        |                 |             |
 +----------------+-----------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
-    assert len(actual.splitlines()[0]) == 50
+''',
 
-    # resize 2 columns
-    tw.return_value = 45
-    expected = '''\
+    47: '''\
++---------------+---------------+-------------+
+| one           | two           | three       |
++---------------+---------------+-------------+
+| one one one   | two two two   | three three |
+| one one       | two           |             |
++---------------+---------------+-------------+
+''',
+
+    45: '''\
 +--------------+--------------+-------------+
 | one          | two          | three       |
 +--------------+--------------+-------------+
 | one one one  | two two two  | three three |
 | one one      | two          |             |
 +--------------+--------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
-    assert len(actual.splitlines()[0]) == 45
+''',
 
-    # resize all columns
-    tw.return_value = 40
-    expected = '''\
+    40: '''\
 +------------+------------+------------+
 | one        | two        | three      |
 +------------+------------+------------+
@@ -265,14 +257,9 @@ def test_table_list_formatter_max_width(tw):
 | one one    | two two    | three      |
 | one        |            |            |
 +------------+------------+------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
-    assert len(actual.splitlines()[0]) == 40
+''',
 
-    # resize all columns limited by min_width=8
-    tw.return_value = 10
-    expected = '''\
+    10: '''\
 +----------+----------+----------+
 | one      | two      | three    |
 +----------+----------+----------+
@@ -280,9 +267,38 @@ def test_table_list_formatter_max_width(tw):
 | one one  | two two  | three    |
 | one      |          |          |
 +----------+----------+----------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+''',
+}
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_list_formatter_max_width(tw):
+    # no resize
+    l = tw.return_value = 80
+    assert _expected_mv[l] == _table_tester_helper(_col_names, _col_data)
+
+    # resize 1 column
+    l = tw.return_value = 50
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[l] == actual
+    assert len(actual.splitlines()[0]) == l
+
+    # resize 2 columns
+    l = tw.return_value = 45
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[l] == actual
+    assert len(actual.splitlines()[0]) == l
+
+    # resize all columns
+    l = tw.return_value = 40
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[l] == actual
+    assert len(actual.splitlines()[0]) == l
+
+    # resize all columns limited by min_width=8
+    l = tw.return_value = 10
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[l] == actual
     # 3 columns each 8 wide, plus table spacing and borders
     expected_width = 11 * 3 + 1
     assert len(actual.splitlines()[0]) == expected_width
@@ -292,260 +308,95 @@ def test_table_list_formatter_max_width(tw):
 @mock.patch('cliff.utils.terminal_width')
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '666'})
 def test_table_list_formatter_max_width_and_envvar_max(tw):
-    tw.return_value = 80
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # no resize
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    tw.return_value = 80
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data)
 
     # resize 1 column
     tw.return_value = 50
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data)
 
     # resize 2 columns
     tw.return_value = 45
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data)
 
     # resize all columns
     tw.return_value = 40
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data)
 
     # resize all columns limited by min_width=8
     tw.return_value = 10
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data)
 
 
 # Force a narrow terminal by overriding its width with envvar
 @mock.patch('cliff.utils.terminal_width')
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '47'})
 def test_table_list_formatter_max_width_and_envvar_mid(tw):
-    tw.return_value = 80
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # no resize
-    expected = '''\
-+---------------+---------------+-------------+
-| one           | two           | three       |
-+---------------+---------------+-------------+
-| one one one   | two two two   | three three |
-| one one       | two           |             |
-+---------------+---------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    tw.return_value = 80
+    assert _expected_mv[47] == _table_tester_helper(_col_names, _col_data)
 
     # resize 1 column
     tw.return_value = 50
-    expected = '''\
-+---------------+---------------+-------------+
-| one           | two           | three       |
-+---------------+---------------+-------------+
-| one one one   | two two two   | three three |
-| one one       | two           |             |
-+---------------+---------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[47] == actual
     assert len(actual.splitlines()[0]) == 47
 
     # resize 2 columns
     tw.return_value = 45
-    expected = '''\
-+---------------+---------------+-------------+
-| one           | two           | three       |
-+---------------+---------------+-------------+
-| one one one   | two two two   | three three |
-| one one       | two           |             |
-+---------------+---------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[47] == actual
     assert len(actual.splitlines()[0]) == 47
 
     # resize all columns
     tw.return_value = 40
-    expected = '''\
-+---------------+---------------+-------------+
-| one           | two           | three       |
-+---------------+---------------+-------------+
-| one one one   | two two two   | three three |
-| one one       | two           |             |
-+---------------+---------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[47] == actual
     assert len(actual.splitlines()[0]) == 47
 
     # resize all columns limited by min_width=8
     tw.return_value = 10
-    expected = '''\
-+---------------+---------------+-------------+
-| one           | two           | three       |
-+---------------+---------------+-------------+
-| one one one   | two two two   | three three |
-| one one       | two           |             |
-+---------------+---------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[47] == actual
     assert len(actual.splitlines()[0]) == 47
 
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '80'})
 def test_table_list_formatter_env_maxwidth_noresize():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # no resize
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data)
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data)
 
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '50'})
 def test_table_list_formatter_env_maxwidth_resize_one():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # resize 1 column
-    expected = '''\
-+----------------+-----------------+-------------+
-| one            | two             | three       |
-+----------------+-----------------+-------------+
-| one one one    | two two two two | three three |
-| one one        |                 |             |
-+----------------+-----------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[50] == actual
     assert len(actual.splitlines()[0]) == 50
 
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '45'})
 def test_table_list_formatter_env_maxwidth_resize_two():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # resize 2 columns
-    expected = '''\
-+--------------+--------------+-------------+
-| one          | two          | three       |
-+--------------+--------------+-------------+
-| one one one  | two two two  | three three |
-| one one      | two          |             |
-+--------------+--------------+-------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[45] == actual
     assert len(actual.splitlines()[0]) == 45
 
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '40'})
 def test_table_list_formatter_env_maxwidth_resize_all():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # resize all columns
-    expected = '''\
-+------------+------------+------------+
-| one        | two        | three      |
-+------------+------------+------------+
-| one one    | two two    | three      |
-| one one    | two two    | three      |
-| one        |            |            |
-+------------+------------+------------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[40] == actual
     assert len(actual.splitlines()[0]) == 40
 
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '8'})
 def test_table_list_formatter_env_maxwidth_resize_all_tiny():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
     # resize all columns limited by min_width=8
-    expected = '''\
-+----------+----------+----------+
-| one      | two      | three    |
-+----------+----------+----------+
-| one one  | two two  | three    |
-| one one  | two two  | three    |
-| one      |          |          |
-+----------+----------+----------+
-'''
-    actual = _table_tester_helper(c, data)
-    assert expected == actual
+    actual = _table_tester_helper(_col_names, _col_data)
+    assert _expected_mv[10] == actual
     # 3 columns each 8 wide, plus table spacing and borders
     expected_width = 11 * 3 + 1
     assert len(actual.splitlines()[0]) == expected_width
@@ -553,42 +404,14 @@ def test_table_list_formatter_env_maxwidth_resize_all_tiny():
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '42'})
 def test_table_list_formatter_env_maxwidth_args_big():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
-    expected = '''\
-+---------------------+-----------------+-------------+
-| one                 | two             | three       |
-+---------------------+-----------------+-------------+
-| one one one one one | two two two two | three three |
-+---------------------+-----------------+-------------+
-'''
-    assert expected == _table_tester_helper(c, data, extra_args=args(666))
+    assert _expected_mv[80] == _table_tester_helper(_col_names, _col_data,
+                                                    extra_args=args(666))
 
 
 @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '42'})
 def test_table_list_formatter_env_maxwidth_args_tiny():
-    c = ('one', 'two', 'three')
-    d1 = (
-        'one one one one one',
-        'two two two two',
-        'three three')
-    data = [d1]
-
-    expected = '''\
-+------------+------------+------------+
-| one        | two        | three      |
-+------------+------------+------------+
-| one one    | two two    | three      |
-| one one    | two two    | three      |
-| one        |            |            |
-+------------+------------+------------+
-'''
-    assert expected == _table_tester_helper(c, data, extra_args=args(40))
+    assert _expected_mv[40] == _table_tester_helper(_col_names, _col_data,
+                                                    extra_args=args(40))
 
 
 @mock.patch('cliff.utils.terminal_width')
