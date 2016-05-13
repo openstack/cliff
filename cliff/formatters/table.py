@@ -3,6 +3,7 @@
 
 import prettytable
 import six
+import os
 
 from cliff import utils
 from .base import ListFormatter, SingleFormatter
@@ -25,9 +26,11 @@ class TableFormatter(ListFormatter, SingleFormatter):
         group.add_argument(
             '--max-width',
             metavar='<integer>',
-            default=0,
+            default=int(os.environ.get('CLIFF_MAX_TERM_WIDTH', 0)),
             type=int,
-            help='Maximum display width, 0 to disable',
+            help=('Maximum display width, 0 to disable. You can also '
+                  'use the CLIFF_MAX_TERM_WIDTH environment variable, '
+                  'but the parameter takes precedence.'),
         )
 
     def emit_list(self, column_names, data, stdout, parsed_args):
