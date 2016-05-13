@@ -66,6 +66,7 @@ def test_table_formatter(tw):
     assert expected == _table_tester_helper(c, d)
 
 
+# Multi-line output when width is restricted to 42 columns
 expected_ml_val = '''\
 +-------+--------------------------------+
 | Field | Value                          |
@@ -79,10 +80,61 @@ expected_ml_val = '''\
 +-------+--------------------------------+
 '''
 
+# Multi-line output when width is restricted to 80 columns
+expected_ml_80_val = '''\
++-------+----------------------------------------------------------------------+
+| Field | Value                                                                |
++-------+----------------------------------------------------------------------+
+| a     | A                                                                    |
+| b     | B                                                                    |
+| c     | C                                                                    |
+| d     | dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd |
+|       | ddddddddd                                                            |
++-------+----------------------------------------------------------------------+
+'''  # noqa
+
+# Single-line output, for when no line length restriction apply
+expected_sl_val = '''\
++-------+-------------------------------------------------------------------------------+
+| Field | Value                                                                         |
++-------+-------------------------------------------------------------------------------+
+| a     | A                                                                             |
+| b     | B                                                                             |
+| c     | C                                                                             |
+| d     | ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd |
++-------+-------------------------------------------------------------------------------+
+'''  # noqa
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_formatter_no_cli_param(tw):
+    tw.return_value = 80
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', 'd' * 77)
+    assert expected_ml_80_val == _table_tester_helper(c, d, extra_args=args())
+
 
 @mock.patch('cliff.utils.terminal_width')
 def test_table_formatter_cli_param(tw):
     tw.return_value = 80
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', 'd' * 77)
+    assert (expected_ml_val ==
+            _table_tester_helper(c, d, extra_args=['--max-width', '42']))
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_formatter_no_cli_param_unlimited_tw(tw):
+    tw.return_value = 0
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', 'd' * 77)
+    # output should not be wrapped to multiple lines
+    assert expected_sl_val == _table_tester_helper(c, d, extra_args=args())
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_formatter_cli_param_unlimited_tw(tw):
+    tw.return_value = 0
     c = ('a', 'b', 'c', 'd')
     d = ('A', 'B', 'C', 'd' * 77)
     assert (expected_ml_val ==
