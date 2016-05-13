@@ -27,14 +27,9 @@ class ShowOne(DisplayCommandBase):
         """
 
     def produce_output(self, parsed_args, column_names, data):
-        if not parsed_args.columns:
-            columns_to_include = column_names
-        else:
-            columns_to_include = [c for c in column_names
-                                  if c in parsed_args.columns]
-            # Set up argument to compress()
-            selector = [(c in columns_to_include)
-                        for c in column_names]
+        (columns_to_include, selector) = self._generate_columns_and_selector(
+            parsed_args, column_names)
+        if selector:
             data = list(self._compress_iterable(data, selector))
         self.formatter.emit_one(columns_to_include,
                                 data,

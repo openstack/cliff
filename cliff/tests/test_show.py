@@ -23,7 +23,6 @@ class ExerciseShowOne(ShowOne):
         return {
             'test': FauxFormatter(),
         }
-        return
 
     def take_action(self, parsed_args):
         return (
@@ -56,3 +55,18 @@ def test_dict2columns():
     expected = [('a', 'b', 'c'), ('A', 'B', 'C')]
     actual = list(test_show.dict2columns(d))
     assert expected == actual
+
+
+def test_no_exist_column():
+    test_show = ExerciseShowOne(mock.Mock(), [])
+    parsed_args = mock.Mock()
+    parsed_args.columns = ('no_exist_column',)
+    parsed_args.formatter = 'test'
+    with mock.patch.object(test_show, 'take_action') as mock_take_action:
+        mock_take_action.return_value = (('Col1', 'Col2', 'Col3'), [])
+        try:
+            test_show.run(parsed_args)
+        except ValueError:
+            pass
+        else:
+            assert False, 'Should have had an exception'

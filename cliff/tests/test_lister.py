@@ -23,7 +23,6 @@ class ExerciseLister(Lister):
         return {
             'test': FauxFormatter(),
         }
-        return
 
     def take_action(self, parsed_args):
         return (
@@ -47,3 +46,18 @@ def test_formatter_args():
     assert args[0] == list(parsed_args.columns)
     data = list(args[1])
     assert data == [['a', 'A'], ['b', 'B']]
+
+
+def test_no_exist_column():
+    test_lister = ExerciseLister(mock.Mock(), [])
+    parsed_args = mock.Mock()
+    parsed_args.columns = ('no_exist_column',)
+    parsed_args.formatter = 'test'
+    with mock.patch.object(test_lister, 'take_action') as mock_take_action:
+        mock_take_action.return_value = (('Col1', 'Col2', 'Col3'), [])
+        try:
+            test_lister.run(parsed_args)
+        except ValueError:
+            pass
+        else:
+            assert False, 'Should have had an exception'
