@@ -3,6 +3,7 @@
 import mock
 from six import StringIO
 import os
+import argparse
 
 from cliff.formatters import table
 
@@ -44,7 +45,6 @@ def test_table_formatter(tw):
 def test_table_formatter_cli_param(tw):
     tw.return_value = 80
     sf = table.TableFormatter()
-    import argparse
 
     parser = argparse.ArgumentParser(description='Testing...')
     sf.add_argument_group(parser)
@@ -74,7 +74,6 @@ def test_table_formatter_cli_param(tw):
 def test_table_formatter_cli_param_envvar_big(tw):
     tw.return_value = 80
     sf = table.TableFormatter()
-    import argparse
 
     parser = argparse.ArgumentParser(description='Testing...')
     sf.add_argument_group(parser)
@@ -104,7 +103,6 @@ def test_table_formatter_cli_param_envvar_big(tw):
 def test_table_formatter_cli_param_envvar_tiny(tw):
     tw.return_value = 80
     sf = table.TableFormatter()
-    import argparse
 
     parser = argparse.ArgumentParser(description='Testing...')
     sf.add_argument_group(parser)
