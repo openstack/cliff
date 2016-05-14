@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import mock
 
+import mock
+import argparse
 import six
 
 from cliff.formatters import commaseparated
@@ -17,6 +18,23 @@ def test_commaseparated_list_formatter():
     output = six.StringIO()
     parsed_args = mock.Mock()
     parsed_args.quote_mode = 'none'
+    sf.emit_list(c, data, output, parsed_args)
+    actual = output.getvalue()
+    assert expected == actual
+
+
+def test_commaseparated_list_formatter_quoted():
+    sf = commaseparated.CSVLister()
+    c = ('a', 'b', 'c')
+    d1 = ('A', 'B', 'C')
+    d2 = ('D', 'E', 'F')
+    data = [d1, d2]
+    expected = '"a","b","c"\n"A","B","C"\n"D","E","F"\n'
+    output = six.StringIO()
+    # Parse arguments as if passed on the command-line
+    parser = argparse.ArgumentParser(description='Testing...')
+    sf.add_argument_group(parser)
+    parsed_args = parser.parse_args(['--quote', 'all'])
     sf.emit_list(c, data, output, parsed_args)
     actual = output.getvalue()
     assert expected == actual
