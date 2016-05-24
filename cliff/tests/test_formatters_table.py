@@ -66,12 +66,7 @@ def test_table_formatter(tw):
     assert expected == _table_tester_helper(c, d)
 
 
-@mock.patch('cliff.utils.terminal_width')
-def test_table_formatter_cli_param(tw):
-    tw.return_value = 80
-    c = ('a', 'b', 'c', 'd')
-    d = ('A', 'B', 'C', 'd' * 77)
-    expected = '''\
+expected_ml_val = '''\
 +-------+--------------------------------+
 | Field | Value                          |
 +-------+--------------------------------+
@@ -83,8 +78,15 @@ def test_table_formatter_cli_param(tw):
 |       | ddddddddddddddddd              |
 +-------+--------------------------------+
 '''
-    assert expected == _table_tester_helper(c, d,
-                                            extra_args=['--max-width', '42'])
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_formatter_cli_param(tw):
+    tw.return_value = 80
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', 'd' * 77)
+    assert (expected_ml_val ==
+            _table_tester_helper(c, d, extra_args=['--max-width', '42']))
 
 
 @mock.patch('cliff.utils.terminal_width')
@@ -93,20 +95,8 @@ def test_table_formatter_cli_param_envvar_big(tw):
     tw.return_value = 80
     c = ('a', 'b', 'c', 'd')
     d = ('A', 'B', 'C', 'd' * 77)
-    expected = '''\
-+-------+--------------------------------+
-| Field | Value                          |
-+-------+--------------------------------+
-| a     | A                              |
-| b     | B                              |
-| c     | C                              |
-| d     | dddddddddddddddddddddddddddddd |
-|       | dddddddddddddddddddddddddddddd |
-|       | ddddddddddddddddd              |
-+-------+--------------------------------+
-'''
-    assert expected == _table_tester_helper(c, d,
-                                            extra_args=['--max-width', '42'])
+    assert (expected_ml_val ==
+            _table_tester_helper(c, d, extra_args=['--max-width', '42']))
 
 
 @mock.patch('cliff.utils.terminal_width')
@@ -115,20 +105,8 @@ def test_table_formatter_cli_param_envvar_tiny(tw):
     tw.return_value = 80
     c = ('a', 'b', 'c', 'd')
     d = ('A', 'B', 'C', 'd' * 77)
-    expected = '''\
-+-------+--------------------------------+
-| Field | Value                          |
-+-------+--------------------------------+
-| a     | A                              |
-| b     | B                              |
-| c     | C                              |
-| d     | dddddddddddddddddddddddddddddd |
-|       | dddddddddddddddddddddddddddddd |
-|       | ddddddddddddddddd              |
-+-------+--------------------------------+
-'''
-    assert expected == _table_tester_helper(c, d,
-                                            extra_args=['--max-width', '42'])
+    assert (expected_ml_val ==
+            _table_tester_helper(c, d, extra_args=['--max-width', '42']))
 
 
 @mock.patch('cliff.utils.terminal_width')
