@@ -8,6 +8,7 @@ import sys
 import mock
 
 from cliff.app import App
+from cliff.commandmanager import EntryPointWrapper
 from cliff.help import HelpCommand
 from cliff.tests import utils
 
@@ -83,6 +84,7 @@ def test_show_help_for_help():
               utils.TestCommandManager(utils.TEST_NAMESPACE),
               stdout=stdout)
     app.NAME = 'test'
+    app.options = mock.Mock()
     help_cmd = HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args([])
@@ -118,3 +120,49 @@ def test_list_deprecated_commands():
     assert 'two words' in help_output
     assert 'three word command' in help_output
     assert 'old cmd' not in help_output
+
+
+@mock.patch.object(EntryPointWrapper, 'load',
+                   side_effect=Exception('Could not load EntryPoint'))
+def test_show_help_with_ep_load_fail(mock_load):
+    stdout = StringIO()
+    app = App('testing', '1',
+              utils.TestCommandManager(utils.TEST_NAMESPACE),
+              stdout=stdout)
+    app.NAME = 'test'
+    app.options = mock.Mock()
+    app.options.debug = False
+    help_cmd = HelpCommand(app, mock.Mock())
+    parser = help_cmd.get_parser('test')
+    parsed_args = parser.parse_args([])
+    try:
+        help_cmd.run(parsed_args)
+    except SystemExit:
+        pass
+    help_output = stdout.getvalue()
+    assert 'Commands:' in help_output
+    assert 'Could not load' in help_output
+    assert 'Exception: Could not load EntryPoint' not in help_output
+
+
+@mock.patch.object(EntryPointWrapper, 'load',
+                   side_effect=Exception('Could not load EntryPoint'))
+def test_show_help_print_exc_with_ep_load_fail(mock_load):
+    stdout = StringIO()
+    app = App('testing', '1',
+              utils.TestCommandManager(utils.TEST_NAMESPACE),
+              stdout=stdout)
+    app.NAME = 'test'
+    app.options = mock.Mock()
+    app.options.debug = True
+    help_cmd = HelpCommand(app, mock.Mock())
+    parser = help_cmd.get_parser('test')
+    parsed_args = parser.parse_args([])
+    try:
+        help_cmd.run(parsed_args)
+    except SystemExit:
+        pass
+    help_output = stdout.getvalue()
+    assert 'Commands:' in help_output
+    assert 'Could not load' in help_output
+    assert 'Exception: Could not load EntryPoint' in help_output
