@@ -3,6 +3,7 @@ from six import StringIO
 import json
 
 from cliff.formatters import json_format
+from cliff.tests import test_columns
 
 import mock
 
@@ -38,6 +39,29 @@ def test_json_format_one():
     assert expected == actual
 
 
+def test_json_format_formattablecolumn_one():
+    sf = json_format.JSONFormatter()
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', test_columns.FauxColumn(['the', 'value']))
+    expected = {
+        'a': 'A',
+        'b': 'B',
+        'c': 'C',
+        'd': ['the', 'value'],
+    }
+    args = mock.Mock()
+    sf.add_argument_group(args)
+
+    args.noindent = True
+    output = StringIO()
+    sf.emit_one(c, d, output, args)
+    value = output.getvalue()
+    print(len(value.splitlines()))
+    assert 1 == len(value.splitlines())
+    actual = json.loads(value)
+    assert expected == actual
+
+
 def test_json_format_list():
     sf = json_format.JSONFormatter()
     c = ('a', 'b', 'c')
@@ -67,5 +91,26 @@ def test_json_format_list():
     sf.emit_list(c, d, output, args)
     value = output.getvalue()
     assert 17 == len(value.splitlines())
+    actual = json.loads(value)
+    assert expected == actual
+
+
+def test_json_format_formattablecolumn_list():
+    sf = json_format.JSONFormatter()
+    c = ('a', 'b', 'c')
+    d = (
+        ('A1', 'B1', test_columns.FauxColumn(['the', 'value'])),
+    )
+    expected = [
+        {'a': 'A1', 'b': 'B1', 'c': ['the', 'value']},
+    ]
+    args = mock.Mock()
+    sf.add_argument_group(args)
+
+    args.noindent = True
+    output = StringIO()
+    sf.emit_list(c, d, output, args)
+    value = output.getvalue()
+    assert 1 == len(value.splitlines())
     actual = json.loads(value)
     assert expected == actual

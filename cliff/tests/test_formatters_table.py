@@ -6,6 +6,7 @@ import os
 import argparse
 
 from cliff.formatters import table
+from cliff.tests import test_columns
 
 
 class args(object):
@@ -64,7 +65,6 @@ def test_table_formatter(tw):
 +-------+---------------+
 '''
     assert expected == _table_tester_helper(c, d)
-
 
 # Multi-line output when width is restricted to 42 columns
 expected_ml_val = '''\
@@ -237,6 +237,24 @@ def test_table_list_formatter(tw):
     assert expected == _table_tester_helper(c, data)
 
 
+@mock.patch('cliff.utils.terminal_width')
+def test_table_formatter_formattable_column(tw):
+    tw.return_value = 0
+    c = ('a', 'b', 'c', 'd')
+    d = ('A', 'B', 'C', test_columns.FauxColumn(['the', 'value']))
+    expected = '''\
++-------+---------------------------------------------+
+| Field | Value                                       |
++-------+---------------------------------------------+
+| a     | A                                           |
+| b     | B                                           |
+| c     | C                                           |
+| d     | I made this string myself: ['the', 'value'] |
++-------+---------------------------------------------+
+'''
+    assert expected == _table_tester_helper(c, d)
+
+
 _col_names = ('one', 'two', 'three')
 _col_data = [(
     'one one one one one',
@@ -299,6 +317,22 @@ _expected_mv = {
 +----------+----------+----------+
 ''',
 }
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_list_formatter_formattable_column(tw):
+    tw.return_value = 80
+    c = ('a', 'b', 'c')
+    d1 = ('A', 'B', test_columns.FauxColumn(['the', 'value']))
+    data = [d1]
+    expected = '''\
++---+---+---------------------------------------------+
+| a | b | c                                           |
++---+---+---------------------------------------------+
+| A | B | I made this string myself: ['the', 'value'] |
++---+---+---------------------------------------------+
+'''
+    assert expected == _table_tester_helper(c, data)
 
 
 @mock.patch('cliff.utils.terminal_width')
