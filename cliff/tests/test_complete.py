@@ -32,6 +32,26 @@ def test_complete_dictionary():
     assert "2" == result[3][1]
 
 
+def test_complete_dictionary_subcmd():
+    sot = complete.CompleteDictionary()
+    sot.add_command("image delete".split(),
+                    [mock.Mock(option_strings=["1"])])
+    sot.add_command("image list".split(),
+                    [mock.Mock(option_strings=["2"])])
+    sot.add_command("image list better".split(),
+                    [mock.Mock(option_strings=["3"])])
+    assert "image" == sot.get_commands()
+    result = sot.get_data()
+    assert "image" == result[0][0]
+    assert "delete list list_better" == result[0][1]
+    assert "image_delete" == result[1][0]
+    assert "1" == result[1][1]
+    assert "image_list" == result[2][0]
+    assert "2 better" == result[2][1]
+    assert "image_list_better" == result[3][0]
+    assert "3" == result[3][1]
+
+
 class FakeStdout:
     def __init__(self):
         self.content = []
