@@ -6,7 +6,7 @@ import sys
 
 
 if sys.version_info < (3, 5):
-    class ArgumentParser(ArgumentParser):
+    class ArgumentParser(ArgumentParser):  # noqa
         def __init__(self, *args, **kwargs):
             self.allow_abbrev = kwargs.pop("allow_abbrev", True)
             super(ArgumentParser, self).__init__(*args, **kwargs)
