@@ -5,7 +5,11 @@ try:
 except ImportError:
     from io import StringIO
 
+import codecs
+import locale
 import mock
+import six
+import sys
 
 from cliff.app import App
 from cliff.command import Command
@@ -398,3 +402,82 @@ def test_verbose():
         pass
     else:
         raise Exception('Exception was not thrown')
+
+
+def test_io_streams():
+    cmd_mgr = CommandManager('cliff.tests')
+    io = mock.Mock()
+
+    if six.PY2:
+        stdin_save = sys.stdin
+        stdout_save = sys.stdout
+        stderr_save = sys.stderr
+        encoding = locale.getpreferredencoding() or 'utf-8'
+
+        app = App('no io streams', 1, cmd_mgr)
+        assert isinstance(app.stdin, codecs.StreamReader)
+        assert isinstance(app.stdout, codecs.StreamWriter)
+        assert isinstance(app.stderr, codecs.StreamWriter)
+
+        app = App('with stdin io stream', 1, cmd_mgr, stdin=io)
+        assert app.stdin is io
+        assert isinstance(app.stdout, codecs.StreamWriter)
+        assert isinstance(app.stderr, codecs.StreamWriter)
+
+        app = App('with stdout io stream', 1, cmd_mgr, stdout=io)
+        assert isinstance(app.stdin, codecs.StreamReader)
+        assert app.stdout is io
+        assert isinstance(app.stderr, codecs.StreamWriter)
+
+        app = App('with stderr io stream', 1, cmd_mgr, stderr=io)
+        assert isinstance(app.stdin, codecs.StreamReader)
+        assert isinstance(app.stdout, codecs.StreamWriter)
+        assert app.stderr is io
+
+        try:
+            sys.stdin = codecs.getreader(encoding)(sys.stdin)
+            app = App('with wrapped sys.stdin io stream', 1, cmd_mgr)
+            assert app.stdin is sys.stdin
+            assert isinstance(app.stdout, codecs.StreamWriter)
+            assert isinstance(app.stderr, codecs.StreamWriter)
+        finally:
+            sys.stdin = stdin_save
+
+        try:
+            sys.stdout = codecs.getwriter(encoding)(sys.stdout)
+            app = App('with wrapped stdout io stream', 1, cmd_mgr)
+            assert isinstance(app.stdin, codecs.StreamReader)
+            assert app.stdout is sys.stdout
+            assert isinstance(app.stderr, codecs.StreamWriter)
+        finally:
+            sys.stdout = stdout_save
+
+        try:
+            sys.stderr = codecs.getwriter(encoding)(sys.stderr)
+            app = App('with wrapped stderr io stream', 1, cmd_mgr)
+            assert isinstance(app.stdin, codecs.StreamReader)
+            assert isinstance(app.stdout, codecs.StreamWriter)
+            assert app.stderr is sys.stderr
+        finally:
+            sys.stderr = stderr_save
+
+    else:
+        app = App('no io streams', 1, cmd_mgr)
+        assert app.stdin is sys.stdin
+        assert app.stdout is sys.stdout
+        assert app.stderr is sys.stderr
+
+        app = App('with stdin io stream', 1, cmd_mgr, stdin=io)
+        assert app.stdin is io
+        assert app.stdout is sys.stdout
+        assert app.stderr is sys.stderr
+
+        app = App('with stdout io stream', 1, cmd_mgr, stdout=io)
+        assert app.stdin is sys.stdin
+        assert app.stdout is io
+        assert app.stderr is sys.stderr
+
+        app = App('with stderr io stream', 1, cmd_mgr, stderr=io)
+        assert app.stdin is sys.stdin
+        assert app.stdout is sys.stdout
+        assert app.stderr is io

@@ -1,11 +1,13 @@
 """Application base class.
 """
 
+import codecs
 import inspect
 import locale
 import logging
 import logging.handlers
 import os
+import six
 import sys
 
 from cliff import argparse
@@ -70,6 +72,45 @@ class App(object):
             locale.setlocale(locale.LC_ALL, '')
         except locale.Error:
             pass
+
+        # Unicode must be encoded/decoded for text I/O streams, the
+        # correct encoding for the stream must be selected and it must
+        # be capable of handling the set of characters in the stream
+        # or Python will raise a codec error. The correct codec is
+        # selected based on the locale. Python2 uses the locales
+        # encoding but only when the I/O stream is attached to a
+        # terminal (TTY) otherwise it uses the default ASCII
+        # encoding. The effect is internationalized text written to
+        # the terminal works as expected but if command line output is
+        # redirected (file or pipe) the ASCII codec is used and the
+        # program aborts with a codec error.
+        #
+        # The default I/O streams stdin, stdout and stderr can be
+        # wrapped in a codec based on the locale thus assuring the
+        # users desired encoding is always used no matter the I/O
+        # destination. Python3 does this by default.
+        #
+        # If the caller supplies an I/O stream we use it unmodified on
+        # the assumption the caller has taken all responsibility for
+        # the stream.  But with Python2 if the caller allows us to
+        # default the I/O streams to sys.stdin, sys.stdout and
+        # sys.stderr we apply the locales encoding just as Python3
+        # would do. We also check to make sure the main Python program
+        # has not already already wrapped sys.stdin, sys.stdout and
+        # sys.stderr as this is a common recommendation.
+
+        if six.PY2:
+            encoding = locale.getpreferredencoding()
+            if encoding:
+                if not (stdin or isinstance(sys.stdin, codecs.StreamReader)):
+                    stdin = codecs.getreader(encoding)(sys.stdin)
+
+                if not (stdout or isinstance(sys.stdout, codecs.StreamWriter)):
+                    stdout = codecs.getwriter(encoding)(sys.stdout)
+
+                if not (stderr or isinstance(sys.stderr, codecs.StreamWriter)):
+                    stderr = codecs.getwriter(encoding)(sys.stderr)
+
         self.stdin = stdin or sys.stdin
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
