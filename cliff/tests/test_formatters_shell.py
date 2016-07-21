@@ -5,6 +5,7 @@ import argparse
 from six import StringIO, text_type
 
 from cliff.formatters import shell
+from cliff.tests import test_columns
 
 import mock
 
@@ -34,6 +35,24 @@ def test_shell_formatter_args():
     sf.add_argument_group(parser)
     parsed_args = parser.parse_args(['--variable', 'd', '--prefix', 'X'])
     sf.emit_one(c, d, output, parsed_args)
+    actual = output.getvalue()
+    assert expected == actual
+
+
+def test_shell_formatter_formattable_column():
+    sf = shell.ShellFormatter()
+    c = ('a', 'b', 'c')
+    d = ('A', 'B', test_columns.FauxColumn(['the', 'value']))
+    expected = '\n'.join([
+        'a="A"',
+        'b="B"',
+        'c="[\'the\', \'value\']"\n',
+    ])
+    output = StringIO()
+    args = mock.Mock()
+    args.variables = ['a', 'b', 'c']
+    args.prefix = ''
+    sf.emit_one(c, d, output, args)
     actual = output.getvalue()
     assert expected == actual
 

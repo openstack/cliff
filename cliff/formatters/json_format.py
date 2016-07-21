@@ -4,6 +4,7 @@
 import json
 
 from .base import ListFormatter, SingleFormatter
+from cliff import columns
 
 
 class JSONFormatter(ListFormatter, SingleFormatter):
@@ -20,11 +21,21 @@ class JSONFormatter(ListFormatter, SingleFormatter):
     def emit_list(self, column_names, data, stdout, parsed_args):
         items = []
         for item in data:
-            items.append(dict(zip(column_names, item)))
+            items.append(
+                {n: (i.machine_readable()
+                     if isinstance(i, columns.FormattableColumn)
+                     else i)
+                 for n, i in zip(column_names, item)}
+            )
         indent = None if parsed_args.noindent else 2
         json.dump(items, stdout, indent=indent)
 
     def emit_one(self, column_names, data, stdout, parsed_args):
-        one = dict(zip(column_names, data))
+        one = {
+            n: (i.machine_readable()
+                if isinstance(i, columns.FormattableColumn)
+                else i)
+            for n, i in zip(column_names, data)
+        }
         indent = None if parsed_args.noindent else 2
         json.dump(one, stdout, indent=indent)

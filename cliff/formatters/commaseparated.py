@@ -5,6 +5,9 @@ import os
 import sys
 
 from .base import ListFormatter
+from cliff import columns
+
+import six
 
 if sys.version_info[0] == 3:
     import csv
@@ -35,8 +38,14 @@ class CSVLister(ListFormatter):
         writer = csv.writer(stdout,
                             quoting=self.QUOTE_MODES[parsed_args.quote_mode],
                             lineterminator=os.linesep,
+                            escapechar='\\',
                             )
         writer.writerow(column_names)
         for row in data:
-            writer.writerow(row)
+            writer.writerow(
+                [(six.text_type(c.machine_readable())
+                  if isinstance(c, columns.FormattableColumn)
+                  else c)
+                 for c in row]
+            )
         return

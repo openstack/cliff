@@ -7,6 +7,18 @@ import os
 
 from cliff import utils
 from .base import ListFormatter, SingleFormatter
+from cliff import columns
+
+
+def _format_row(row):
+    new_row = []
+    for r in row:
+        if isinstance(r, columns.FormattableColumn):
+            r = r.human_readable()
+        if isinstance(r, six.string_types):
+            r = r.replace('\r\n', '\n').replace('\r', ' ')
+        new_row.append(r)
+    return new_row
 
 
 class TableFormatter(ListFormatter, SingleFormatter):
@@ -52,12 +64,9 @@ class TableFormatter(ListFormatter, SingleFormatter):
                 alignment = self.ALIGNMENTS.get(type(value), 'l')
                 x.align[name] = alignment
             # Now iterate over the data and add the rows.
-            x.add_row(first_row)
+            x.add_row(_format_row(first_row))
             for row in data_iter:
-                row = [r.replace('\r\n', '\n').replace('\r', ' ')
-                       if isinstance(r, six.string_types) else r
-                       for r in row]
-                x.add_row(row)
+                x.add_row(_format_row(row))
 
         # Choose a reasonable min_width to better handle many columns on a
         # narrow console. The table will overflow the console width in
@@ -80,9 +89,7 @@ class TableFormatter(ListFormatter, SingleFormatter):
         x.align['Field'] = 'l'
         x.align['Value'] = 'l'
         for name, value in zip(column_names, data):
-            value = (value.replace('\r\n', '\n').replace('\r', ' ') if
-                     isinstance(value, six.string_types) else value)
-            x.add_row((name, value))
+            x.add_row(_format_row((name, value)))
 
         # Choose a reasonable min_width to better handle a narrow
         # console. The table will overflow the console width in preference

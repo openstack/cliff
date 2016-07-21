@@ -2,6 +2,7 @@
 """
 
 from .base import SingleFormatter
+from cliff import columns
 
 import argparse
 import six
@@ -37,6 +38,9 @@ class ShellFormatter(SingleFormatter):
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):
             if name in desired_columns or not desired_columns:
+                value = (six.text_type(value.machine_readable())
+                         if isinstance(value, columns.FormattableColumn)
+                         else value)
                 if isinstance(value, six.string_types):
                     value = value.replace('"', '\\"')
                 stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
