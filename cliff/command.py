@@ -54,6 +54,6 @@ class Command(object):
         :class:`Lister` and :class:`ShowOne`) should override this
         method to wrap :meth:`take_action`.
 
-        Return the value returned by :method:`take_action` or 0.
+        Return the value returned by :meth:`take_action` or 0.
         """
         return self.take_action(parsed_args) or 0
