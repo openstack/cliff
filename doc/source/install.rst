@@ -42,10 +42,10 @@ or::
 Source Code
 ===========
 
-The source is hosted on github: https://github.com/dreamhost/cliff
+The source is hosted on github: http://git.openstack.org/cgit/openstack/cliff
 
 Reporting Bugs
 ==============
 
 Please report bugs through the github project:
-https://github.com/dreamhost/cliff/issues
+https://bugs.launchpad.net/python-cliff
