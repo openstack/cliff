@@ -38,7 +38,7 @@ class CommandManager(object):
         self._load_commands()
 
     def _load_commands(self):
-        # NOTE(jamielennox): kept for compatability.
+        # NOTE(jamielennox): kept for compatibility.
         self.load_commands(self.namespace)
 
     def load_commands(self, namespace):
