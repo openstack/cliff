@@ -70,6 +70,21 @@ def test_add_command():
     assert found_cmd is mock_cmd
 
 
+def test_intersected_commands():
+    def foo(arg):
+        pass
+
+    def foo_bar():
+        pass
+
+    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+    mgr.add_command('foo', foo)
+    mgr.add_command('foo bar', foo_bar)
+
+    assert mgr.find_command(['foo', 'bar'])[0] is foo_bar
+    assert mgr.find_command(['foo', 'arg0'])[0] is foo
+
+
 def test_load_commands():
     testcmd = mock.Mock(name='testcmd')
     testcmd.name.replace.return_value = 'test'
