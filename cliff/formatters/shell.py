@@ -1,14 +1,14 @@
 """Output formatters using shell syntax.
 """
 
-from .base import SingleFormatter
+from . import base
 from cliff import columns
 
 import argparse
 import six
 
 
-class ShellFormatter(SingleFormatter):
+class ShellFormatter(base.SingleFormatter):
 
     def add_argument_group(self, parser):
         group = parser.add_argument_group(

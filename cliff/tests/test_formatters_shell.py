@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-
-from six import StringIO, text_type
+import six
 
 from cliff.formatters import shell
 from cliff.tests import test_columns
@@ -15,7 +14,7 @@ def test_shell_formatter():
     c = ('a', 'b', 'c', 'd')
     d = ('A', 'B', 'C', '"escape me"')
     expected = 'a="A"\nb="B"\nd="\\"escape me\\""\n'
-    output = StringIO()
+    output = six.StringIO()
     args = mock.Mock()
     args.variables = ['a', 'b', 'd']
     args.prefix = ''
@@ -29,7 +28,7 @@ def test_shell_formatter_args():
     c = ('a', 'b', 'c', 'd')
     d = ('A', 'B', 'C', '"escape me"')
     expected = 'Xd="\\"escape me\\""\n'
-    output = StringIO()
+    output = six.StringIO()
     # Parse arguments as if passed on the command-line
     parser = argparse.ArgumentParser(description='Testing...')
     sf.add_argument_group(parser)
@@ -48,7 +47,7 @@ def test_shell_formatter_formattable_column():
         'b="B"',
         'c="[\'the\', \'value\']"\n',
     ])
-    output = StringIO()
+    output = six.StringIO()
     args = mock.Mock()
     args.variables = ['a', 'b', 'c']
     args.prefix = ''
@@ -60,9 +59,9 @@ def test_shell_formatter_formattable_column():
 def test_shell_formatter_with_non_string_values():
     sf = shell.ShellFormatter()
     c = ('a', 'b', 'c', 'd', 'e')
-    d = (True, False, 100, '"esc"', text_type('"esc"'))
+    d = (True, False, 100, '"esc"', six.text_type('"esc"'))
     expected = 'a="True"\nb="False"\nc="100"\nd="\\"esc\\""\ne="\\"esc\\""\n'
-    output = StringIO()
+    output = six.StringIO()
     args = mock.Mock()
     args.variables = ['a', 'b', 'c', 'd', 'e']
     args.prefix = ''

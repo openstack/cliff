@@ -3,11 +3,11 @@
 
 import yaml
 
-from .base import ListFormatter, SingleFormatter
+from . import base
 from cliff import columns
 
 
-class YAMLFormatter(ListFormatter, SingleFormatter):
+class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
 
     def add_argument_group(self, parser):
         pass

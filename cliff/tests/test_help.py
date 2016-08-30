@@ -7,9 +7,9 @@ import sys
 
 import mock
 
-from cliff.app import App
-from cliff.commandmanager import EntryPointWrapper
-from cliff.help import HelpCommand
+from cliff import app as application
+from cliff import commandmanager
+from cliff import help
 from cliff.tests import utils
 
 
@@ -18,11 +18,11 @@ def test_show_help_for_command():
     # do commands know too much about apps by using them to get to the
     # command manager?
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
-    help_cmd = HelpCommand(app, mock.Mock())
+    help_cmd = help.HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args(['one'])
     try:
@@ -37,11 +37,11 @@ def test_list_matching_commands():
     # do commands know too much about apps by using them to get to the
     # command manager?
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
-    help_cmd = HelpCommand(app, mock.Mock())
+    help_cmd = help.HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args(['t'])
     try:
@@ -58,11 +58,11 @@ def test_list_matching_commands_no_match():
     # do commands know too much about apps by using them to get to the
     # command manager?
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
-    help_cmd = HelpCommand(app, mock.Mock())
+    help_cmd = help.HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args(['z'])
     try:
@@ -80,12 +80,12 @@ def test_show_help_for_help():
     # do commands know too much about apps by using them to get to the
     # command manager?
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
     app.options = mock.Mock()
-    help_cmd = HelpCommand(app, mock.Mock())
+    help_cmd = help.HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args([])
     try:
@@ -108,9 +108,9 @@ def test_list_deprecated_commands():
     # do commands know too much about apps by using them to get to the
     # command manager?
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
     try:
         app.run(['--help'])
@@ -122,17 +122,17 @@ def test_list_deprecated_commands():
     assert 'old cmd' not in help_output
 
 
-@mock.patch.object(EntryPointWrapper, 'load',
+@mock.patch.object(commandmanager.EntryPointWrapper, 'load',
                    side_effect=Exception('Could not load EntryPoint'))
 def test_show_help_with_ep_load_fail(mock_load):
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
     app.options = mock.Mock()
     app.options.debug = False
-    help_cmd = HelpCommand(app, mock.Mock())
+    help_cmd = help.HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args([])
     try:
@@ -145,17 +145,17 @@ def test_show_help_with_ep_load_fail(mock_load):
     assert 'Exception: Could not load EntryPoint' not in help_output
 
 
-@mock.patch.object(EntryPointWrapper, 'load',
+@mock.patch.object(commandmanager.EntryPointWrapper, 'load',
                    side_effect=Exception('Could not load EntryPoint'))
 def test_show_help_print_exc_with_ep_load_fail(mock_load):
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          utils.TestCommandManager(utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
     app.options = mock.Mock()
     app.options.debug = True
-    help_cmd = HelpCommand(app, mock.Mock())
+    help_cmd = help.HelpCommand(app, mock.Mock())
     parser = help_cmd.get_parser('test')
     parsed_args = parser.parse_args([])
     try:

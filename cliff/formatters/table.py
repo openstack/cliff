@@ -6,7 +6,7 @@ import six
 import os
 
 from cliff import utils
-from .base import ListFormatter, SingleFormatter
+from . import base
 from cliff import columns
 
 
@@ -21,7 +21,7 @@ def _format_row(row):
     return new_row
 
 
-class TableFormatter(ListFormatter, SingleFormatter):
+class TableFormatter(base.ListFormatter, base.SingleFormatter):
 
     ALIGNMENTS = {
         int: 'r',

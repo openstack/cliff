@@ -2,7 +2,7 @@ import argparse
 import sys
 import traceback
 
-from .command import Command
+from . import command
 
 
 class HelpAction(argparse.Action):
@@ -39,7 +39,7 @@ class HelpAction(argparse.Action):
         sys.exit(0)
 
 
-class HelpCommand(Command):
+class HelpCommand(command.Command):
     """print detailed help for another command
     """
 

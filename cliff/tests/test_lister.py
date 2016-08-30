@@ -2,7 +2,7 @@
 
 import weakref
 
-from cliff.lister import Lister
+from cliff import lister
 
 import mock
 
@@ -17,7 +17,7 @@ class FauxFormatter(object):
         self.args.append((columns, data))
 
 
-class ExerciseLister(Lister):
+class ExerciseLister(lister.Lister):
 
     def _load_formatter_plugins(self):
         return {

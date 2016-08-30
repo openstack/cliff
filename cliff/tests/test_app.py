@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from argparse import ArgumentError
+import argparse
 try:
     from StringIO import StringIO
 except ImportError:
@@ -11,38 +11,38 @@ import mock
 import six
 import sys
 
-from cliff.app import App
-from cliff.command import Command
-from cliff.commandmanager import CommandManager
-from cliff.tests import utils
-from cliff.utils import damerau_levenshtein, COST
+from cliff import app as application
+from cliff import command as c_cmd
+from cliff import commandmanager
+from cliff.tests import utils as test_utils
+from cliff import utils
 
 
 def make_app(**kwargs):
-    cmd_mgr = CommandManager('cliff.tests')
+    cmd_mgr = commandmanager.CommandManager('cliff.tests')
 
     # Register a command that succeeds
-    command = mock.MagicMock(spec=Command)
-    command_inst = mock.MagicMock(spec=Command)
+    command = mock.MagicMock(spec=c_cmd.Command)
+    command_inst = mock.MagicMock(spec=c_cmd.Command)
     command_inst.run.return_value = 0
     command.return_value = command_inst
     cmd_mgr.add_command('mock', command)
 
     # Register a command that fails
-    err_command = mock.Mock(name='err_command', spec=Command)
-    err_command_inst = mock.Mock(spec=Command)
+    err_command = mock.Mock(name='err_command', spec=c_cmd.Command)
+    err_command_inst = mock.Mock(spec=c_cmd.Command)
     err_command_inst.run = mock.Mock(
         side_effect=RuntimeError('test exception')
     )
     err_command.return_value = err_command_inst
     cmd_mgr.add_command('error', err_command)
 
-    app = App('testing interactive mode',
-              '1',
-              cmd_mgr,
-              stderr=mock.Mock(),  # suppress warning messages
-              **kwargs
-              )
+    app = application.App('testing interactive mode',
+                          '1',
+                          cmd_mgr,
+                          stderr=mock.Mock(),  # suppress warning messages
+                          **kwargs
+                          )
     return app, command
 
 
@@ -191,12 +191,12 @@ def test_normal_clean_up_raises_exception_debug():
 
 
 def test_build_option_parser_conflicting_option_should_throw():
-    class MyApp(App):
+    class MyApp(application.App):
         def __init__(self):
             super(MyApp, self).__init__(
                 description='testing',
                 version='0.1',
-                command_manager=CommandManager('tests'),
+                command_manager=commandmanager.CommandManager('tests'),
             )
 
         def build_option_parser(self, description, version):
@@ -211,19 +211,19 @@ def test_build_option_parser_conflicting_option_should_throw():
     # TODO: tests should really use unittest2.
     try:
         MyApp()
-    except ArgumentError:
+    except argparse.ArgumentError:
         pass
     else:
         raise Exception('Exception was not thrown')
 
 
 def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
-    class MyApp(App):
+    class MyApp(application.App):
         def __init__(self):
             super(MyApp, self).__init__(
                 description='testing',
                 version='0.1',
-                command_manager=CommandManager('tests'),
+                command_manager=commandmanager.CommandManager('tests'),
             )
 
         def build_option_parser(self, description, version):
@@ -242,7 +242,7 @@ def test_option_parser_conflicting_option_custom_arguments_should_not_throw():
 
 
 def test_option_parser_abbrev_issue():
-    class MyCommand(Command):
+    class MyCommand(c_cmd.Command):
         def get_parser(self, prog_name):
             parser = super(MyCommand, self).get_parser(prog_name)
             parser.add_argument("--end")
@@ -251,11 +251,11 @@ def test_option_parser_abbrev_issue():
         def take_action(self, parsed_args):
             assert(parsed_args.end == '123')
 
-    class MyCommandManager(CommandManager):
+    class MyCommandManager(commandmanager.CommandManager):
         def load_commands(self, namespace):
             self.add_command("mycommand", MyCommand)
 
-    class MyApp(App):
+    class MyApp(application.App):
         def __init__(self):
             super(MyApp, self).__init__(
                 description='testing',
@@ -335,9 +335,10 @@ def test_unknown_cmd_debug():
 
 def test_list_matching_commands():
     stdout = StringIO()
-    app = App('testing', '1',
-              utils.TestCommandManager(utils.TEST_NAMESPACE),
-              stdout=stdout)
+    app = application.App('testing', '1',
+                          test_utils.TestCommandManager(
+                            test_utils.TEST_NAMESPACE),
+                          stdout=stdout)
     app.NAME = 'test'
     try:
         assert app.run(['t']) == 2
@@ -350,8 +351,8 @@ def test_list_matching_commands():
 
 
 def test_fuzzy_no_commands():
-    cmd_mgr = CommandManager('cliff.fuzzy')
-    app = App('test', '1.0', cmd_mgr)
+    cmd_mgr = commandmanager.CommandManager('cliff.fuzzy')
+    app = application.App('test', '1.0', cmd_mgr)
     cmd_mgr.commands = {}
     matches = app.get_fuzzy_matches('foo')
     assert matches == []
@@ -359,31 +360,31 @@ def test_fuzzy_no_commands():
 
 def test_fuzzy_common_prefix():
     # searched string is a prefix of all commands
-    cmd_mgr = CommandManager('cliff.fuzzy')
-    app = App('test', '1.0', cmd_mgr)
+    cmd_mgr = commandmanager.CommandManager('cliff.fuzzy')
+    app = application.App('test', '1.0', cmd_mgr)
     cmd_mgr.commands = {}
-    cmd_mgr.add_command('user list', utils.TestCommand)
-    cmd_mgr.add_command('user show', utils.TestCommand)
+    cmd_mgr.add_command('user list', test_utils.TestCommand)
+    cmd_mgr.add_command('user show', test_utils.TestCommand)
     matches = app.get_fuzzy_matches('user')
     assert matches == ['user list', 'user show']
 
 
 def test_fuzzy_same_distance():
     # searched string has the same distance to all commands
-    cmd_mgr = CommandManager('cliff.fuzzy')
-    app = App('test', '1.0', cmd_mgr)
-    cmd_mgr.add_command('user', utils.TestCommand)
+    cmd_mgr = commandmanager.CommandManager('cliff.fuzzy')
+    app = application.App('test', '1.0', cmd_mgr)
+    cmd_mgr.add_command('user', test_utils.TestCommand)
     for cmd in cmd_mgr.commands.keys():
-        assert damerau_levenshtein('node', cmd, COST) == 8
+        assert utils.damerau_levenshtein('node', cmd, utils.COST) == 8
     matches = app.get_fuzzy_matches('node')
     assert matches == ['complete', 'help', 'user']
 
 
 def test_fuzzy_no_prefix():
     # search by distance, no common prefix with any command
-    cmd_mgr = CommandManager('cliff.fuzzy')
-    app = App('test', '1.0', cmd_mgr)
-    cmd_mgr.add_command('user', utils.TestCommand)
+    cmd_mgr = commandmanager.CommandManager('cliff.fuzzy')
+    app = application.App('test', '1.0', cmd_mgr)
+    cmd_mgr.add_command('user', test_utils.TestCommand)
     matches = app.get_fuzzy_matches('uesr')
     assert matches == ['user']
 
@@ -405,7 +406,7 @@ def test_verbose():
 
 
 def test_io_streams():
-    cmd_mgr = CommandManager('cliff.tests')
+    cmd_mgr = commandmanager.CommandManager('cliff.tests')
     io = mock.Mock()
 
     if six.PY2:
@@ -414,29 +415,30 @@ def test_io_streams():
         stderr_save = sys.stderr
         encoding = locale.getpreferredencoding() or 'utf-8'
 
-        app = App('no io streams', 1, cmd_mgr)
+        app = application.App('no io streams', 1, cmd_mgr)
         assert isinstance(app.stdin, codecs.StreamReader)
         assert isinstance(app.stdout, codecs.StreamWriter)
         assert isinstance(app.stderr, codecs.StreamWriter)
 
-        app = App('with stdin io stream', 1, cmd_mgr, stdin=io)
+        app = application.App('with stdin io stream', 1, cmd_mgr, stdin=io)
         assert app.stdin is io
         assert isinstance(app.stdout, codecs.StreamWriter)
         assert isinstance(app.stderr, codecs.StreamWriter)
 
-        app = App('with stdout io stream', 1, cmd_mgr, stdout=io)
+        app = application.App('with stdout io stream', 1, cmd_mgr, stdout=io)
         assert isinstance(app.stdin, codecs.StreamReader)
         assert app.stdout is io
         assert isinstance(app.stderr, codecs.StreamWriter)
 
-        app = App('with stderr io stream', 1, cmd_mgr, stderr=io)
+        app = application.App('with stderr io stream', 1, cmd_mgr, stderr=io)
         assert isinstance(app.stdin, codecs.StreamReader)
         assert isinstance(app.stdout, codecs.StreamWriter)
         assert app.stderr is io
 
         try:
             sys.stdin = codecs.getreader(encoding)(sys.stdin)
-            app = App('with wrapped sys.stdin io stream', 1, cmd_mgr)
+            app = application.App(
+                'with wrapped sys.stdin io stream', 1, cmd_mgr)
             assert app.stdin is sys.stdin
             assert isinstance(app.stdout, codecs.StreamWriter)
             assert isinstance(app.stderr, codecs.StreamWriter)
@@ -445,7 +447,7 @@ def test_io_streams():
 
         try:
             sys.stdout = codecs.getwriter(encoding)(sys.stdout)
-            app = App('with wrapped stdout io stream', 1, cmd_mgr)
+            app = application.App('with wrapped stdout io stream', 1, cmd_mgr)
             assert isinstance(app.stdin, codecs.StreamReader)
             assert app.stdout is sys.stdout
             assert isinstance(app.stderr, codecs.StreamWriter)
@@ -454,7 +456,7 @@ def test_io_streams():
 
         try:
             sys.stderr = codecs.getwriter(encoding)(sys.stderr)
-            app = App('with wrapped stderr io stream', 1, cmd_mgr)
+            app = application.App('with wrapped stderr io stream', 1, cmd_mgr)
             assert isinstance(app.stdin, codecs.StreamReader)
             assert isinstance(app.stdout, codecs.StreamWriter)
             assert app.stderr is sys.stderr
@@ -462,22 +464,22 @@ def test_io_streams():
             sys.stderr = stderr_save
 
     else:
-        app = App('no io streams', 1, cmd_mgr)
+        app = application.App('no io streams', 1, cmd_mgr)
         assert app.stdin is sys.stdin
         assert app.stdout is sys.stdout
         assert app.stderr is sys.stderr
 
-        app = App('with stdin io stream', 1, cmd_mgr, stdin=io)
+        app = application.App('with stdin io stream', 1, cmd_mgr, stdin=io)
         assert app.stdin is io
         assert app.stdout is sys.stdout
         assert app.stderr is sys.stderr
 
-        app = App('with stdout io stream', 1, cmd_mgr, stdout=io)
+        app = application.App('with stdout io stream', 1, cmd_mgr, stdout=io)
         assert app.stdin is sys.stdin
         assert app.stdout is io
         assert app.stderr is sys.stderr
 
-        app = App('with stderr io stream', 1, cmd_mgr, stderr=io)
+        app = application.App('with stderr io stream', 1, cmd_mgr, stderr=io)
         assert app.stdin is sys.stdin
         assert app.stdout is sys.stdout
         assert app.stderr is io

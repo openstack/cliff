@@ -1,8 +1,8 @@
 
-from cliff.command import Command
+from cliff import command
 
 
-class TestCommand(Command):
+class TestCommand(command.Command):
     """Description of command.
     """
 

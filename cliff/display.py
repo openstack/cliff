@@ -6,11 +6,11 @@ from itertools import compress
 import six
 import stevedore
 
-from .command import Command
+from . import command
 
 
 @six.add_metaclass(abc.ABCMeta)
-class DisplayCommandBase(Command):
+class DisplayCommandBase(command.Command):
     """Command base class for displaying data about a single object.
     """
 

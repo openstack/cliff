@@ -4,11 +4,11 @@ import abc
 
 import six
 
-from .display import DisplayCommandBase
+from . import display
 
 
 @six.add_metaclass(abc.ABCMeta)
-class ShowOne(DisplayCommandBase):
+class ShowOne(display.DisplayCommandBase):
     """Command base class for displaying data about a single object.
     """
 

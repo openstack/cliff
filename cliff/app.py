@@ -11,9 +11,9 @@ import six
 import sys
 
 from cliff import argparse
-from .complete import CompleteCommand
-from .help import HelpAction, HelpCommand
-from .utils import damerau_levenshtein, COST
+from . import complete
+from . import help
+from . import utils
 
 
 logging.getLogger('cliff').addHandler(logging.NullHandler())
@@ -58,8 +58,8 @@ class App(object):
         """Initialize the application.
         """
         self.command_manager = command_manager
-        self.command_manager.add_command('help', HelpCommand)
-        self.command_manager.add_command('complete', CompleteCommand)
+        self.command_manager.add_command('help', help.HelpCommand)
+        self.command_manager.add_command('complete', complete.CompleteCommand)
         self._set_streams(stdin, stdout, stderr)
         self.interactive_app_factory = interactive_app_factory
         self.deferred_help = deferred_help
@@ -172,7 +172,7 @@ class App(object):
         else:
             parser.add_argument(
                 '-h', '--help',
-                action=HelpAction,
+                action=help.HelpAction,
                 nargs=0,
                 default=self,  # tricky
                 help="Show help message and exit.",
@@ -222,7 +222,7 @@ class App(object):
            explicitly this method in initialize_app.
         """
         if self.deferred_help and self.options.deferred_help:
-            action = HelpAction(None, None, default=self)
+            action = help.HelpAction(None, None, default=self)
             action(self.parser, self.options, None, None)
 
     def run(self, argv):
@@ -329,7 +329,8 @@ class App(object):
                 dist.append((0, candidate))
                 continue
             # Levenshtein distance
-            dist.append((damerau_levenshtein(cmd, prefix, COST)+1, candidate))
+            dist.append((utils.damerau_levenshtein(cmd, prefix, utils.COST)+1,
+                         candidate))
 
         matches = []
         match_distance = 0

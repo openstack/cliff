@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from six import StringIO
 import json
+import six
 
 from cliff.formatters import json_format
 from cliff.tests import test_columns
@@ -22,7 +22,7 @@ def test_json_format_one():
     sf.add_argument_group(args)
 
     args.noindent = True
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_one(c, d, output, args)
     value = output.getvalue()
     print(len(value.splitlines()))
@@ -31,7 +31,7 @@ def test_json_format_one():
     assert expected == actual
 
     args.noindent = False
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_one(c, d, output, args)
     value = output.getvalue()
     assert 6 == len(value.splitlines())
@@ -53,7 +53,7 @@ def test_json_format_formattablecolumn_one():
     sf.add_argument_group(args)
 
     args.noindent = True
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_one(c, d, output, args)
     value = output.getvalue()
     print(len(value.splitlines()))
@@ -79,7 +79,7 @@ def test_json_format_list():
     sf.add_argument_group(args)
 
     args.noindent = True
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_list(c, d, output, args)
     value = output.getvalue()
     assert 1 == len(value.splitlines())
@@ -87,7 +87,7 @@ def test_json_format_list():
     assert expected == actual
 
     args.noindent = False
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_list(c, d, output, args)
     value = output.getvalue()
     assert 17 == len(value.splitlines())
@@ -108,7 +108,7 @@ def test_json_format_formattablecolumn_list():
     sf.add_argument_group(args)
 
     args.noindent = True
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_list(c, d, output, args)
     value = output.getvalue()
     assert 1 == len(value.splitlines())

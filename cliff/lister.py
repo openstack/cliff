@@ -3,11 +3,11 @@
 import abc
 import six
 
-from .display import DisplayCommandBase
+from . import display
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Lister(DisplayCommandBase):
+class Lister(display.DisplayCommandBase):
     """Command base class for providing a list of data as output.
     """
 

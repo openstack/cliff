@@ -3,11 +3,11 @@
 
 import json
 
-from .base import ListFormatter, SingleFormatter
+from . import base
 from cliff import columns
 
 
-class JSONFormatter(ListFormatter, SingleFormatter):
+class JSONFormatter(base.ListFormatter, base.SingleFormatter):
 
     def add_argument_group(self, parser):
         group = parser.add_argument_group(title='json formatter')

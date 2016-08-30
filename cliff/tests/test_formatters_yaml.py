@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from six import StringIO
+import six
 import yaml
 
 from cliff.formatters import yaml_format
@@ -18,7 +18,7 @@ def test_yaml_format_one():
         'c': 'C',
         'd': '"escape me"'
     }
-    output = StringIO()
+    output = six.StringIO()
     args = mock.Mock()
     sf.emit_one(c, d, output, args)
     actual = yaml.safe_load(output.getvalue())
@@ -39,7 +39,7 @@ def test_yaml_format_formattablecolumn_one():
     sf.add_argument_group(args)
 
     args.noindent = True
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_one(c, d, output, args)
     value = output.getvalue()
     print(len(value.splitlines()))
@@ -60,7 +60,7 @@ def test_yaml_format_list():
         {'a': 'A2', 'b': 'B2', 'c': 'C2'},
         {'a': 'A3', 'b': 'B3', 'c': 'C3'}
     ]
-    output = StringIO()
+    output = six.StringIO()
     args = mock.Mock()
     sf.add_argument_group(args)
     sf.emit_list(c, d, output, args)
@@ -81,7 +81,7 @@ def test_yaml_format_formattablecolumn_list():
     sf.add_argument_group(args)
 
     args.noindent = True
-    output = StringIO()
+    output = six.StringIO()
     sf.emit_list(c, d, output, args)
     actual = yaml.safe_load(output.getvalue())
     assert expected == actual

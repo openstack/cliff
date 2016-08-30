@@ -3,12 +3,11 @@
 
 import six
 
-from .base import ListFormatter
-from .base import SingleFormatter
+from . import base
 from cliff import columns
 
 
-class ValueFormatter(ListFormatter, SingleFormatter):
+class ValueFormatter(base.ListFormatter, base.SingleFormatter):
 
     def add_argument_group(self, parser):
         pass
