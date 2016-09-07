@@ -59,6 +59,6 @@ multiple commands before the program exits. Many cliff-based
 applications will be able to use the default implementation of
 :class:`InteractiveApp` without subclassing it.
 
-.. _setuptools entry points: https://pythonhosted.org/setuptools/pkg_resources.html#entry-points
+.. _setuptools entry points: https://setuptools.readthedocs.io/en/latest/pkg_resources.html#entry-points
 
 .. _argparse: http://docs.python.org/library/argparse.html
