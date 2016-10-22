@@ -3,7 +3,7 @@
 # process, which may cause wedges in the gate later.
 nose # LGPL
 mock>=2.0 # BSD
-coverage>=3.6 # Apache-2.0
+coverage>=4.0 # Apache-2.0
 # this is required for the docs build jobs
 sphinx!=1.3b1,<1.4,>=1.2.1 # BSD
 oslosphinx>=4.7.0 # Apache-2.0
