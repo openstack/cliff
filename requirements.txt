@@ -4,7 +4,7 @@
 pbr>=1.6 # Apache-2.0
 cmd2>=0.6.7 # MIT
 PrettyTable<0.8,>=0.7.1 # BSD
-pyparsing>=2.0.1 # MIT
+pyparsing>=2.0.7 # MIT
 six>=1.9.0 # MIT
 stevedore>=1.17.1 # Apache-2.0
 unicodecsv>=0.8.0;python_version<'3.0' # BSD
