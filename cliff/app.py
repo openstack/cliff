@@ -371,7 +371,7 @@ class App(object):
                     article = 'an'
                 self.stdout.write('%s: \'%s\' is not %s %s command. '
                                   'See \'%s --help\'.\n'
-                                  % (self.NAME, the_cmd, article,
+                                  % (self.NAME, ' '.join(argv), article,
                                       self.NAME, self.NAME))
                 self.stdout.write('Did you mean one of these?\n')
                 for match in fuzzy_matches:
