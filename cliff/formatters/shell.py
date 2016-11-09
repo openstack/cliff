@@ -55,5 +55,11 @@ class ShellFormatter(base.SingleFormatter):
                          else value)
                 if isinstance(value, six.string_types):
                     value = value.replace('"', '\\"')
+                if isinstance(name, six.string_types):
+                    # Colons and dashes may appear as a resource property but
+                    # are invalid to use in a shell, replace them with an
+                    # underscore.
+                    name = name.replace(':', '_')
+                    name = name.replace('-', '_')
                 stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
         return
