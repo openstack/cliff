@@ -41,6 +41,7 @@ class JSONFormatter(base.ListFormatter, base.SingleFormatter):
             )
         indent = None if parsed_args.noindent else 2
         json.dump(items, stdout, indent=indent)
+        stdout.write('\n')
 
     def emit_one(self, column_names, data, stdout, parsed_args):
         one = {
