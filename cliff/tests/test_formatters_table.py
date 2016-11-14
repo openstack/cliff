@@ -78,6 +78,7 @@ def test_table_formatter(tw):
 '''
     assert expected == _table_tester_helper(c, d)
 
+
 # Multi-line output when width is restricted to 42 columns
 expected_ml_val = '''\
 +-------+--------------------------------+
