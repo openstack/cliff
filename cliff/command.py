@@ -48,7 +48,16 @@ class Command(object):
         translation marker.
 
         """
-        return self._description or inspect.getdoc(self.__class__) or ''
+        # NOTE(dhellmann): We need the trailing "or ''" because under
+        # Python 2.7 the default for the docstring is None instead of
+        # an empty string, and we always want this method to return a
+        # string.
+        desc = self._description or inspect.getdoc(self.__class__) or ''
+        # The base class command description isn't useful for any
+        # real commands, so ignore that value.
+        if desc == inspect.getdoc(Command):
+            desc = ''
+        return desc
 
     def get_parser(self, prog_name):
         """Return an :class:`argparse.ArgumentParser`.

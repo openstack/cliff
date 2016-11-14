@@ -12,12 +12,16 @@
 
 from cliff import command
 
-import mock
-
 
 class TestCommand(command.Command):
     """Description of command.
     """
+
+    def take_action(self, parsed_args):
+        return 42
+
+
+class TestCommandNoDocstring(command.Command):
 
     def take_action(self, parsed_args):
         return 42
@@ -39,13 +43,9 @@ def test_get_description_attribute():
 
 
 def test_get_description_default():
-    cmd = TestCommand(None, None)
-    # Remove the docstring to verify that the default description is
-    # still a string.
-    with mock.patch.object(cmd.__class__, '__doc__', ''):
-        cmd.__class__.__doc__ = ''
-        desc = cmd.get_description()
-        assert desc == ''
+    cmd = TestCommandNoDocstring(None, None)
+    desc = cmd.get_description()
+    assert desc == ''
 
 
 def test_get_parser():
