@@ -24,9 +24,12 @@ class Command(object):
 
     :param app: Application instance invoking the command.
     :paramtype app: cliff.app.App
+
     """
 
     deprecated = False
+
+    _description = ''
 
     def __init__(self, app, app_args, cmd_name=None):
         self.app = app
@@ -36,8 +39,16 @@ class Command(object):
 
     def get_description(self):
         """Return the command description.
+
+        The default is to use the first line of the class' docstring
+        as the description. Set the ``_description`` class attribute
+        to a one-line description of a command to use a different
+        value. This is useful for enabling translations, for example,
+        with ``_description`` set to a string wrapped with a gettext
+        translation marker.
+
         """
-        return inspect.getdoc(self.__class__) or ''
+        return self._description or inspect.getdoc(self.__class__) or ''
 
     def get_parser(self, prog_name):
         """Return an :class:`argparse.ArgumentParser`.
