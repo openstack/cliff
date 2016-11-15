@@ -80,3 +80,17 @@ def test_shell_formatter_with_non_string_values():
     sf.emit_one(c, d, output, args)
     actual = output.getvalue()
     assert expected == actual
+
+
+def test_shell_formatter_with_non_bash_friendly_values():
+    sf = shell.ShellFormatter()
+    c = ('a', 'foo-bar', 'provider:network_type')
+    d = (True, 'baz', 'vxlan')
+    expected = 'a="True"\nfoo_bar="baz"\nprovider_network_type="vxlan"\n'
+    output = six.StringIO()
+    args = mock.Mock()
+    args.variables = ['a', 'foo-bar', 'provider:network_type']
+    args.prefix = ''
+    sf.emit_one(c, d, output, args)
+    actual = output.getvalue()
+    assert expected == actual
