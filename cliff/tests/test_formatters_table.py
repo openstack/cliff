@@ -22,12 +22,13 @@ from cliff.tests import test_columns
 
 
 class args(object):
-    def __init__(self, max_width=0):
+    def __init__(self, max_width=0, print_empty=False):
         if max_width > 0:
             self.max_width = max_width
         else:
             # Envvar is only taken into account iff CLI parameter not given
             self.max_width = int(os.environ.get('CLIFF_MAX_TERM_WIDTH', 0))
+        self.print_empty = print_empty
 
 
 def _table_tester_helper(tags, data, extra_args=None):
@@ -498,6 +499,21 @@ def test_table_list_formatter_empty(tw):
     data = []
     expected = '\n'
     assert expected == _table_tester_helper(c, data)
+
+
+@mock.patch('cliff.utils.terminal_width')
+def test_table_list_formatter_empty_table(tw):
+    tw.return_value = 80
+    c = ('a', 'b', 'c')
+    data = []
+    expected = '''\
++---+---+---+
+| a | b | c |
++---+---+---+
++---+---+---+
+'''
+    assert expected == _table_tester_helper(c, data,
+                                            extra_args=['--print-empty'])
 
 
 def test_field_widths():
