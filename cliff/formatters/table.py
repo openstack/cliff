@@ -56,13 +56,13 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
                   'use the CLIFF_MAX_TERM_WIDTH environment variable, '
                   'but the parameter takes precedence.'),
         )
-
-    def emit_list(self, column_names, data, stdout, parsed_args):
-        x = prettytable.PrettyTable(
-            column_names,
-            print_empty=False,
+        group.add_argument(
+            '--print-empty',
+            action='store_true',
+            help='Print empty table if there is no data to show.',
         )
-        x.padding_width = 1
+
+    def add_rows(self, table, column_names, data):
         # Figure out the types of the columns in the
         # first row and set the alignment of the
         # output accordingly.
@@ -74,11 +74,22 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         else:
             for value, name in zip(first_row, column_names):
                 alignment = self.ALIGNMENTS.get(type(value), 'l')
-                x.align[name] = alignment
+                table.align[name] = alignment
             # Now iterate over the data and add the rows.
-            x.add_row(_format_row(first_row))
+            table.add_row(_format_row(first_row))
             for row in data_iter:
-                x.add_row(_format_row(row))
+                table.add_row(_format_row(row))
+
+    def emit_list(self, column_names, data, stdout, parsed_args):
+        x = prettytable.PrettyTable(
+            column_names,
+            print_empty=parsed_args.print_empty,
+        )
+        x.padding_width = 1
+
+        # Add rows if data is provided
+        if data:
+            self.add_rows(x, column_names, data)
 
         # Choose a reasonable min_width to better handle many columns on a
         # narrow console. The table will overflow the console width in
