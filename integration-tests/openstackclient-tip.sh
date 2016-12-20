@@ -7,7 +7,10 @@ envdir=$1
 # The source for the client library is checked out by pip because of
 # the deps listed in tox.ini, so we just need to move into that
 # directory.
-cd $envdir/src/openstackclient/
+# NOTE(tonyb): tools/tox_install.sh will place the code in 1 of 2 paths
+# depending on whether zuul-cloner is used, so try each possible location
+cd $envdir/src/python-openstackclient/ || \
+    cd $envdir/src/openstack/python-openstackclient/
 
 pip install -r test-requirements.txt
 
