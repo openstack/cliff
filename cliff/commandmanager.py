@@ -73,14 +73,10 @@ class CommandManager(object):
         """Given an argument list, find a command and
         return the processor and any remaining arguments.
         """
-        search_args = argv[:]
-        name = ''
-        while search_args:
-            if search_args[0].startswith('-'):
-                name = '%s %s' % (name, search_args[0])
-                raise ValueError('Invalid command %r' % name)
-            next_val = search_args.pop(0)
-            name = '%s %s' % (name, next_val) if name else next_val
+        start = self._get_last_possible_command_index(argv)
+        for i in range(start, 0, -1):
+            name = ' '.join(argv[:i])
+            search_args = argv[i:]
             if name in self.commands:
                 cmd_ep = self.commands[name]
                 if hasattr(cmd_ep, 'resolve'):
@@ -97,3 +93,12 @@ class CommandManager(object):
         else:
             raise ValueError('Unknown command %r' %
                              (argv,))
+
+    def _get_last_possible_command_index(self, argv):
+        """Returns the index after the last argument
+        in argv that can be a command word
+        """
+        for i, arg in enumerate(argv):
+            if arg.startswith('-'):
+                return i
+        return len(argv)
