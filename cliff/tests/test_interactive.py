@@ -44,8 +44,8 @@ def test_no_completenames():
 
 
 def test_both_completenames():
-    # cmd2.Cmd define do_hi and do_history methods
-    _test_completenames(['hi', 'history', 'hips', 'hippo'], 'hi')
+    # cmd2.Cmd defines do_history method
+    _test_completenames(['history', 'hips', 'hippo'], 'hi')
 
 
 def _test_completedefault(expecteds, line, begidx):
