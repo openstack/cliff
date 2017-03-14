@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+import cmd2
+
 from cliff.interactive import InteractiveApp
 
 
@@ -32,8 +34,15 @@ def test_no_completenames():
 
 
 def test_both_completenames():
-    # cmd2.Cmd defines do_history method
-    _test_completenames(['history', 'hips', 'hippo'], 'hi')
+    # cmd2.Cmd define do_history method
+    # NOTE(dtroyer): Before release 0.7.0 do_hi was also defined so we need
+    #                to account for that in the list of possible responses.
+    #                Remove this check after cmd2 0.7.0 is the minimum
+    #                requirement.
+    if hasattr(cmd2.Cmd, "do_hi"):
+        _test_completenames(['hi', 'history', 'hips', 'hippo'], 'hi')
+    else:
+        _test_completenames(['history', 'hips', 'hippo'], 'hi')
 
 
 def _test_completedefault(expecteds, line, begidx):
