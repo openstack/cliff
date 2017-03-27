@@ -19,6 +19,7 @@ Contents:
    interactive_mode
    classes
    install
+   sphinxext
    developers
    history
 
