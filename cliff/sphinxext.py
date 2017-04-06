@@ -176,6 +176,7 @@ class AutoprogramCliffDirective(rst.Directive):
         command = command_class(None, None)
         parser = command.get_parser(command_name)
         description = command.get_description()
+        epilog = command.get_epilog()
 
         # Drop the automatically-added help action
         for action in parser._actions:
@@ -215,6 +216,17 @@ class AutoprogramCliffDirective(rst.Directive):
             result.append(line, source_name)
 
         self.state.nested_parse(result, 0, section)
+
+        # Epilog
+
+        # Like description, this is parsed as reStructuredText
+
+        if epilog:
+            result.append('', source_name)
+
+            for line in statemachine.string2lines(
+                    epilog, tab_width=4, convert_whitespace=True):
+                result.append(line, source_name)
 
         return [section]
 

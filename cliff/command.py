@@ -30,6 +30,7 @@ class Command(object):
     deprecated = False
 
     _description = ''
+    _epilog = None
 
     def __init__(self, app, app_args, cmd_name=None):
         self.app = app
@@ -59,11 +60,16 @@ class Command(object):
             desc = ''
         return desc
 
+    def get_epilog(self):
+        """Return the command epilog."""
+        return self._epilog
+
     def get_parser(self, prog_name):
         """Return an :class:`argparse.ArgumentParser`.
         """
         parser = argparse.ArgumentParser(
             description=self.get_description(),
+            epilog=self.get_epilog(),
             prog=prog_name,
         )
         return parser
