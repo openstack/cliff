@@ -15,92 +15,91 @@
 import argparse
 import textwrap
 
-from nose.tools import assert_equals
-
 from cliff import sphinxext
+from cliff.tests import base
 
 
-def test_empty_help():
-    """Handle positional and optional actions without help messages."""
-    parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
-    parser.add_argument('name', action='store')
-    parser.add_argument('--language', dest='lang')
+class TestSphinxExtension(base.TestBase):
 
-    output = '\n'.join(sphinxext._format_parser(parser))
-    assert_equals(textwrap.dedent("""
-    .. program:: hello-world
-    .. code-block:: shell
+    def test_empty_help(self):
+        """Handle positional and optional actions without help messages."""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
+        parser.add_argument('name', action='store')
+        parser.add_argument('--language', dest='lang')
 
-        hello-world [--language LANG] name
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        .. program:: hello-world
+        .. code-block:: shell
 
-    .. option:: --language <LANG>
+            hello-world [--language LANG] name
 
-    .. option:: name
-    """).lstrip(), output)
+        .. option:: --language <LANG>
+
+        .. option:: name
+        """).lstrip(), output)
+
+    def test_nonempty_help(self):
+        """Handle positional and optional actions with help messages."""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
+        parser.add_argument('name', help='user name')
+        parser.add_argument('--language', dest='lang',
+                            help='greeting language')
+
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        .. program:: hello-world
+        .. code-block:: shell
+
+            hello-world [--language LANG] name
+
+        .. option:: --language <LANG>
+
+            greeting language
+
+        .. option:: name
+
+            user name
+        """).lstrip(), output)
+
+    def test_flag(self):
+        """Handle a boolean argparse action."""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
+        parser.add_argument('name', help='user name')
+        parser.add_argument('--translate', action='store_true',
+                            help='translate to local language')
+
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        .. program:: hello-world
+        .. code-block:: shell
+
+            hello-world [--translate] name
+
+        .. option:: --translate
+
+            translate to local language
+
+        .. option:: name
+
+            user name
+        """).lstrip(), output)
+
+    def test_supressed(self):
+        """Handle a supressed action."""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
+        parser.add_argument('name', help='user name')
+        parser.add_argument('--variable', help=argparse.SUPPRESS)
+
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        .. program:: hello-world
+        .. code-block:: shell
+
+            hello-world name
 
 
-def test_nonempty_help():
-    """Handle positional and optional actions with help messages."""
-    parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
-    parser.add_argument('name', help='user name')
-    parser.add_argument('--language', dest='lang', help='greeting language')
+        .. option:: name
 
-    output = '\n'.join(sphinxext._format_parser(parser))
-    assert_equals(textwrap.dedent("""
-    .. program:: hello-world
-    .. code-block:: shell
-
-        hello-world [--language LANG] name
-
-    .. option:: --language <LANG>
-
-        greeting language
-
-    .. option:: name
-
-        user name
-    """).lstrip(), output)
-
-
-def test_flag():
-    """Handle a boolean argparse action."""
-    parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
-    parser.add_argument('name', help='user name')
-    parser.add_argument('--translate', action='store_true',
-                        help='translate to local language')
-
-    output = '\n'.join(sphinxext._format_parser(parser))
-    assert_equals(textwrap.dedent("""
-    .. program:: hello-world
-    .. code-block:: shell
-
-        hello-world [--translate] name
-
-    .. option:: --translate
-
-        translate to local language
-
-    .. option:: name
-
-        user name
-    """).lstrip(), output)
-
-
-def test_supressed():
-    """Handle a supressed action."""
-    parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
-    parser.add_argument('name', help='user name')
-    parser.add_argument('--variable', help=argparse.SUPPRESS)
-
-    output = '\n'.join(sphinxext._format_parser(parser))
-    assert_equals(textwrap.dedent("""
-    .. program:: hello-world
-    .. code-block:: shell
-
-        hello-world name
-
-
-    .. option:: name
-
-        user name
-    """).lstrip(), output)
+            user name
+        """).lstrip(), output)

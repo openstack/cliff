@@ -15,6 +15,7 @@
 import weakref
 
 from cliff import lister
+from cliff.tests import base
 
 import mock
 
@@ -43,33 +44,33 @@ class ExerciseLister(lister.Lister):
         )
 
 
-def test_formatter_args():
-    app = mock.Mock()
-    test_lister = ExerciseLister(app, [])
+class TestLister(base.TestBase):
 
-    parsed_args = mock.Mock()
-    parsed_args.columns = ('Col1', 'Col2')
-    parsed_args.formatter = 'test'
+    def test_formatter_args(self):
+        app = mock.Mock()
+        test_lister = ExerciseLister(app, [])
 
-    test_lister.run(parsed_args)
-    f = test_lister._formatter_plugins['test']
-    assert len(f.args) == 1
-    args = f.args[0]
-    assert args[0] == list(parsed_args.columns)
-    data = list(args[1])
-    assert data == [['a', 'A'], ['b', 'B']]
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Col1', 'Col2')
+        parsed_args.formatter = 'test'
 
+        test_lister.run(parsed_args)
+        f = test_lister._formatter_plugins['test']
+        self.assertEqual(1, len(f.args))
+        args = f.args[0]
+        self.assertEqual(list(parsed_args.columns), args[0])
+        data = list(args[1])
+        self.assertEqual([['a', 'A'], ['b', 'B']], data)
 
-def test_no_exist_column():
-    test_lister = ExerciseLister(mock.Mock(), [])
-    parsed_args = mock.Mock()
-    parsed_args.columns = ('no_exist_column',)
-    parsed_args.formatter = 'test'
-    with mock.patch.object(test_lister, 'take_action') as mock_take_action:
-        mock_take_action.return_value = (('Col1', 'Col2', 'Col3'), [])
-        try:
-            test_lister.run(parsed_args)
-        except ValueError:
-            pass
-        else:
-            assert False, 'Should have had an exception'
+    def test_no_exist_column(self):
+        test_lister = ExerciseLister(mock.Mock(), [])
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('no_exist_column',)
+        parsed_args.formatter = 'test'
+        with mock.patch.object(test_lister, 'take_action') as mock_take_action:
+            mock_take_action.return_value = (('Col1', 'Col2', 'Col3'), [])
+            self.assertRaises(
+                ValueError,
+                test_lister.run,
+                parsed_args,
+            )

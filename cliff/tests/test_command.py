@@ -11,6 +11,7 @@
 #  under the License.
 
 from cliff import command
+from cliff.tests import base
 
 
 class TestCommand(command.Command):
@@ -51,47 +52,44 @@ class TestCommandNoDocstring(command.Command):
         return 42
 
 
-def test_get_description_docstring():
-    cmd = TestCommand(None, None)
-    desc = cmd.get_description()
-    assert desc == "Description of command.\n    "
+class TestDescription(base.TestBase):
+
+    def test_get_description_docstring(self):
+        cmd = TestCommand(None, None)
+        desc = cmd.get_description()
+        assert desc == "Description of command.\n    "
+
+    def test_get_description_attribute(self):
+        cmd = TestCommand(None, None)
+        # Artificially inject a value for _description to verify that it
+        # overrides the docstring.
+        cmd._description = 'this is not the default'
+        desc = cmd.get_description()
+        assert desc == 'this is not the default'
+
+    def test_get_description_default(self):
+        cmd = TestCommandNoDocstring(None, None)
+        desc = cmd.get_description()
+        assert desc == ''
 
 
-def test_get_description_attribute():
-    cmd = TestCommand(None, None)
-    # Artificially inject a value for _description to verify that it
-    # overrides the docstring.
-    cmd._description = 'this is not the default'
-    desc = cmd.get_description()
-    assert desc == 'this is not the default'
+class TestBasicValues(base.TestBase):
+
+    def test_get_parser(self):
+        cmd = TestCommand(None, None)
+        parser = cmd.get_parser('NAME')
+        assert parser.prog == 'NAME'
+
+    def test_get_name(self):
+        cmd = TestCommand(None, None, cmd_name='object action')
+        assert cmd.cmd_name == 'object action'
+
+    def test_run_return(self):
+        cmd = TestCommand(None, None, cmd_name='object action')
+        assert cmd.run(None) == 42
 
 
-def test_get_description_default():
-    cmd = TestCommandNoDocstring(None, None)
-    desc = cmd.get_description()
-    assert desc == ''
-
-
-def test_get_parser():
-    cmd = TestCommand(None, None)
-    parser = cmd.get_parser('NAME')
-    assert parser.prog == 'NAME'
-
-
-def test_get_name():
-    cmd = TestCommand(None, None, cmd_name='object action')
-    assert cmd.cmd_name == 'object action'
-
-
-def test_run_return():
-    cmd = TestCommand(None, None, cmd_name='object action')
-    assert cmd.run(None) == 42
-
-
-def test_smart_help_formatter():
-    cmd = TestCommand(None, None)
-    parser = cmd.get_parser('NAME')
-    expected_help_message = """
+expected_help_message = """
   long_help_argument    Create a NIC on the server.
                         Specify option multiple times to create multiple NICs.
                         Either net-id or port-id must be provided, but not
@@ -108,4 +106,11 @@ def test_smart_help_formatter():
   regular_help_argument
                         The quick brown fox jumps over the lazy dog.
 """
-    assert expected_help_message in parser.format_help()
+
+
+class TestHelp(base.TestBase):
+
+    def test_smart_help_formatter(self):
+        cmd = TestCommand(None, None)
+        parser = cmd.get_parser('NAME')
+        self.assertIn(expected_help_message, parser.format_help())

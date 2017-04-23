@@ -11,122 +11,142 @@
 #  under the License.
 
 import mock
+import testscenarios
 
 from cliff import commandmanager
+from cliff.tests import base
 from cliff.tests import utils
 
 
-def test_lookup_and_find():
-    def check(mgr, argv):
-        cmd, name, remaining = mgr.find_command(argv)
-        assert cmd
-        assert name == ' '.join(argv)
-        assert not remaining
-    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-    for expected in [['one'],
-                     ['two', 'words'],
-                     ['three', 'word', 'command'],
-                     ]:
-        yield check, mgr, expected
-    return
+load_tests = testscenarios.load_tests_apply_scenarios
 
 
-def test_lookup_with_remainder():
-    def check(mgr, argv):
-        cmd, name, remaining = mgr.find_command(argv)
-        assert cmd
-        assert remaining == ['--opt']
-    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-    for expected in [['one', '--opt'],
-                     ['two', 'words', '--opt'],
-                     ['three', 'word', 'command', '--opt'],
-                     ]:
-        yield check, mgr, expected
-    return
+class TestLookupAndFind(base.TestBase):
+
+    scenarios = [
+        ('one-word', {'argv': ['one']}),
+        ('two-words', {'argv': ['two', 'words']}),
+        ('three-words', {'argv': ['three', 'word', 'command']}),
+    ]
+
+    def test(self):
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+        cmd, name, remaining = mgr.find_command(self.argv)
+        self.assertTrue(cmd)
+        self.assertEqual(' '.join(self.argv), name)
+        self.assertFalse(remaining)
 
 
-def test_find_invalid_command():
-    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+class TestLookupWithRemainder(base.TestBase):
 
-    def check_one(argv):
+    scenarios = [
+        ('one', {'argv': ['one', '--opt']}),
+        ('two', {'argv': ['two', 'words', '--opt']}),
+        ('three', {'argv': ['three', 'word', 'command', '--opt']}),
+    ]
+
+    def test(self):
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+        cmd, name, remaining = mgr.find_command(self.argv)
+        self.assertTrue(cmd)
+        self.assertEqual(['--opt'], remaining)
+
+
+class TestFindInvalidCommand(base.TestBase):
+
+    scenarios = [
+        ('no-such-command', {'argv': ['a', '-b']}),
+        ('no-command-given', {'argv': ['-b']}),
+    ]
+
+    def test(self):
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         try:
-            mgr.find_command(argv)
+            mgr.find_command(self.argv)
         except ValueError as err:
             # make sure err include 'a' when ['a', '-b']
-            assert argv[0] in ('%s' % err)
-            assert '-b' in ('%s' % err)
+            self.assertIn(self.argv[0], str(err))
+            self.assertIn('-b', str(err))
         else:
-            assert False, 'expected a failure'
-    for argv in [['a', '-b'],
-                 ['-b'],
-                 ]:
-        yield check_one, argv
+            self.fail('expected a failure')
 
 
-def test_find_unknown_command():
-    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-    try:
-        mgr.find_command(['a', 'b'])
-    except ValueError as err:
-        assert "['a', 'b']" in ('%s' % err)
-    else:
-        assert False, 'expected a failure'
+class TestFindUnknownCommand(base.TestBase):
+
+    def test(self):
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+        try:
+            mgr.find_command(['a', 'b'])
+        except ValueError as err:
+            self.assertIn("['a', 'b']", str(err))
+        else:
+            self.fail('expected a failure')
 
 
-def test_add_command():
-    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-    mock_cmd = mock.Mock()
-    mgr.add_command('mock', mock_cmd)
-    found_cmd, name, args = mgr.find_command(['mock'])
-    assert found_cmd is mock_cmd
+class TestDynamicCommands(base.TestBase):
+
+    def test_add(self):
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+        mock_cmd = mock.Mock()
+        mgr.add_command('mock', mock_cmd)
+        found_cmd, name, args = mgr.find_command(['mock'])
+        self.assertIs(mock_cmd, found_cmd)
+
+    def test_intersected_commands(self):
+        def foo(arg):
+            pass
+
+        def foo_bar():
+            pass
+
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+        mgr.add_command('foo', foo)
+        mgr.add_command('foo bar', foo_bar)
+
+        self.assertIs(foo_bar, mgr.find_command(['foo', 'bar'])[0])
+        self.assertIs(
+            foo,
+            mgr.find_command(['foo', 'arg0'])[0],
+        )
 
 
-def test_intersected_commands():
-    def foo(arg):
-        pass
+class TestLoad(base.TestBase):
 
-    def foo_bar():
-        pass
+    def test_load_commands(self):
+        testcmd = mock.Mock(name='testcmd')
+        testcmd.name.replace.return_value = 'test'
+        mock_pkg_resources = mock.Mock(return_value=[testcmd])
+        with mock.patch('pkg_resources.iter_entry_points',
+                        mock_pkg_resources) as iter_entry_points:
+            mgr = commandmanager.CommandManager('test')
+            iter_entry_points.assert_called_once_with('test')
+            names = [n for n, v in mgr]
+            self.assertEqual(['test'], names)
 
-    mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-    mgr.add_command('foo', foo)
-    mgr.add_command('foo bar', foo_bar)
+    def test_load_commands_keep_underscores(self):
+        testcmd = mock.Mock()
+        testcmd.name = 'test_cmd'
+        mock_pkg_resources = mock.Mock(return_value=[testcmd])
+        with mock.patch('pkg_resources.iter_entry_points',
+                        mock_pkg_resources) as iter_entry_points:
+            mgr = commandmanager.CommandManager(
+                'test',
+                convert_underscores=False,
+            )
+            iter_entry_points.assert_called_once_with('test')
+            names = [n for n, v in mgr]
+            self.assertEqual(['test_cmd'], names)
 
-    assert mgr.find_command(['foo', 'bar'])[0] is foo_bar
-    assert mgr.find_command(['foo', 'arg0'])[0] is foo
-
-
-def test_load_commands():
-    testcmd = mock.Mock(name='testcmd')
-    testcmd.name.replace.return_value = 'test'
-    mock_pkg_resources = mock.Mock(return_value=[testcmd])
-    with mock.patch('pkg_resources.iter_entry_points',
-                    mock_pkg_resources) as iter_entry_points:
-        mgr = commandmanager.CommandManager('test')
-        iter_entry_points.assert_called_once_with('test')
-        names = [n for n, v in mgr]
-        assert names == ['test']
-
-
-def test_load_commands_keep_underscores():
-    testcmd = mock.Mock()
-    testcmd.name = 'test_cmd'
-    mock_pkg_resources = mock.Mock(return_value=[testcmd])
-    with mock.patch('pkg_resources.iter_entry_points',
-                    mock_pkg_resources) as iter_entry_points:
-        mgr = commandmanager.CommandManager('test', convert_underscores=False)
-        iter_entry_points.assert_called_once_with('test')
-        names = [n for n, v in mgr]
-        assert names == ['test_cmd']
-
-
-def test_load_commands_replace_underscores():
-    testcmd = mock.Mock()
-    testcmd.name = 'test_cmd'
-    mock_pkg_resources = mock.Mock(return_value=[testcmd])
-    with mock.patch('pkg_resources.iter_entry_points',
-                    mock_pkg_resources) as iter_entry_points:
-        mgr = commandmanager.CommandManager('test', convert_underscores=True)
-        iter_entry_points.assert_called_once_with('test')
-        names = [n for n, v in mgr]
-        assert names == ['test cmd']
+    def test_load_commands_replace_underscores(self):
+        testcmd = mock.Mock()
+        testcmd.name = 'test_cmd'
+        mock_pkg_resources = mock.Mock(return_value=[testcmd])
+        with mock.patch('pkg_resources.iter_entry_points',
+                        mock_pkg_resources) as iter_entry_points:
+            mgr = commandmanager.CommandManager(
+                'test',
+                convert_underscores=True,
+            )
+            iter_entry_points.assert_called_once_with('test')
+            names = [n for n, v in mgr]
+            self.assertEqual(['test cmd'], names)

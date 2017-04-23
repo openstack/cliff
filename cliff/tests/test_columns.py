@@ -10,6 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import unittest
+
 from cliff import columns
 
 
@@ -19,12 +21,15 @@ class FauxColumn(columns.FormattableColumn):
         return u'I made this string myself: {}'.format(self._value)
 
 
-def test_faux_column_machine():
-    c = FauxColumn(['list', 'of', 'values'])
-    assert c.machine_readable() == ['list', 'of', 'values']
+class TestColumns(unittest.TestCase):
 
+    def test_faux_column_machine(self):
+        c = FauxColumn(['list', 'of', 'values'])
+        self.assertEqual(['list', 'of', 'values'], c.machine_readable())
 
-def test_faux_column_human():
-    c = FauxColumn(['list', 'of', 'values'])
-    assert c.human_readable() == \
-        u"I made this string myself: ['list', 'of', 'values']"
+    def test_faux_column_human(self):
+        c = FauxColumn(['list', 'of', 'values'])
+        self.assertEqual(
+            u"I made this string myself: ['list', 'of', 'values']",
+            c.human_readable(),
+        )
