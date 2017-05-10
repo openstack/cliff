@@ -18,7 +18,7 @@ import shlex
 import sys
 
 import cmd2
-
+import os
 
 class InteractiveApp(cmd2.Cmd):
     """Provides "interactive mode" features.
@@ -44,7 +44,7 @@ class InteractiveApp(cmd2.Cmd):
     def __init__(self, parent_app, command_manager, stdin, stdout):
         self.parent_app = parent_app
         if not hasattr(sys.stdin, 'isatty') or sys.stdin.isatty():
-            self.prompt = '(%s) ' % parent_app.NAME
+            self.prompt = '(%s) ' % (os.environ.get('OS_PROMPT') or parent_app.NAME)
         else:
             # batch/pipe mode
             self.prompt = ''
