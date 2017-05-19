@@ -22,7 +22,7 @@ import os
 import six
 import sys
 
-from cliff import argparse
+from cliff import _argparse
 from . import complete
 from . import help
 from . import utils
@@ -143,7 +143,7 @@ class App(object):
         :paramtype extra_kwargs: dict
         """
         argparse_kwargs = argparse_kwargs or {}
-        parser = argparse.ArgumentParser(
+        parser = _argparse.ArgumentParser(
             description=description,
             add_help=False,
             **argparse_kwargs
