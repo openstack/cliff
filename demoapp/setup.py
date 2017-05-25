@@ -60,6 +60,10 @@ setup(
             'file = cliffdemo.show:File',
             'show file = cliffdemo.show:File',
             'unicode = cliffdemo.encoding:Encoding',
+            'hooked = cliffdemo.hook:Hooked',
+        ],
+        'cliff.demo.hooked': [
+            'sample-hook = cliffdemo.hook:Hook',
         ],
     },
 

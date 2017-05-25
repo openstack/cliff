@@ -14,6 +14,7 @@ import abc
 import inspect
 
 import six
+from stevedore import extension
 
 from cliff import _argparse
 
@@ -21,6 +22,12 @@ from cliff import _argparse
 @six.add_metaclass(abc.ABCMeta)
 class Command(object):
     """Base class for command plugins.
+
+    When the command is instantiated, it loads extensions from a
+    namespace based on the parent application namespace and the
+    command name::
+
+        app.namespace + '.' + cmd_name.replace(' ', '_')
 
     :param app: Application instance invoking the command.
     :paramtype app: cliff.app.App
@@ -36,6 +43,26 @@ class Command(object):
         self.app = app
         self.app_args = app_args
         self.cmd_name = cmd_name
+        self._load_hooks()
+
+    def _load_hooks(self):
+        # Look for command extensions
+        if self.app and self.cmd_name:
+            namespace = '{}.{}'.format(
+                self.app.command_manager.namespace,
+                self.cmd_name.replace(' ', '_')
+            )
+            self._hooks = extension.ExtensionManager(
+                namespace=namespace,
+                invoke_on_load=True,
+                invoke_kwds={
+                    'command': self,
+                },
+            )
+        else:
+            # Setting _hooks to an empty list allows iteration without
+            # checking if there are hooks every time.
+            self._hooks = []
         return
 
     def get_description(self):
@@ -73,6 +100,8 @@ class Command(object):
             prog=prog_name,
             formatter_class=_SmartHelpFormatter,
         )
+        for hook in self._hooks:
+            hook.obj.get_parser(parser)
         return parser
 
     @abc.abstractmethod

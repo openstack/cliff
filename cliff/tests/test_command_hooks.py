@@ -1,0 +1,107 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+from cliff import app as application
+from cliff import command
+from cliff import commandmanager
+from cliff import hooks
+from cliff.tests import base
+
+import mock
+from stevedore import extension
+
+
+def make_app(**kwargs):
+    cmd_mgr = commandmanager.CommandManager('cliff.tests')
+
+    # Register a command that succeeds
+    cmd = mock.MagicMock(spec=command.Command)
+    command_inst = mock.MagicMock(spec=command.Command)
+    command_inst.run.return_value = 0
+    command.return_value = command_inst
+    cmd_mgr.add_command('mock', cmd)
+
+    # Register a command that fails
+    err_command = mock.Mock(name='err_command', spec=command.Command)
+    err_command_inst = mock.Mock(spec=command.Command)
+    err_command_inst.run = mock.Mock(
+        side_effect=RuntimeError('test exception')
+    )
+    err_command.return_value = err_command_inst
+    cmd_mgr.add_command('error', err_command)
+
+    app = application.App('testing command hooks',
+                          '1',
+                          cmd_mgr,
+                          stderr=mock.Mock(),  # suppress warning messages
+                          **kwargs
+                          )
+    return app
+
+
+class TestCommand(command.Command):
+    """Description of command.
+    """
+
+    def get_parser(self, prog_name):
+        parser = super(TestCommand, self).get_parser(prog_name)
+        return parser
+
+    def take_action(self, parsed_args):
+        return 42
+
+
+class TestHook(hooks.CommandHook):
+
+    def get_parser(self, parser):
+        parser.add_argument('--added-by-hook')
+        return parser
+
+
+class TestCommandLoadHooks(base.TestBase):
+
+    def test_no_app_or_name(self):
+        cmd = TestCommand(None, None)
+        self.assertEqual([], cmd._hooks)
+
+    @mock.patch('stevedore.extension.ExtensionManager')
+    def test_app_and_name(self, em):
+        app = make_app()
+        TestCommand(app, None, cmd_name='test')
+        print(em.mock_calls[0])
+        name, args, kwargs = em.mock_calls[0]
+        print(kwargs)
+        self.assertEqual('cliff.tests.test', kwargs['namespace'])
+
+
+class TestParserHook(base.TestBase):
+
+    def setUp(self):
+        super(TestParserHook, self).setUp()
+        self.app = make_app()
+        self.cmd = TestCommand(self.app, None, cmd_name='test')
+        self.hook = TestHook(self.cmd)
+        self.mgr = extension.ExtensionManager.make_test_instance(
+            [extension.Extension(
+                'parser-hook',
+                None,
+                None,
+                self.hook)],
+        )
+        # Replace the auto-loaded hooks with our explicitly created
+        # manager.
+        self.cmd._hooks = self.mgr
+
+    def test_get_parser(self):
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.assertEqual(results.added_by_hook, 'value')
