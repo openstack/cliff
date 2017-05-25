@@ -11,6 +11,7 @@
 #  under the License.
 
 import argparse
+import inspect
 import sys
 import traceback
 
@@ -38,7 +39,10 @@ class HelpAction(argparse.Action):
                     traceback.print_exc(file=app.stdout)
                 continue
             try:
-                cmd = factory(app, None)
+                kwargs = {}
+                if 'cmd_name' in inspect.getargspec(factory.__init__).args:
+                    kwargs['cmd_name'] = name
+                cmd = factory(app, None, **kwargs)
                 if cmd.deprecated:
                     continue
             except Exception as err:
@@ -83,7 +87,10 @@ class HelpCommand(command.Command):
                     self.app.stdout.write('  %s\n' % fm)
                 return
             self.app_args.cmd = search_args
-            cmd = cmd_factory(self.app, self.app_args)
+            kwargs = {}
+            if 'cmd_name' in inspect.getargspec(cmd_factory.__init__).args:
+                kwargs['cmd_name'] = cmd_name
+            cmd = cmd_factory(self.app, self.app_args, **kwargs)
             full_name = (cmd_name
                          if self.app.interactive_mode
                          else ' '.join([self.app.NAME, cmd_name])
