@@ -66,6 +66,9 @@ class TestHook(hooks.CommandHook):
         parser.add_argument('--added-by-hook')
         return parser
 
+    def get_epilog(self):
+        return 'hook epilog'
+
 
 class TestCommandLoadHooks(base.TestBase):
 
@@ -83,10 +86,10 @@ class TestCommandLoadHooks(base.TestBase):
         self.assertEqual('cliff.tests.test', kwargs['namespace'])
 
 
-class TestParserHook(base.TestBase):
+class TestHooks(base.TestBase):
 
     def setUp(self):
-        super(TestParserHook, self).setUp()
+        super(TestHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
@@ -105,3 +108,7 @@ class TestParserHook(base.TestBase):
         parser = self.cmd.get_parser('test')
         results = parser.parse_args(['--added-by-hook', 'value'])
         self.assertEqual(results.added_by_hook, 'value')
+
+    def test_get_epilog(self):
+        results = self.cmd.get_epilog()
+        self.assertIn('hook epilog', results)

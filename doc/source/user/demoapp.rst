@@ -293,6 +293,8 @@ single ``--added-by-hook`` option.
       -h, --help            show this help message and exit
       --added-by-hook ADDED_BY_HOOK
 
+    extension epilog text
+
 .. seealso::
 
    :class:`cliff.hooks.CommandHook` -- The API for command hooks.

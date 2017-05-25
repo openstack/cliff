@@ -36,3 +36,8 @@ class CommandHook(object):
         :returns: ArgumentParser
         """
         return parser
+
+    @abc.abstractmethod
+    def get_epilog(self):
+        "Return text to add to the command help epilog."
+        return ''
