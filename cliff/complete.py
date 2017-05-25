@@ -167,8 +167,8 @@ class CompleteCommand(command.Command):
 
     log = logging.getLogger(__name__ + '.CompleteCommand')
 
-    def __init__(self, app, app_args):
-        super(CompleteCommand, self).__init__(app, app_args)
+    def __init__(self, app, app_args, cmd_name=None):
+        super(CompleteCommand, self).__init__(app, app_args, cmd_name)
         self._formatters = stevedore.ExtensionManager(
             namespace='cliff.formatter.completion',
         )
