@@ -24,7 +24,7 @@ class Hooked(Command):
     log = logging.getLogger(__name__)
 
     def take_action(self, parsed_args):
-        self.app.stdout.write('this command has an extension')
+        self.app.stdout.write('this command has an extension\n')
 
 
 class Hook(CommandHook):
@@ -42,3 +42,9 @@ class Hook(CommandHook):
 
     def get_epilog(self):
         return 'extension epilog text'
+
+    def before(self, parsed_args):
+        self.cmd.app.stdout.write('before\n')
+
+    def after(self, parsed_args, return_code):
+        self.cmd.app.stdout.write('after\n')

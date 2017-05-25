@@ -295,6 +295,12 @@ single ``--added-by-hook`` option.
 
     extension epilog text
 
+    (.venv)$ cliffdemo hooked
+    sample hook get_parser()
+    before
+    this command has an extension
+    after
+
 .. seealso::
 
    :class:`cliff.hooks.CommandHook` -- The API for command hooks.

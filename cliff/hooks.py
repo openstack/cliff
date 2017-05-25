@@ -41,3 +41,25 @@ class CommandHook(object):
     def get_epilog(self):
         "Return text to add to the command help epilog."
         return ''
+
+    @abc.abstractmethod
+    def before(self, parsed_args):
+        """Called before the command's take_action() method.
+
+        Any return value is ignored.
+
+        :param parsed_args: The arguments to the command.
+        :paramtype parsed_args: argparse.Namespace
+        """
+
+    @abc.abstractmethod
+    def after(self, parsed_args, return_code):
+        """Called after the command's take_action() method.
+
+        Any return value is ignored.
+
+        :param parsed_args: The arguments to the command.
+        :paramtype parsed_args: argparse.Namespace
+        :param return_code: The value returned from take_action().
+        :paramtype return_code: int
+        """
