@@ -15,7 +15,7 @@ import inspect
 
 import six
 
-from cliff import argparse
+from cliff import _argparse
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -67,7 +67,7 @@ class Command(object):
     def get_parser(self, prog_name):
         """Return an :class:`argparse.ArgumentParser`.
         """
-        parser = argparse.ArgumentParser(
+        parser = _argparse.ArgumentParser(
             description=self.get_description(),
             epilog=self.get_epilog(),
             prog=prog_name,
@@ -97,7 +97,7 @@ class Command(object):
         return self.take_action(parsed_args) or 0
 
 
-class _SmartHelpFormatter(argparse.HelpFormatter):
+class _SmartHelpFormatter(_argparse.HelpFormatter):
     """Smart help formatter to output raw help message if help contain \n.
 
     Some command help messages maybe have multiple line content, the built-in
