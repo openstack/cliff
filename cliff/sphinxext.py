@@ -14,6 +14,7 @@
 
 import argparse
 import fnmatch
+import re
 
 from docutils import nodes
 from docutils.parsers import rst
@@ -37,10 +38,30 @@ def _indent(text):
 def _format_usage(parser):
     """Get usage without a prefix."""
     fmt = argparse.HelpFormatter(parser.prog)
-    fmt.add_usage(parser.usage, parser._actions,
-                  parser._mutually_exclusive_groups, prefix='')
 
-    return fmt.format_help().strip().splitlines()
+    optionals = parser._get_optional_actions()
+    positionals = parser._get_positional_actions()
+    groups = parser._mutually_exclusive_groups
+
+    # hacked variant of the regex used by the actual argparse module. Unlike
+    # that version, this one attempts to group long and short opts with their
+    # optional arguments ensuring that, for example, '---format <FORMAT>'
+    # becomes ['--format <FORMAT>'] and not ['--format', '<FORMAT>'].
+    # Yes, they really do use regexes to break apart and rewrap their help
+    # string. Don't ask me why.
+    part_regexp = r'\(.*?\)+|\[.*?\]+|(?:(?:-\w|--\w+)(?:\s+<\w+>)?)|\S+'
+
+    opt_usage = fmt._format_actions_usage(optionals, groups)
+    pos_usage = fmt._format_actions_usage(positionals, groups)
+
+    opt_parts = re.findall(part_regexp, opt_usage)
+    pos_parts = re.findall(part_regexp, pos_usage)
+    parts = opt_parts + pos_parts
+
+    if len(' '.join([parser.prog] + parts)) < 72:
+        return [' '.join([parser.prog] + parts)]
+
+    return [parser.prog] + [_indent(x) for x in parts]
 
 
 def _format_positional_action(action):
