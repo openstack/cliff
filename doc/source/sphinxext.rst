@@ -31,6 +31,13 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
 
      .. seealso:: The ``autoprogram_cliff_application`` configuration option.
 
+   `:ignored:`
+
+     A comma-separated list of options to exclude from documentation for this
+     option. This is useful for options that are of low value.
+
+     .. seealso:: The ``autoprogram_cliff_ignored`` configuration option.
+
    The following global configuration values are supported. These should be
    placed in `conf.py`:
 
@@ -41,7 +48,31 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
      the `entry_points` section of either `setup.cfg` or `setup.py`. Refer to
      the example_ below for more information.
 
+     For example:
+
+     .. code-block:: python
+
+        autoprogram_cliff_application = 'my-sample-application'
+
+     Defaults to ``''``
+
      .. seealso:: The ``:command:`` directive option.
+
+   `autoprogram_cliff_ignored`
+
+     A global list of options to exclude from documentation. This can be used
+     to prevent duplication of common options, such as those used for
+     pagination, across **all** options.
+
+     For example:
+
+     .. code-block:: python
+
+        autoprogram_cliff_ignored = ['--help', '--page', '--order']
+
+     Defaults to ``['--help']``
+
+     .. seealso:: The ``:ignored:`` directive option.
 
 .. seealso::
 

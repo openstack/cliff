@@ -164,6 +164,7 @@ class AutoprogramCliffDirective(rst.Directive):
     required_arguments = 1
     option_spec = {
         'command': directives.unchanged,
+        'ignored': directives.unchanged,
     }
 
     def _load_command(self, manager, command_name):
@@ -176,7 +177,8 @@ class AutoprogramCliffDirective(rst.Directive):
                              'namespace'.format(
                                  command_name, manager.namespace))
 
-    def _generate_nodes(self, title, command_name, command_class):
+    def _generate_nodes(self, title, command_name, command_class,
+                        ignored_opts):
         """Generate the relevant Sphinx nodes.
 
         This is a little funky. Parts of this use raw docutils nodes while
@@ -192,17 +194,21 @@ class AutoprogramCliffDirective(rst.Directive):
         :param command_name: Name of command, as used on the command line
         :param command_class: Subclass of :py:class:`cliff.command.Command`
         :param prefix: Prefix to apply before command, if any
+        :param ignored_opts: A list of options to exclude from output, if any
         :returns: A list of nested docutil nodes
         """
         command = command_class(None, None)
         parser = command.get_parser(command_name)
         description = command.get_description()
         epilog = command.get_epilog()
+        ignored_opts = ignored_opts or []
 
         # Drop the automatically-added help action
-        for action in parser._actions:
-            if isinstance(action, argparse._HelpAction):
-                del parser._actions[parser._actions.index(action)]
+        for action in list(parser._actions):
+            for option_string in action.option_strings:
+                if option_string in ignored_opts:
+                    del parser._actions[parser._actions.index(action)]
+                    break
 
         # Title
 
@@ -255,7 +261,13 @@ class AutoprogramCliffDirective(rst.Directive):
         self.env = self.state.document.settings.env
 
         command_pattern = self.options.get('command')
-        application_name = self.env.config.autoprogram_cliff_application or ''
+        application_name = self.env.config.autoprogram_cliff_application
+
+        global_ignored = self.env.config.autoprogram_cliff_ignored
+        local_ignored = self.options.get('ignored', '')
+        local_ignored = [x.strip() for x in local_ignored.split(',')
+                         if x.strip()]
+        ignored_opts = list(set(global_ignored + local_ignored))
 
         # TODO(sfinucan): We should probably add this wildcarding functionality
         # to the CommandManager itself to allow things like "show me the
@@ -276,7 +288,7 @@ class AutoprogramCliffDirective(rst.Directive):
                 command_name = ' '.join([application_name, command_name])
 
             output.extend(self._generate_nodes(
-                title, command_name, command_class))
+                title, command_name, command_class, ignored_opts))
 
         return output
 
@@ -284,3 +296,4 @@ class AutoprogramCliffDirective(rst.Directive):
 def setup(app):
     app.add_directive('autoprogram-cliff', AutoprogramCliffDirective)
     app.add_config_value('autoprogram_cliff_application', '', True)
+    app.add_config_value('autoprogram_cliff_ignored', ['--help'], True)
