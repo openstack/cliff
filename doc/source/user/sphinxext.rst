@@ -29,6 +29,14 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
      wildcarding is supported. Refer to the example_ below for more
      information.
 
+   `:application:`
+
+     The top-level application name, which will be prefixed before all
+     commands. This option overrides the global option
+     `autoprogram_cliff_application` described below.
+     In most cases the global configuration is enough, but this option is
+     useful if your sphinx document handles multiple cliff applications.
+
      .. seealso:: The ``autoprogram_cliff_application`` configuration option.
 
    `:ignored:`
@@ -44,7 +52,7 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
    `autoprogram_cliff_application`
 
      The top-level application name, which will be prefixed before all
-     commands.  This is generally defined in the `console_scripts` attribute of
+     commands. This is generally defined in the `console_scripts` attribute of
      the `entry_points` section of either `setup.cfg` or `setup.py`. Refer to
      the example_ below for more information.
 
@@ -57,6 +65,7 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
      Defaults to ``''``
 
      .. seealso:: The ``:command:`` directive option.
+     .. seealso:: The ``:application:`` directive option.
 
    `autoprogram_cliff_ignored`
 

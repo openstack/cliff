@@ -204,6 +204,7 @@ class AutoprogramCliffDirective(rst.Directive):
     option_spec = {
         'command': directives.unchanged,
         'ignored': directives.unchanged,
+        'application': directives.unchanged,
     }
 
     def _load_command(self, manager, command_name):
@@ -267,7 +268,8 @@ class AutoprogramCliffDirective(rst.Directive):
         self.env = self.state.document.settings.env
 
         command_pattern = self.options.get('command')
-        application_name = self.env.config.autoprogram_cliff_application
+        application_name = (self.options.get('application')
+                            or self.env.config.autoprogram_cliff_application)
 
         global_ignored = self.env.config.autoprogram_cliff_ignored
         local_ignored = self.options.get('ignored', '')
