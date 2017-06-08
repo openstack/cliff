@@ -62,6 +62,30 @@ class TestSphinxExtension(base.TestBase):
             user name
         """).lstrip(), output)
 
+    def test_description_epilog(self):
+        """Handle a parser description, epilog."""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False,
+                                         description='A "Hello, World" app.',
+                                         epilog='What am I doing down here?')
+        parser.add_argument('name', action='store')
+        parser.add_argument('--language', dest='lang')
+
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        A "Hello, World" app.
+
+        .. program:: hello-world
+        .. code-block:: shell
+
+            hello-world [--language LANG] name
+
+        .. option:: --language <LANG>
+
+        .. option:: name
+
+        What am I doing down here?
+        """).lstrip(), output)
+
     def test_flag(self):
         """Handle a boolean argparse action."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
