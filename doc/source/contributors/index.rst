@@ -1,6 +1,6 @@
-================
- For Developers
-================
+==================
+ For Contributors
+==================
 
 If you would like to contribute to cliff directly, these instructions
 should help you get started.  Bug reports, and feature requests are

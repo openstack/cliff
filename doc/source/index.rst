@@ -6,22 +6,13 @@ cliff is a framework for building command line programs. It uses
 plugins to define sub-commands, output formatters, and other
 extensions.
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
-   introduction
-   demoapp
-   list_commands
-   show_commands
-   complete
-   interactive_mode
-   classes
-   install
-   sphinxext
-   developers
-   history
+   install/index
+   user/index
+   reference/index
+   contributors/index
 
 
 Indices and tables
