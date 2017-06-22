@@ -15,8 +15,7 @@ extensions.
    contributors/index
 
 
-Indices and tables
-==================
+.. rubric:: Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
