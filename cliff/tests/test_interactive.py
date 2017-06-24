@@ -31,7 +31,8 @@ class TestInteractive(base.TestBase):
 
     def _test_completenames(self, expecteds, prefix):
         app = self.make_interactive_app('hips', 'hippo', 'nonmatching')
-        self.assertEqual(set(app.completenames(prefix)), set(expecteds))
+        self.assertEqual(
+            set(app.completenames(prefix, '', 0, 1)), set(expecteds))
 
     def test_cmd2_completenames(self):
         # cmd2.Cmd define do_help method
