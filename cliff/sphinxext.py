@@ -35,6 +35,17 @@ def _indent(text):
     return ''.join(prefixed_lines())
 
 
+def _format_description(parser):
+    """Get parser description.
+
+    We parse this as reStructuredText, allowing users to embed rich
+    information in their help messages if they so choose.
+    """
+    for line in statemachine.string2lines(
+            parser.description, tab_width=4, convert_whitespace=True):
+        yield line
+
+
 def _format_usage(parser):
     """Get usage without a prefix."""
     fmt = argparse.HelpFormatter(parser.prog)
@@ -62,6 +73,17 @@ def _format_usage(parser):
         return [' '.join([parser.prog] + parts)]
 
     return [parser.prog] + [_indent(x) for x in parts]
+
+
+def _format_epilog(parser):
+    """Get parser epilog.
+
+    We parse this as reStructuredText, allowing users to embed rich
+    information in their help messages if they so choose.
+    """
+    for line in statemachine.string2lines(
+            parser.epilog, tab_width=4, convert_whitespace=True):
+        yield line
 
 
 def _format_positional_action(action):
@@ -109,12 +131,16 @@ def _format_parser(parser):
     Given the following parser::
 
       >>> import argparse
-      >>> parser = argparse.ArgumentParser(prog='hello-world')
+      >>> parser = argparse.ArgumentParser(prog='hello-world', \
+              description='This is my description.',
+              epilog='This is my epilog')
       >>> parser.add_argument('name', help='User name', metavar='<name>')
       >>> parser.add_argument('--language', action='store', dest='lang', \
               help='Greeting language')
 
     Returns the following::
+
+      This is my description.
 
       .. program:: hello-world
       .. code:: shell
@@ -132,7 +158,14 @@ def _format_parser(parser):
       .. option:: -h, --help
 
           Show this help message and exit
+
+      This is my epilog.
     """
+    if parser.description:
+        for line in _format_description(parser):
+            yield line
+        yield ''
+
     yield '.. program:: {}'.format(parser.prog)
 
     yield '.. code-block:: shell'
@@ -153,6 +186,11 @@ def _format_parser(parser):
 
     for action in parser._get_positional_actions():
         for line in _format_positional_action(action):
+            yield line
+        yield ''
+
+    if parser.epilog:
+        for line in _format_epilog(parser):
             yield line
         yield ''
 
@@ -199,8 +237,6 @@ class AutoprogramCliffDirective(rst.Directive):
         """
         command = command_class(None, None)
         parser = command.get_parser(command_name)
-        description = command.get_description()
-        epilog = command.get_epilog()
         ignored_opts = ignored_opts or []
 
         # Drop the automatically-added help action
@@ -209,10 +245,6 @@ class AutoprogramCliffDirective(rst.Directive):
                 if option_string in ignored_opts:
                     del parser._actions[parser._actions.index(action)]
                     break
-
-        # Title
-
-        # We build this with plain old docutils nodes
 
         section = nodes.section(
             '',
@@ -223,37 +255,10 @@ class AutoprogramCliffDirective(rst.Directive):
         source_name = '<{}>'.format(command.__class__.__name__)
         result = statemachine.ViewList()
 
-        # Description
-
-        # We parse this as reStructuredText, allowing users to embed rich
-        # information in their help messages if they so choose.
-
-        if description:
-            for line in statemachine.string2lines(
-                    description, tab_width=4, convert_whitespace=True):
-                result.append(line, source_name)
-
-            result.append('', source_name)
-
-        # Summary
-
-        # We both build and parse this as reStructuredText
-
         for line in _format_parser(parser):
             result.append(line, source_name)
 
         self.state.nested_parse(result, 0, section)
-
-        # Epilog
-
-        # Like description, this is parsed as reStructuredText
-
-        if epilog:
-            result.append('', source_name)
-
-            for line in statemachine.string2lines(
-                    epilog, tab_width=4, convert_whitespace=True):
-                result.append(line, source_name)
 
         return [section]
 
