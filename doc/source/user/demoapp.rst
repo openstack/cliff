@@ -81,7 +81,7 @@ main.py
 
 The main application is defined in ``main.py``:
 
-.. literalinclude:: ../../demoapp/cliffdemo/main.py
+.. literalinclude:: ../../../demoapp/cliffdemo/main.py
    :linenos:
 
 The :class:`DemoApp` class inherits from :class:`App` and overrides
@@ -116,7 +116,7 @@ simple.py
 
 Two commands are defined in ``simple.py``:
 
-.. literalinclude:: ../../demoapp/cliffdemo/simple.py
+.. literalinclude:: ../../../demoapp/cliffdemo/simple.py
    :linenos:
 
 :class:`Simple` demonstrates using logging to emit messages on the
@@ -190,7 +190,7 @@ list.py
 :class:`cliff.lister.Lister` which prints a list of the files in the
 current directory.
 
-.. literalinclude:: ../../demoapp/cliffdemo/list.py
+.. literalinclude:: ../../../demoapp/cliffdemo/list.py
    :linenos:
 
 :class:`Files` prepares the data, and :class:`Lister` manages the
@@ -224,7 +224,7 @@ show.py
 :class:`cliff.show.ShowOne` which prints the properties of the named
 file.
 
-.. literalinclude:: ../../demoapp/cliffdemo/show.py
+.. literalinclude:: ../../../demoapp/cliffdemo/show.py
    :linenos:
 
 :class:`File` prepares the data, and :class:`ShowOne` manages the
@@ -250,7 +250,7 @@ setup.py
 The demo application is packaged using distribute_, the modern
 implementation of setuptools.
 
-.. literalinclude:: ../../demoapp/setup.py
+.. literalinclude:: ../../../demoapp/setup.py
    :linenos:
 
 The important parts of the packaging instructions are the

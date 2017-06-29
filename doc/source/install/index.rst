@@ -5,7 +5,7 @@
 Python Versions
 ===============
 
-cliff is being developed under Python 2.7 and tested with Python 3.2.
+cliff is being developed under Python 2.7 and tested with Python 3.5.
 
 Dependencies
 ============
