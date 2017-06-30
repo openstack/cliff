@@ -10,6 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import functools
+
 from cliff import command
 from cliff.tests import base
 
@@ -113,4 +115,16 @@ class TestHelp(base.TestBase):
     def test_smart_help_formatter(self):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
+        # Set up the formatter to always use a width=80 so that the
+        # terminal width of the developer's system does not cause the
+        # test to fail. Trying to mock os.environ failed, but there is
+        # an arg to HelpFormatter to set the width
+        # explicitly. Unfortunately, there is no way to do that
+        # through the parser, so we have to replace the parser's
+        # formatter_class attribute with a partial() that passes width
+        # to the original class.
+        parser.formatter_class = functools.partial(
+            parser.formatter_class,
+            width=78,
+        )
         self.assertIn(expected_help_message, parser.format_help())
