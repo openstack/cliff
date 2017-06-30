@@ -246,8 +246,7 @@ output formatter and printing the data to the console.
 setup.py
 --------
 
-The demo application is packaged using distribute_, the modern
-implementation of setuptools.
+The demo application is packaged using setuptools.
 
 .. literalinclude:: ../../../demoapp/setup.py
    :linenos:
@@ -257,8 +256,6 @@ The important parts of the packaging instructions are the
 ``cliff.demo`` namespace. Each main program should define its own
 command namespace so that it only loads the command plugins that it
 should be managing.
-
-.. _distribute: http://packages.python.org/distribute/
 
 Command Extension Hooks
 =======================
