@@ -27,7 +27,7 @@ def make_app(**kwargs):
     cmd = mock.MagicMock(spec=command.Command)
     command_inst = mock.MagicMock(spec=command.Command)
     command_inst.run.return_value = 0
-    command.return_value = command_inst
+    cmd.return_value = command_inst
     cmd_mgr.add_command('mock', cmd)
 
     # Register a command that fails
