@@ -39,3 +39,6 @@ class Hook(CommandHook):
         print('sample hook get_parser()')
         parser.add_argument('--added-by-hook')
         return parser
+
+    def get_epilog(self):
+        return 'extension epilog text'

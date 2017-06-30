@@ -89,6 +89,16 @@ class Command(object):
 
     def get_epilog(self):
         """Return the command epilog."""
+        hook_epilogs = filter(
+            None,
+            (h.obj.get_epilog() for h in self._hooks),
+        )
+        if hook_epilogs:
+            # combine them, replacing a None in self._epilog with an
+            # empty string
+            parts = [self._epilog or '']
+            parts.extend(hook_epilogs)
+            return '\n\n'.join(parts)
         return self._epilog
 
     def get_parser(self, prog_name):
