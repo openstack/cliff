@@ -62,12 +62,21 @@ class TestCommand(command.Command):
 
 class TestHook(hooks.CommandHook):
 
+    _before_called = False
+    _after_called = False
+
     def get_parser(self, parser):
         parser.add_argument('--added-by-hook')
         return parser
 
     def get_epilog(self):
         return 'hook epilog'
+
+    def before(self, parsed_args):
+        self._before_called = True
+
+    def after(self, parsed_args, return_code):
+        self._after_called = True
 
 
 class TestCommandLoadHooks(base.TestBase):
@@ -112,3 +121,13 @@ class TestHooks(base.TestBase):
     def test_get_epilog(self):
         results = self.cmd.get_epilog()
         self.assertIn('hook epilog', results)
+
+    def test_before(self):
+        self.assertFalse(self.hook._before_called)
+        self.cmd.run(None)
+        self.assertTrue(self.hook._before_called)
+
+    def test_after(self):
+        self.assertFalse(self.hook._after_called)
+        self.cmd.run(None)
+        self.assertTrue(self.hook._after_called)

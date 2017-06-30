@@ -133,7 +133,12 @@ class Command(object):
 
         Return the value returned by :meth:`take_action` or 0.
         """
-        return self.take_action(parsed_args) or 0
+        for hook in self._hooks:
+            hook.obj.before(parsed_args)
+        return_code = self.take_action(parsed_args) or 0
+        for hook in self._hooks:
+            hook.obj.after(parsed_args, return_code)
+        return return_code
 
 
 class _SmartHelpFormatter(_argparse.HelpFormatter):
