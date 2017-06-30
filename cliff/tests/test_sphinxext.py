@@ -128,6 +128,24 @@ class TestSphinxExtension(base.TestBase):
             user name
         """).lstrip(), output)
 
+    def test_metavar(self):
+        """Handle an option with a metavar."""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
+        parser.add_argument('names', metavar='<NAME>', nargs='+',
+                            help='a user name')
+
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        .. program:: hello-world
+        .. code-block:: shell
+
+            hello-world <NAME> [<NAME> ...]
+
+        .. option:: NAME
+
+            a user name
+        """).lstrip(), output)
+
     def test_multiple_opts(self):
         """Correctly output multiple opts on separate lines."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)

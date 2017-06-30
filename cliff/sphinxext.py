@@ -91,10 +91,11 @@ def _format_positional_action(action):
     if action.help == argparse.SUPPRESS:
         return
 
-    # NOTE(stephenfin): We use 'dest' - not 'metavar' - because the 'option'
-    # directive dictates that only option argument names should be surrounded
-    # by angle brackets
-    yield '.. option:: {}'.format(action.dest)
+    # NOTE(stephenfin): We strip all types of brackets from 'metavar' because
+    # the 'option' directive dictates that only option argument names should be
+    # surrounded by angle brackets
+    yield '.. option:: {}'.format(
+        (action.metavar or action.dest).strip('<>[]() '))
     if action.help:
         yield ''
         for line in statemachine.string2lines(
