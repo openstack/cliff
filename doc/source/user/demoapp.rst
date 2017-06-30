@@ -243,7 +243,6 @@ output formatter and printing the data to the console.
     | Modified Time | 1335569964.0 |
     +---------------+--------------+
 
-
 setup.py
 --------
 
@@ -260,3 +259,40 @@ command namespace so that it only loads the command plugins that it
 should be managing.
 
 .. _distribute: http://packages.python.org/distribute/
+
+Command Extension Hooks
+=======================
+
+Individual subcommands of an application can be extended via hooks
+registered as separate plugins. In the demo application, the
+``hooked`` command has a single extension registered.
+
+The namespace for hooks is a combination of the application namespace
+and the command name. In this case, the application namespace is
+``cliff.demo`` and the command is ``hooked``, so the extension
+namespace is ``cliff.demo.hooked``. If the subcommand name includes
+spaces, they are replaced with underscores ("``_``") to build the
+namespace.
+
+.. literalinclude:: ../../../demoapp/cliffdemo/hook.py
+   :linenos:
+
+Although the ``hooked`` command does not add any arguments to the
+parser it creates, the help output shows that the extension adds a
+single ``--added-by-hook`` option.
+
+::
+
+    (.venv)$ cliffdemo hooked -h
+    sample hook get_parser()
+    usage: cliffdemo hooked [-h] [--added-by-hook ADDED_BY_HOOK]
+
+    A command to demonstrate how the hooks work
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --added-by-hook ADDED_BY_HOOK
+
+.. seealso::
+
+   :class:`cliff.hooks.CommandHook` -- The API for command hooks.

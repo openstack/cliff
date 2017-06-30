@@ -29,6 +29,12 @@ Command
 .. autoclass:: cliff.command.Command
    :members:
 
+CommandHook
+-----------
+
+.. autoclass:: cliff.hooks.CommandHook
+   :members:
+
 ShowOne
 -------
 

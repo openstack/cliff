@@ -19,7 +19,7 @@ fit.
 Cliff Objects
 =============
 
-Cliff is organized around four objects that are combined to create a
+Cliff is organized around five objects that are combined to create a
 useful command line program.
 
 The Application
@@ -49,6 +49,18 @@ support for those plugins. Each :class:`Command` subclass is
 responsible for taking action based on instructions from the user. It
 defines its own local argument parser (usually using argparse_) and a
 :func:`take_action` method that does the appropriate work.
+
+The CommandHook
+---------------
+
+The :class:`cliff.hooks.CommandHook` class can extend a Command by
+modifying the command line arguments available, for example to add
+options used by a driver. Each CommandHook subclass must implement the
+full hook API, defined by the base class. Extensions should be
+registered using an entry point namespace based on the application
+namespace and the command name::
+
+  application_namespace + '.' + command_name.replace(' ', '_')
 
 The Interactive Application
 ---------------------------
