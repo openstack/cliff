@@ -25,7 +25,8 @@ from cliff.tests import test_columns
 
 
 class args(object):
-    def __init__(self, max_width=0, print_empty=False):
+    def __init__(self, max_width=0, print_empty=False, fit_width=False):
+        self.fit_width = fit_width
         if max_width > 0:
             self.max_width = max_width
         else:
@@ -133,7 +134,7 @@ class TestTerminalWidth(base.TestBase):
         d = ('A', 'B', 'C', 'd' * 77)
         self.assertEqual(
             self.expected_ml_80_val,
-            _table_tester_helper(c, d, extra_args=args()),
+            _table_tester_helper(c, d, extra_args=args(fit_width=True)),
         )
 
     @mock.patch('cliff.utils.terminal_width')
@@ -223,7 +224,10 @@ class TestMaxWidth(base.TestBase):
         |                          | field                                   |
         +--------------------------+-----------------------------------------+
         ''')
-        self.assertEqual(expected, _table_tester_helper(c, d))
+        self.assertEqual(
+            expected,
+            _table_tester_helper(c, d, extra_args=['--fit-width']),
+        )
 
     @mock.patch('cliff.utils.terminal_width')
     def test_50(self, tw):
@@ -240,7 +244,10 @@ class TestMaxWidth(base.TestBase):
         | ame                   | longer than the field  |
         +-----------------------+------------------------+
         ''')
-        self.assertEqual(expected, _table_tester_helper(c, d))
+        self.assertEqual(
+            expected,
+            _table_tester_helper(c, d, extra_args=['--fit-width']),
+        )
 
     @mock.patch('cliff.utils.terminal_width')
     def test_10(self, tw):
@@ -259,7 +266,10 @@ class TestMaxWidth(base.TestBase):
         |                  | field            |
         +------------------+------------------+
         ''')
-        self.assertEqual(expected, _table_tester_helper(c, d))
+        self.assertEqual(
+            expected,
+            _table_tester_helper(c, d, extra_args=['--fit-width']),
+        )
 
 
 class TestListFormatter(base.TestBase):
@@ -390,7 +400,8 @@ class TestListFormatter(base.TestBase):
     def test_max_width_50(self, tw):
         # resize 1 column
         l = tw.return_value = 50
-        actual = _table_tester_helper(self._col_names, self._col_data)
+        actual = _table_tester_helper(self._col_names, self._col_data,
+                                      extra_args=['--fit-width'])
         self.assertEqual(self._expected_mv[l], actual)
         self.assertEqual(l, len(actual.splitlines()[0]))
 
@@ -398,7 +409,8 @@ class TestListFormatter(base.TestBase):
     def test_max_width_45(self, tw):
         # resize 2 columns
         l = tw.return_value = 45
-        actual = _table_tester_helper(self._col_names, self._col_data)
+        actual = _table_tester_helper(self._col_names, self._col_data,
+                                      extra_args=['--fit-width'])
         self.assertEqual(self._expected_mv[l], actual)
         self.assertEqual(l, len(actual.splitlines()[0]))
 
@@ -406,7 +418,8 @@ class TestListFormatter(base.TestBase):
     def test_max_width_40(self, tw):
         # resize all columns
         l = tw.return_value = 40
-        actual = _table_tester_helper(self._col_names, self._col_data)
+        actual = _table_tester_helper(self._col_names, self._col_data,
+                                      extra_args=['--fit-width'])
         self.assertEqual(self._expected_mv[l], actual)
         self.assertEqual(l, len(actual.splitlines()[0]))
 
@@ -414,7 +427,8 @@ class TestListFormatter(base.TestBase):
     def test_max_width_10(self, tw):
         # resize all columns limited by min_width=8
         l = tw.return_value = 10
-        actual = _table_tester_helper(self._col_names, self._col_data)
+        actual = _table_tester_helper(self._col_names, self._col_data,
+                                      extra_args=['--fit-width'])
         self.assertEqual(self._expected_mv[l], actual)
         # 3 columns each 8 wide, plus table spacing and borders
         expected_width = 11 * 3 + 1

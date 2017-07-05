@@ -57,6 +57,15 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
                   'but the parameter takes precedence.'),
         )
         group.add_argument(
+            '--fit-width',
+            action='store_true',
+            default=bool(int(os.environ.get('CLIFF_FIT_WIDTH', 0))),
+            help=('Fit the table to the display width. '
+                  'Implied if --max-width greater than 0. '
+                  'Set the environment variable CLIFF_FIT_WIDTH=1 '
+                  'to always enable'),
+        )
+        group.add_argument(
             '--print-empty',
             action='store_true',
             help='Print empty table if there is no data to show.',
@@ -96,7 +105,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         # preference to wrapping columns smaller than 8 characters.
         min_width = 8
         self._assign_max_widths(
-            stdout, x, int(parsed_args.max_width), min_width)
+            stdout, x, int(parsed_args.max_width), min_width,
+            parsed_args.fit_width)
 
         formatted = x.get_string()
         stdout.write(formatted)
@@ -120,7 +130,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         # the Field column readable.
         min_width = 16
         self._assign_max_widths(
-            stdout, x, int(parsed_args.max_width), min_width)
+            stdout, x, int(parsed_args.max_width), min_width,
+            parsed_args.fit_width)
 
         formatted = x.get_string()
         stdout.write(formatted)
@@ -164,12 +175,15 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         return shrink_fields, shrink_remaining
 
     @staticmethod
-    def _assign_max_widths(stdout, x, max_width, min_width=0):
+    def _assign_max_widths(stdout, x, max_width, min_width=0, fit_width=False):
         if min_width:
             x.min_width = min_width
 
         if max_width > 0:
             term_width = max_width
+        elif not fit_width:
+            # Fitting is disabled
+            return
         else:
             term_width = utils.terminal_width(stdout)
             if not term_width:
