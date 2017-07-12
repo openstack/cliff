@@ -40,7 +40,9 @@ else:
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'cliff.sphinxext',
 ]
+
 if has_openstackdocstheme:
     extensions.append('openstackdocstheme')
 

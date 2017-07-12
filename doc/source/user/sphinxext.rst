@@ -1,6 +1,9 @@
-==================
-Sphinx Integration
-==================
+====================
+ Sphinx Integration
+====================
+
+Usage
+=====
 
 cliff supports integration with Sphinx by way of a `Sphinx directives`__.
 
@@ -100,11 +103,22 @@ Before using the :rst:dir:`autoprogram-cliff` directive you must add
 
 .. _example:
 
-Example
-=======
+Examples
+========
 
-Take a sample `setup.cfg` file, which is based on the `setup.cfg` for the
-`python-openstackclient` project:
+Simple Example (`demoapp`)
+--------------------------
+
+`cliff` provides a sample application, :doc:`demoapp`, to demonstrate some of the
+features of `cliff`. This application :ref:`is documented <demoapp-sphinx>`
+using the `cliff.sphinxext` Sphinx extension.
+
+Advanced Example (`python-openstackclient`)
+-------------------------------------------
+
+It is also possible to document larger applications, such as
+`python-openstackclient`__. Take a sample `setup.cfg` file, which is a minimal
+version of the `setup.cfg` provided by the `python-openstackclient` project:
 
 .. code-block:: ini
 
@@ -149,3 +163,4 @@ usage examples show the full command name:
 
 __ http://www.sphinx-doc.org/en/stable/extdev/markupapi.html
 __ https://docs.python.org/3/library/fnmatch.html
+__ https://docs.openstack.org/python-openstackclient/
