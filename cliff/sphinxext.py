@@ -14,13 +14,16 @@
 
 import argparse
 import fnmatch
+import importlib
 import re
+import sys
 
 from docutils import nodes
 from docutils.parsers import rst
 from docutils.parsers.rst import directives
 from docutils import statemachine
 
+from cliff import app
 from cliff import commandmanager
 
 
@@ -208,9 +211,41 @@ class AutoprogramCliffDirective(rst.Directive):
     required_arguments = 1
     option_spec = {
         'command': directives.unchanged,
+        'arguments': directives.unchanged,
         'ignored': directives.unchanged,
         'application': directives.unchanged,
     }
+
+    def _get_ignored_opts(self):
+        global_ignored = self.env.config.autoprogram_cliff_ignored
+        local_ignored = self.options.get('ignored', '')
+        local_ignored = [x.strip() for x in local_ignored.split(',')
+                         if x.strip()]
+        return list(set(global_ignored + local_ignored))
+
+    def _drop_ignored_options(self, parser, ignored_opts):
+        for action in list(parser._actions):
+            for option_string in action.option_strings:
+                if option_string in ignored_opts:
+                    del parser._actions[parser._actions.index(action)]
+                    break
+
+    def _load_app(self):
+        mod_str, _sep, class_str = self.arguments[0].rpartition('.')
+        if not mod_str:
+            return
+        try:
+            importlib.import_module(mod_str)
+        except ImportError:
+            return
+        try:
+            cliff_app_class = getattr(sys.modules[mod_str], class_str)
+        except AttributeError:
+            return
+        if not issubclass(cliff_app_class, app.App):
+            return
+        app_arguments = self.options.get('arguments', '').split()
+        return cliff_app_class(*app_arguments)
 
     def _load_command(self, manager, command_name):
         """Load a command using an instance of a `CommandManager`."""
@@ -222,8 +257,42 @@ class AutoprogramCliffDirective(rst.Directive):
                              'namespace'.format(
                                  command_name, manager.namespace))
 
-    def _generate_nodes(self, title, command_name, command_class,
-                        ignored_opts):
+    def _load_commands(self):
+        # TODO(sfinucan): We should probably add this wildcarding functionality
+        # to the CommandManager itself to allow things like "show me the
+        # commands like 'foo *'"
+        command_pattern = self.options.get('command')
+        manager = commandmanager.CommandManager(self.arguments[0])
+        if command_pattern:
+            commands = [x for x in manager.commands
+                        if fnmatch.fnmatch(x, command_pattern)]
+        else:
+            commands = manager.commands.keys()
+        return dict((name, self._load_command(manager, name))
+                    for name in commands)
+
+    def _generate_app_node(self, app, application_name):
+        ignored_opts = self._get_ignored_opts()
+
+        parser = app.parser
+
+        self._drop_ignored_options(parser, ignored_opts)
+
+        parser.prog = application_name
+
+        source_name = '<{}>'.format(app.__class__.__name__)
+        result = statemachine.ViewList()
+        for line in _format_parser(parser):
+            result.append(line, source_name)
+
+        section = nodes.section()
+        self.state.nested_parse(result, 0, section)
+
+        # return [section.children]
+        return section.children
+
+    def _generate_nodes_per_command(self, title, command_name, command_class,
+                                    ignored_opts):
         """Generate the relevant Sphinx nodes.
 
         This doesn't bother using raw docutils nodes as they simply don't offer
@@ -244,12 +313,7 @@ class AutoprogramCliffDirective(rst.Directive):
         parser = command.get_parser(command_name)
         ignored_opts = ignored_opts or []
 
-        # Drop any ignored actions
-        for action in list(parser._actions):
-            for option_string in action.option_strings:
-                if option_string in ignored_opts:
-                    del parser._actions[parser._actions.index(action)]
-                    break
+        self._drop_ignored_options(parser, ignored_opts)
 
         section = nodes.section(
             '',
@@ -267,41 +331,32 @@ class AutoprogramCliffDirective(rst.Directive):
 
         return [section]
 
-    def run(self):
-        self.env = self.state.document.settings.env
-
-        command_pattern = self.options.get('command')
-        application_name = (self.options.get('application')
-                            or self.env.config.autoprogram_cliff_application)
-
-        global_ignored = self.env.config.autoprogram_cliff_ignored
-        local_ignored = self.options.get('ignored', '')
-        local_ignored = [x.strip() for x in local_ignored.split(',')
-                         if x.strip()]
-        ignored_opts = list(set(global_ignored + local_ignored))
-
-        # TODO(sfinucan): We should probably add this wildcarding functionality
-        # to the CommandManager itself to allow things like "show me the
-        # commands like 'foo *'"
-        manager = commandmanager.CommandManager(self.arguments[0])
-        if command_pattern:
-            commands = [x for x in manager.commands
-                        if fnmatch.fnmatch(x, command_pattern)]
-        else:
-            commands = manager.commands.keys()
-
+    def _generate_command_nodes(self, commands, application_name):
+        ignored_opts = self._get_ignored_opts()
         output = []
         for command_name in sorted(commands):
-            command_class = self._load_command(manager, command_name)
-
+            command_class = commands[command_name]
             title = command_name
             if application_name:
                 command_name = ' '.join([application_name, command_name])
 
-            output.extend(self._generate_nodes(
+            output.extend(self._generate_nodes_per_command(
                 title, command_name, command_class, ignored_opts))
 
         return output
+
+    def run(self):
+        self.env = self.state.document.settings.env
+
+        application_name = (self.options.get('application')
+                            or self.env.config.autoprogram_cliff_application)
+
+        app = self._load_app()
+        if app:
+            return self._generate_app_node(app, application_name)
+
+        commands = self._load_commands()
+        return self._generate_command_nodes(commands, application_name)
 
 
 def setup(app):

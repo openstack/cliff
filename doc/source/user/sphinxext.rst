@@ -7,27 +7,55 @@ Usage
 
 cliff supports integration with Sphinx by way of a `Sphinx directives`__.
 
+Preparation
+-----------
+
 Before using the :rst:dir:`autoprogram-cliff` directive you must add
 `'cliff.sphinxext'` extension module to a list of `extensions` in `conf.py`:
 
 .. code-block:: python
 
-    extensions = ['cliff.sphinxext']
+   extensions = ['cliff.sphinxext']
 
-.. rst:directive:: .. autoprogram-cliff:: namespace
+Directive
+---------
 
-   Automatically document an instance of :py:class:`cliff.command.Command`,
+.. rst:directive:: .. autoprogram-cliff:: <namespace> or <app class>
+
+   Automatically document an instance of :py:class:`cliff.command.Command`
+   or :py:class:`cliff.app.App`
    including a description, usage summary, and overview of all options.
+
+   .. important::
+
+      There are two modes in this directive: **command** mode and **app**
+      mode. The directive takes one required argument and the mode is
+      determined based on the argument specified.
+
+   The **command** mode documents various information of a specified instance of
+   :py:class:`cliff.command.Command`. The **command** mode takes the namespace
+   that the command(s) can be found in as the argument. This is generally
+   defined in the `entry_points` section of either `setup.cfg` or
+   `setup.py`. You can specify which command(s) should be displayed using
+   `:command:` option.
 
    .. code-block:: rst
 
        .. autoprogram-cliff:: openstack.compute.v2
           :command: server add fixed ip
 
-   One argument is required, corresponding to the namespace that the command(s)
-   can be found in. This is generally defined in the `entry_points` section of
-   either `setup.cfg` or `setup.py`. Refer to the example_ below for more
-   information.
+   The **app** mode documents various information of a specified instance of
+   :py:class:`cliff.app.App`. The **app** mode takes the python path of the
+   corresponding class as the argument. In the **app** mode, `:application:`
+   option is usually specified so that the command name is shown in the
+   rendered output.
+
+   .. code-block:: rst
+
+       .. autoprogram-cliff:: cliffdemo.main.DemoApp
+          :application: cliffdemo
+
+   Refer to the example_ below for more information.
 
    In addition, the following directive options can be supplied:
 
@@ -37,6 +65,15 @@ Before using the :rst:dir:`autoprogram-cliff` directive you must add
      `setup.py` albeit with underscores. This is optional and `fnmatch-style`__
      wildcarding is supported. Refer to the example_ below for more
      information.
+
+     This option is effective only in the **command** mode.
+
+   `:arguments`
+     The arguments to be passed when the cliff application is instantiated.
+     Some cliff applications requires arguments when instantiated.
+     This option can be used to specify such arguments.
+
+     This option is effective only in the **app** mode.
 
    `:application:`
      The top-level application name, which will be prefixed before all

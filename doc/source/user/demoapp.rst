@@ -288,11 +288,23 @@ is provided by :doc:`the cliff Sphinx extension <sphinxext>`.
 
 .. code-block:: rest
 
+   .. autoprogram-cliff:: cliffdemo.main.DemoApp
+      :application: cliffdemo
+
    .. autoprogram-cliff:: cliff.demo
       :application: cliffdemo
 
 Output
 ------
+
+Global Options
+~~~~~~~~~~~~~~
+
+.. autoprogram-cliff:: cliffdemo.main.DemoApp
+   :application: cliffdemo
+
+Command Options
+~~~~~~~~~~~~~~~
 
 .. autoprogram-cliff:: cliff.demo
    :application: cliffdemo
