@@ -33,7 +33,7 @@ or::
 Source Code
 ===========
 
-The source is hosted on github: http://git.openstack.org/cgit/openstack/cliff
+The source is hosted on github: https://git.openstack.org/cgit/openstack/cliff
 
 Reporting Bugs
 ==============
