@@ -60,13 +60,13 @@ class InteractiveApp(cmd2.Cmd):
         line_parts = shlex.split(line.parsed.raw)
         self.parent_app.run_subcommand(line_parts)
 
-    def completenames(self, text, *ignored):
+    def completenames(self, text, line, begidx, endidx):
         """Tab-completion for command prefix without completer delimiter.
 
         This method returns cmd style and cliff style commands matching
         provided command prefix (text).
         """
-        completions = cmd2.Cmd.completenames(self, text, *ignored)
+        completions = cmd2.Cmd.completenames(self, text, line, begidx, endidx)
         completions += self._complete_prefix(text)
         return completions
 

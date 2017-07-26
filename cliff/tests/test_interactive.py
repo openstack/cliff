@@ -29,7 +29,7 @@ def make_interactive_app(*command_names):
 
 def _test_completenames(expecteds, prefix):
     app = make_interactive_app('hips', 'hippo', 'nonmatching')
-    assert set(app.completenames(prefix)) == set(expecteds)
+    assert set(app.completenames(prefix, '', 0, 1)) == set(expecteds)
 
 
 def test_cmd2_completenames():
