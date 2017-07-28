@@ -22,7 +22,6 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
    In addition, the following directive options can be supplied:
 
    `:command:`
-
      The name of the command, as it would appear if called from the command
      line without the executable name. This will be defined in `setup.cfg` or
      `setup.py` albeit with underscores. This is optional and `fnmatch-style`__
@@ -30,7 +29,6 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
      information.
 
    `:application:`
-
      The top-level application name, which will be prefixed before all
      commands. This option overrides the global option
      `autoprogram_cliff_application` described below.
@@ -40,7 +38,6 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
      .. seealso:: The ``autoprogram_cliff_application`` configuration option.
 
    `:ignored:`
-
      A comma-separated list of options to exclude from documentation for this
      option. This is useful for options that are of low value.
 
@@ -50,7 +47,6 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
    placed in `conf.py`:
 
    `autoprogram_cliff_application`
-
      The top-level application name, which will be prefixed before all
      commands. This is generally defined in the `console_scripts` attribute of
      the `entry_points` section of either `setup.cfg` or `setup.py`. Refer to
@@ -68,7 +64,6 @@ cliff supports integration with Sphinx by way of a `Sphinx directives`__.
      .. seealso:: The ``:application:`` directive option.
 
    `autoprogram_cliff_ignored`
-
      A global list of options to exclude from documentation. This can be used
      to prevent duplication of common options, such as those used for
      pagination, across **all** options.
