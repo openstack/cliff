@@ -221,12 +221,10 @@ class AutoprogramCliffDirective(rst.Directive):
                         ignored_opts):
         """Generate the relevant Sphinx nodes.
 
-        This is a little funky. Parts of this use raw docutils nodes while
-        other parts use reStructuredText and nested parsing. The reason for
-        this is simple: it avoids us having to reinvent the wheel. While raw
-        docutils nodes are helpful for the simpler elements of the output,
-        they don't provide an easy way to use Sphinx's own directives, such as
-        the 'option' directive. Refer to [1] for more information.
+        This doesn't bother using raw docutils nodes as they simply don't offer
+        the power of directives, like Sphinx's 'option' directive. Instead, we
+        generate reStructuredText and parse this in a nested context (to obtain
+        correct header levels). Refer to [1] for more information.
 
         [1] http://www.sphinx-doc.org/en/stable/extdev/markupapi.html
 
@@ -241,7 +239,7 @@ class AutoprogramCliffDirective(rst.Directive):
         parser = command.get_parser(command_name)
         ignored_opts = ignored_opts or []
 
-        # Drop the automatically-added help action
+        # Drop any ignored actions
         for action in list(parser._actions):
             for option_string in action.option_strings:
                 if option_string in ignored_opts:
