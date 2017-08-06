@@ -118,6 +118,9 @@ class InteractiveApp(cmd2.Cmd):
             self.print_topics(self.app_cmd_header, cmd_names, 15, 80)
         return
 
+    # Create exit alias to quit the interactive shell.
+    do_exit = cmd2.Cmd.do_quit
+
     def get_names(self):
         # Override the base class version to filter out
         # things that look like they should be hidden
