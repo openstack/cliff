@@ -15,7 +15,15 @@
 import datetime
 import subprocess
 
-import openstackdocstheme
+# make openstackdocstheme an optional dependency. cliff is a low level lib
+# that is used outside of OpenStack. Not having something OpenStack specific
+# as build requirement is a good thing.
+try:
+    import openstackdocstheme
+except ImportError:
+    has_openstackdocstheme = False
+else:
+    has_openstackdocstheme = True
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -32,8 +40,9 @@ import openstackdocstheme
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'openstackdocstheme',
 ]
+if has_openstackdocstheme:
+    extensions.append('openstackdocstheme')
 
 # openstackdocstheme options
 repository_name = 'openstack/cliff'
@@ -109,7 +118,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = 'default'
-html_theme = 'openstackdocs'
+if has_openstackdocstheme:
+    html_theme = 'openstackdocs'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -118,7 +128,8 @@ html_theme = 'openstackdocs'
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
-html_theme_path = [openstackdocstheme.get_html_theme_path()]
+if has_openstackdocstheme:
+    html_theme_path = [openstackdocstheme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
