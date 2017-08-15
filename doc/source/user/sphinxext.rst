@@ -4,6 +4,13 @@ Sphinx Integration
 
 cliff supports integration with Sphinx by way of a `Sphinx directives`__.
 
+Before using the :rst:dir:`autoprogram-cliff` directive you must add
+`'cliff.sphinxext'` extension module to a list of `extensions` in `conf.py`:
+
+.. code-block:: python
+
+    extensions = ['cliff.sphinxext']
+
 .. rst:directive:: .. autoprogram-cliff:: namespace
 
    Automatically document an instance of :py:class:`cliff.command.Command`,
