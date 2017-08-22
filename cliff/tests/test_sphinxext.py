@@ -157,6 +157,8 @@ class TestSphinxExtension(base.TestBase):
         parser.add_argument('--write-to-var-log-something-or-other',
                             action='store_true',
                             help='a long opt to force wrapping')
+        parser.add_argument('--required-arg', dest='stuff', required=True,
+                            help='a required argument')
         style_group = parser.add_mutually_exclusive_group(required=True)
         style_group.add_argument('--polite', action='store_true',
                                  help='use a polite greeting')
@@ -172,6 +174,7 @@ class TestSphinxExtension(base.TestBase):
                 [--language LANG]
                 [--translate]
                 [--write-to-var-log-something-or-other]
+                --required-arg STUFF
                 (--polite | --profane)
                 name
 
@@ -186,6 +189,10 @@ class TestSphinxExtension(base.TestBase):
         .. option:: --write-to-var-log-something-or-other
 
             a long opt to force wrapping
+
+        .. option:: --required-arg <STUFF>
+
+            a required argument
 
         .. option:: --polite
 

@@ -56,11 +56,11 @@ def _format_usage(parser):
 
     # hacked variant of the regex used by the actual argparse module. Unlike
     # that version, this one attempts to group long and short opts with their
-    # optional arguments ensuring that, for example, '---format <FORMAT>'
+    # optional arguments ensuring that, for example, '--format <FORMAT>'
     # becomes ['--format <FORMAT>'] and not ['--format', '<FORMAT>'].
     # Yes, they really do use regexes to break apart and rewrap their help
     # string. Don't ask me why.
-    part_regexp = r'\(.*?\)+|\[.*?\]+|(?:(?:-\w|--\w+)(?:\s+<\w+>)?)|\S+'
+    part_regexp = r'\(.*?\)+|\[.*?\]+|(?:(?:-\w|--[\w-]+)(?:\s+<?\w+>?)?)|\S+'
 
     opt_usage = fmt._format_actions_usage(optionals, groups)
     pos_usage = fmt._format_actions_usage(positionals, groups)
