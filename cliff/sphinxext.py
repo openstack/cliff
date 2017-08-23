@@ -60,13 +60,18 @@ def _format_usage(parser):
     # becomes ['--format <FORMAT>'] and not ['--format', '<FORMAT>'].
     # Yes, they really do use regexes to break apart and rewrap their help
     # string. Don't ask me why.
-    part_regexp = r'\(.*?\)+|\[.*?\]+|(?:(?:-\w|--[\w-]+)(?:\s+<?\w+>?)?)|\S+'
+    part_regexp = re.compile(r"""
+        \(.*?\)+ |
+        \[.*?\]+ |
+        (?:(?:-\w|--\w+(?:-\w+)*)(?:\s+<?\w[\w-]*>?)?) |
+        \S+
+    """, re.VERBOSE)
 
     opt_usage = fmt._format_actions_usage(optionals, groups)
     pos_usage = fmt._format_actions_usage(positionals, groups)
 
-    opt_parts = re.findall(part_regexp, opt_usage)
-    pos_parts = re.findall(part_regexp, pos_usage)
+    opt_parts = part_regexp.findall(opt_usage)
+    pos_parts = part_regexp.findall(pos_usage)
     parts = opt_parts + pos_parts
 
     if len(' '.join([parser.prog] + parts)) < 72:

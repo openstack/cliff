@@ -206,3 +206,57 @@ class TestSphinxExtension(base.TestBase):
 
             user name
         """).lstrip(), output)
+
+    def test_various_option_names_with_hyphen(self):
+        """Handle options whose name and/or metavar contain hyphen(s)"""
+        parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
+        parser.add_argument('--foo-bar', metavar='<foo-bar>',
+                            help='foo bar', required=True)
+        parser.add_argument('--foo-bar-baz', metavar='<foo-bar-baz>',
+                            help='foo bar baz', required=True)
+        parser.add_argument('--foo', metavar='<foo>',
+                            help='foo', required=True)
+        parser.add_argument('--alpha', metavar='<A>',
+                            help='alpha')
+        parser.add_argument('--alpha-beta', metavar='<A-B>',
+                            help='alpha beta')
+        parser.add_argument('--alpha-beta-gamma', metavar='<A-B-C>',
+                            help='alpha beta gamma')
+
+        output = '\n'.join(sphinxext._format_parser(parser))
+        self.assertEqual(textwrap.dedent("""
+        .. program:: hello-world
+        .. code-block:: shell
+
+            hello-world
+                --foo-bar <foo-bar>
+                --foo-bar-baz <foo-bar-baz>
+                --foo <foo>
+                [--alpha <A>]
+                [--alpha-beta <A-B>]
+                [--alpha-beta-gamma <A-B-C>]
+
+        .. option:: --foo-bar <foo-bar>
+
+            foo bar
+
+        .. option:: --foo-bar-baz <foo-bar-baz>
+
+            foo bar baz
+
+        .. option:: --foo <foo>
+
+            foo
+
+        .. option:: --alpha <A>
+
+            alpha
+
+        .. option:: --alpha-beta <A-B>
+
+            alpha beta
+
+        .. option:: --alpha-beta-gamma <A-B-C>
+
+            alpha beta gamma
+        """).lstrip(), output)
