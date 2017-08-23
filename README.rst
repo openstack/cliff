@@ -2,8 +2,8 @@
 Team and repository tags
 ========================
 
-.. image:: http://governance.openstack.org/badges/cliff.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
+.. image:: https://governance.openstack.org/tc/badges/cliff.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
 
 .. Change things from this point on
 
@@ -18,6 +18,6 @@ other extensions.
 .. _setuptools entry points: http://setuptools.readthedocs.io/en/latest/pkg_resources.html#convenience-api
 
 * Free software: Apache license
-* Documentation: http://docs.openstack.org/developer/cliff
-* Source: http://git.openstack.org/cgit/openstack/cliff
+* Documentation: https://docs.openstack.org/cliff/latest/
+* Source: https://git.openstack.org/cgit/openstack/cliff
 * Bugs: https://bugs.launchpad.net/python-cliff
