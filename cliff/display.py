@@ -100,8 +100,10 @@ class DisplayCommandBase(command.Command):
             columns_to_include = [c for c in column_names
                                   if c in parsed_args.columns]
             if not columns_to_include:
-                raise ValueError('No recognized column names in %s' %
-                                 str(parsed_args.columns))
+                raise ValueError('No recognized column names in %s. '
+                                 'Recognized columns are %s.' %
+                                 (str(parsed_args.columns), str(column_names)))
+
             # Set up argument to compress()
             selector = [(c in columns_to_include)
                         for c in column_names]
