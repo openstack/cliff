@@ -110,10 +110,11 @@ class DisplayCommandBase(command.Command):
         return columns_to_include, selector
 
     def run(self, parsed_args):
-        self._run_before_hooks(parsed_args)
+        parsed_args = self._run_before_hooks(parsed_args)
         self.formatter = self._formatter_plugins[parsed_args.formatter].obj
         column_names, data = self.take_action(parsed_args)
-        self._run_after_hooks(parsed_args, (column_names, data))
+        column_names, data = self._run_after_hooks(parsed_args,
+                                                   (column_names, data))
         self.produce_output(parsed_args, column_names, data)
         return 0
 

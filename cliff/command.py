@@ -133,9 +133,9 @@ class Command(object):
 
         Return the value returned by :meth:`take_action` or 0.
         """
-        self._run_before_hooks(parsed_args)
+        parsed_args = self._run_before_hooks(parsed_args)
         return_code = self.take_action(parsed_args) or 0
-        self._run_after_hooks(parsed_args, return_code)
+        return_code = self._run_after_hooks(parsed_args, return_code)
         return return_code
 
     def _run_before_hooks(self, parsed_args):
@@ -149,7 +149,12 @@ class Command(object):
         hook processing behavior.
         """
         for hook in self._hooks:
-            hook.obj.before(parsed_args)
+            ret = hook.obj.before(parsed_args)
+            # If the return is None do not change parsed_args, otherwise
+            # set up to pass it to the next hook
+            if ret is not None:
+                parsed_args = ret
+        return parsed_args
 
     def _run_after_hooks(self, parsed_args, return_code):
         """Calls after() method of the hooks.
@@ -162,7 +167,12 @@ class Command(object):
         hook processing behavior.
         """
         for hook in self._hooks:
-            hook.obj.after(parsed_args, return_code)
+            ret = hook.obj.after(parsed_args, return_code)
+            # If the return is None do not change return_code, otherwise
+            # set up to pass it to the next hook
+            if ret is not None:
+                return_code = ret
+        return return_code
 
 
 class _SmartHelpFormatter(_argparse.HelpFormatter):
