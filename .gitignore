@@ -38,6 +38,7 @@ ChangeLog
 # Editors
 *~
 .*.swp
+/.stestr/
 /.testrepository/
 /cover/
 .coverage.*
