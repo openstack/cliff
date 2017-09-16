@@ -46,10 +46,9 @@ class CommandHook(object):
     def before(self, parsed_args):
         """Called before the command's take_action() method.
 
-        Any return value is ignored.
-
         :param parsed_args: The arguments to the command.
         :paramtype parsed_args: argparse.Namespace
+        :returns: argparse.Namespace
         """
         return parsed_args
 
@@ -57,11 +56,10 @@ class CommandHook(object):
     def after(self, parsed_args, return_code):
         """Called after the command's take_action() method.
 
-        Any return value is ignored.
-
         :param parsed_args: The arguments to the command.
         :paramtype parsed_args: argparse.Namespace
         :param return_code: The value returned from take_action().
         :paramtype return_code: int
+        :returns: int
         """
         return return_code
