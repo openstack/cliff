@@ -51,6 +51,7 @@ class CommandHook(object):
         :param parsed_args: The arguments to the command.
         :paramtype parsed_args: argparse.Namespace
         """
+        return parsed_args
 
     @abc.abstractmethod
     def after(self, parsed_args, return_code):
@@ -63,3 +64,4 @@ class CommandHook(object):
         :param return_code: The value returned from take_action().
         :paramtype return_code: int
         """
+        return return_code

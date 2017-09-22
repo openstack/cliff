@@ -97,6 +97,75 @@ class TestHook(hooks.CommandHook):
         self._after_called = True
 
 
+class TestChangeHook(hooks.CommandHook):
+
+    _before_called = False
+    _after_called = False
+
+    def get_parser(self, parser):
+        parser.add_argument('--added-by-hook')
+        return parser
+
+    def get_epilog(self):
+        return 'hook epilog'
+
+    def before(self, parsed_args):
+        self._before_called = True
+        parsed_args.added_by_hook = 'othervalue'
+        parsed_args.added_by_before = True
+        return parsed_args
+
+    def after(self, parsed_args, return_code):
+        self._after_called = True
+        return 24
+
+
+class TestDisplayChangeHook(hooks.CommandHook):
+
+    _before_called = False
+    _after_called = False
+
+    def get_parser(self, parser):
+        parser.add_argument('--added-by-hook')
+        return parser
+
+    def get_epilog(self):
+        return 'hook epilog'
+
+    def before(self, parsed_args):
+        self._before_called = True
+        parsed_args.added_by_hook = 'othervalue'
+        parsed_args.added_by_before = True
+        return parsed_args
+
+    def after(self, parsed_args, return_code):
+        self._after_called = True
+        return (('Name',), ('othervalue',))
+
+
+class TestListerChangeHook(hooks.CommandHook):
+
+    _before_called = False
+    _after_called = False
+
+    def get_parser(self, parser):
+        parser.add_argument('--added-by-hook')
+        return parser
+
+    def get_epilog(self):
+        return 'hook epilog'
+
+    def before(self, parsed_args):
+        self._before_called = True
+        parsed_args.added_by_hook = 'othervalue'
+        parsed_args.added_by_before = True
+        return parsed_args
+
+    def after(self, parsed_args, return_code):
+        self._after_called = True
+        return (('Name',), [('othervalue',)])
+
+
 class TestCommandLoadHooks(base.TestBase):
 
     def test_no_app_or_name(self):
@@ -147,8 +216,54 @@ class TestHooks(base.TestBase):
 
     def test_after(self):
         self.assertFalse(self.hook._after_called)
-        self.cmd.run(None)
+        result = self.cmd.run(None)
         self.assertTrue(self.hook._after_called)
+        self.assertEqual(result, 42)
+
+
+class TestChangeHooks(base.TestBase):
+
+    def setUp(self):
+        super(TestChangeHooks, self).setUp()
+        self.app = make_app()
+        self.cmd = TestCommand(self.app, None, cmd_name='test')
+        self.hook = TestChangeHook(self.cmd)
+        self.mgr = extension.ExtensionManager.make_test_instance(
+            [extension.Extension(
+                'parser-hook',
+                None,
+                None,
+                self.hook)],
+        )
+        # Replace the auto-loaded hooks with our explicitly created
+        # manager.
+        self.cmd._hooks = self.mgr
+
+    def test_get_parser(self):
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.assertEqual(results.added_by_hook, 'value')
+
+    def test_get_epilog(self):
+        results = self.cmd.get_epilog()
+        self.assertIn('hook epilog', results)
+
+    def test_before(self):
+        self.assertFalse(self.hook._before_called)
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.cmd.run(results)
+        self.assertTrue(self.hook._before_called)
+        self.assertEqual(results.added_by_hook, 'othervalue')
+        self.assertTrue(results.added_by_before)
+
+    def test_after(self):
+        self.assertFalse(self.hook._after_called)
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        result = self.cmd.run(results)
+        self.assertTrue(self.hook._after_called)
+        self.assertEqual(result, 24)
 
 
 class TestShowOneHooks(base.TestBase):
@@ -193,6 +308,51 @@ class TestShowOneHooks(base.TestBase):
         self.assertTrue(self.hook._after_called)
 
 
+class TestShowOneChangeHooks(base.TestBase):
+
+    def setUp(self):
+        super(TestShowOneChangeHooks, self).setUp()
+        self.app = make_app()
+        self.cmd = TestShowCommand(self.app, None, cmd_name='test')
+        self.hook = TestDisplayChangeHook(self.cmd)
+        self.mgr = extension.ExtensionManager.make_test_instance(
+            [extension.Extension(
+                'parser-hook',
+                None,
+                None,
+                self.hook)],
+        )
+        # Replace the auto-loaded hooks with our explicitly created
+        # manager.
+        self.cmd._hooks = self.mgr
+
+    def test_get_parser(self):
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.assertEqual(results.added_by_hook, 'value')
+
+    def test_get_epilog(self):
+        results = self.cmd.get_epilog()
+        self.assertIn('hook epilog', results)
+
+    def test_before(self):
+        self.assertFalse(self.hook._before_called)
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.cmd.run(results)
+        self.assertTrue(self.hook._before_called)
+        self.assertEqual(results.added_by_hook, 'othervalue')
+        self.assertTrue(results.added_by_before)
+
+    def test_after(self):
+        self.assertFalse(self.hook._after_called)
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        result = self.cmd.run(results)
+        self.assertTrue(self.hook._after_called)
+        self.assertEqual(result, 0)
+
+
 class TestListerHooks(base.TestBase):
 
     def setUp(self):
@@ -233,3 +393,48 @@ class TestListerHooks(base.TestBase):
         results = parser.parse_args(['--added-by-hook', 'value'])
         self.cmd.run(results)
         self.assertTrue(self.hook._after_called)
+
+
+class TestListerChangeHooks(base.TestBase):
+
+    def setUp(self):
+        super(TestListerChangeHooks, self).setUp()
+        self.app = make_app()
+        self.cmd = TestListerCommand(self.app, None, cmd_name='test')
+        self.hook = TestListerChangeHook(self.cmd)
+        self.mgr = extension.ExtensionManager.make_test_instance(
+            [extension.Extension(
+                'parser-hook',
+                None,
+                None,
+                self.hook)],
+        )
+        # Replace the auto-loaded hooks with our explicitly created
+        # manager.
+        self.cmd._hooks = self.mgr
+
+    def test_get_parser(self):
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.assertEqual(results.added_by_hook, 'value')
+
+    def test_get_epilog(self):
+        results = self.cmd.get_epilog()
+        self.assertIn('hook epilog', results)
+
+    def test_before(self):
+        self.assertFalse(self.hook._before_called)
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        self.cmd.run(results)
+        self.assertTrue(self.hook._before_called)
+        self.assertEqual(results.added_by_hook, 'othervalue')
+        self.assertTrue(results.added_by_before)
+
+    def test_after(self):
+        self.assertFalse(self.hook._after_called)
+        parser = self.cmd.get_parser('test')
+        results = parser.parse_args(['--added-by-hook', 'value'])
+        result = self.cmd.run(results)
+        self.assertTrue(self.hook._after_called)
+        self.assertEqual(result, 0)
