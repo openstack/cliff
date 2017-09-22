@@ -29,6 +29,13 @@ class HelpAction(argparse.Action):
         app = self.default
         parser.print_help(app.stdout)
         app.stdout.write('\nCommands:\n')
+        dists_by_module = command._get_distributions_by_modules()
+
+        def dist_for_obj(obj):
+            name = inspect.getmodule(obj).__name__.partition('.')[0]
+            return dists_by_module.get(name)
+
+        app_dist = dist_for_obj(app)
         command_manager = app.command_manager
         for name, ep in sorted(command_manager):
             try:
@@ -51,7 +58,12 @@ class HelpAction(argparse.Action):
                     traceback.print_exc(file=app.stdout)
                 continue
             one_liner = cmd.get_description().split('\n')[0]
-            app.stdout.write('  %-13s  %s\n' % (name, one_liner))
+            dist_name = dist_for_obj(factory)
+            if dist_name and dist_name != app_dist:
+                dist_info = ' (' + dist_name + ')'
+            else:
+                dist_info = ''
+            app.stdout.write('  %-13s  %s%s\n' % (name, one_liner, dist_info))
         sys.exit(0)
 
 

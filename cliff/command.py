@@ -13,10 +13,46 @@
 import abc
 import inspect
 
+import pkg_resources
 import six
 from stevedore import extension
 
 from cliff import _argparse
+
+_dists_by_mods = None
+
+
+def _get_distributions_by_modules():
+    """Return dict mapping module name to distribution names.
+
+    The python package name (the name used for importing) and the
+    distribution name (the name used with pip and PyPI) do not
+    always match. We want to report which distribution caused the
+    command to be installed, so we need to look up the values.
+
+    """
+    global _dists_by_mods
+    if _dists_by_mods is None:
+        results = {}
+        for dist in pkg_resources.working_set:
+            try:
+                mod_name = dist.get_metadata('top_level.txt').strip()
+            except KeyError:
+                # Could not retrieve metadata. Ignore.
+                pass
+            else:
+                results[mod_name] = dist.project_name
+        _dists_by_mods = results
+    return _dists_by_mods
+
+
+def _get_distribution_for_module(module):
+    "Return the distribution containing the module."
+    dist_name = None
+    if module:
+        pkg_name = module.__name__.partition('.')[0]
+        dist_name = _get_distributions_by_modules().get(pkg_name)
+    return dist_name
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -89,17 +125,23 @@ class Command(object):
 
     def get_epilog(self):
         """Return the command epilog."""
+        # replace a None in self._epilog with an empty string
+        parts = [self._epilog or '']
         hook_epilogs = filter(
             None,
             (h.obj.get_epilog() for h in self._hooks),
         )
-        if hook_epilogs:
-            # combine them, replacing a None in self._epilog with an
-            # empty string
-            parts = [self._epilog or '']
-            parts.extend(hook_epilogs)
-            return '\n\n'.join(parts)
-        return self._epilog
+        parts.extend(hook_epilogs)
+        app_dist_name = _get_distribution_for_module(
+            inspect.getmodule(self.app)
+        )
+        dist_name = _get_distribution_for_module(inspect.getmodule(self))
+        if dist_name and dist_name != app_dist_name:
+            parts.append(
+                'This command is provided by the %s plugin.' %
+                (dist_name,)
+            )
+        return '\n\n'.join(parts)
 
     def get_parser(self, prog_name):
         """Return an :class:`argparse.ArgumentParser`.
