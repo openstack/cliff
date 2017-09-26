@@ -36,12 +36,17 @@ def _get_distributions_by_modules():
         results = {}
         for dist in pkg_resources.working_set:
             try:
-                mod_name = dist.get_metadata('top_level.txt').strip()
-            except KeyError:
-                # Could not retrieve metadata. Ignore.
+                mod_names = dist.get_metadata('top_level.txt').strip()
+            except Exception:
+                # Could not retrieve metadata. Either the file is not
+                # present or we cannot read it. Ignore the
+                # distribution.
                 pass
             else:
-                results[mod_name] = dist.project_name
+                # Distributions may include multiple top-level
+                # packages (see setuptools for an example).
+                for mod_name in mod_names.splitlines():
+                    results[mod_name] = dist.project_name
         _dists_by_mods = results
     return _dists_by_mods
 
