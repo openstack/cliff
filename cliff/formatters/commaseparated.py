@@ -47,11 +47,24 @@ class CSVLister(ListFormatter):
         )
 
     def emit_list(self, column_names, data, stdout, parsed_args):
-        writer = csv.writer(stdout,
-                            quoting=self.QUOTE_MODES[parsed_args.quote_mode],
-                            lineterminator=os.linesep,
-                            escapechar='\\',
-                            )
+        writer_kwargs = dict(
+            quoting=self.QUOTE_MODES[parsed_args.quote_mode],
+            lineterminator=os.linesep,
+            escapechar='\\',
+        )
+
+        # In Py2 we replace the csv module with unicodecsv because the
+        # Py2 csv module cannot handle unicode. unicodecsv encodes
+        # unicode objects based on the value of it's encoding keyword
+        # with the result unicodecsv emits encoded bytes in a str
+        # object. The utils.getwriter assures no attempt is made to
+        # re-encode the encoded bytes in the str object.
+
+        if six.PY2:
+            writer_kwargs['encoding'] = (getattr(stdout, 'encoding', None)
+                                         or 'utf-8')
+
+        writer = csv.writer(stdout, **writer_kwargs)
         writer.writerow(column_names)
         for row in data:
             writer.writerow(
