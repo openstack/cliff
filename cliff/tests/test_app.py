@@ -498,3 +498,53 @@ class TestIO(base.TestBase):
             self.assertIs(sys.stdin, app.stdin)
             self.assertIs(sys.stdout, app.stdout)
             self.assertIs(io, app.stderr)
+
+    def test_writer_encoding(self):
+        # The word "test" with the e replaced by
+        # Unicode latin small letter e with acute,
+        # U+00E9, utf-8 encoded as 0xC3 0xA9
+        text = u't\u00E9st'
+        text_utf8 = text.encode('utf-8')
+
+        if six.PY2:
+            # In PY2 StreamWriter can't accept non-ASCII encoded characters
+            # because it must first promote the encoded byte stream to
+            # unicode in order to encode it in the desired encoding.
+            # Because the encoding of the byte stream is not known at this
+            # point the default-encoding of ASCII is utilized, but you can't
+            # decode a non-ASCII charcater to ASCII.
+            io = six.StringIO()
+            writer = codecs.getwriter('utf-8')(io)
+            self.assertRaises(UnicodeDecodeError,
+                              writer.write,
+                              text_utf8)
+
+            # In PY2 with our override of codecs.getwriter we do not
+            # attempt to encode bytes in a str object (only unicode
+            # objects) therefore the final output string should be the
+            # utf-8 encoded byte sequence
+            io = six.StringIO()
+            writer = utils.getwriter('utf-8')(io)
+            writer.write(text)
+            output = io.getvalue()
+            self.assertEqual(text_utf8, output)
+
+            io = six.StringIO()
+            writer = utils.getwriter('utf-8')(io)
+            writer.write(text_utf8)
+            output = io.getvalue()
+            self.assertEqual(text_utf8, output)
+        else:
+            # In PY3 you can't write encoded bytes to a text writer
+            # instead text functions require text.
+            io = six.StringIO()
+            writer = utils.getwriter('utf-8')(io)
+            self.assertRaises(TypeError,
+                              writer.write,
+                              text)
+
+            io = six.StringIO()
+            writer = utils.getwriter('utf-8')(io)
+            self.assertRaises(TypeError,
+                              writer.write,
+                              text_utf8)
