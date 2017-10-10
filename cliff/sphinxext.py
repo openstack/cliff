@@ -268,6 +268,15 @@ class AutoprogramCliffDirective(rst.Directive):
                         if fnmatch.fnmatch(x, command_pattern)]
         else:
             commands = manager.commands.keys()
+
+        if not commands:
+            msg = 'No commands found in the "{}" namespace'
+            if command_pattern:
+                msg += ' using the "{}" command name/pattern'
+            msg += ('. Are you sure this is correct and the application being '
+                    'documented is installed?')
+            raise self.warning(msg.format(self.arguments[0], command_pattern))
+
         return dict((name, self._load_command(manager, name))
                     for name in commands)
 
