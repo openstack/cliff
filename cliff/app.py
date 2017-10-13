@@ -324,8 +324,7 @@ class App(object):
                                                         self.stdin,
                                                         self.stdout,
                                                         )
-        self.interpreter.cmdloop()
-        return 0
+        return self.interpreter.cmdloop()
 
     def get_fuzzy_matches(self, cmd):
         """return fuzzy matches of unknown command
@@ -412,7 +411,8 @@ class App(object):
                 else:
                     self.LOG.error('Could not clean up: %s', err2)
             if self.options.debug:
-                raise
+                # 'raise' here gets caught and does not exit like we want
+                return result
         else:
             try:
                 self.clean_up(cmd, result, None)

@@ -74,10 +74,27 @@ class TestInteractiveMode(base.TestBase):
             name='interactive_app_factory'
         )
         self.assertIsNone(app.interpreter)
-        app.run([])
+        ret = app.run([])
         self.assertIsNotNone(app.interpreter)
         cmdloop = app.interactive_app_factory.return_value.cmdloop
         cmdloop.assert_called_once_with()
+        self.assertNotEqual(ret, 0)
+
+    def test_interactive_mode_cmdloop_error(self):
+        app, command = make_app()
+        cmdloop_mock = mock.MagicMock(
+            name='cmdloop',
+        )
+        cmdloop_mock.return_value = 1
+        app.interactive_app_factory = mock.MagicMock(
+            name='interactive_app_factory'
+        )
+        self.assertIsNone(app.interpreter)
+        ret = app.run([])
+        self.assertIsNotNone(app.interpreter)
+        cmdloop = app.interactive_app_factory.return_value.cmdloop
+        cmdloop.assert_called_once_with()
+        self.assertNotEqual(ret, 0)
 
 
 class TestInitAndCleanup(base.TestBase):
@@ -99,14 +116,16 @@ class TestInitAndCleanup(base.TestBase):
     def test_clean_up_success(self):
         app, command = make_app()
         app.clean_up = mock.MagicMock(name='clean_up')
-        app.run(['mock'])
+        ret = app.run(['mock'])
         app.clean_up.assert_called_once_with(command.return_value, 0, None)
+        self.assertEqual(ret, 0)
 
     def test_clean_up_error(self):
         app, command = make_app()
 
         app.clean_up = mock.MagicMock(name='clean_up')
-        app.run(['error'])
+        ret = app.run(['error'])
+        self.assertNotEqual(ret, 0)
 
         app.clean_up.assert_called_once_with(mock.ANY, mock.ANY, mock.ANY)
         call_args = app.clean_up.call_args_list[0]
@@ -119,12 +138,8 @@ class TestInitAndCleanup(base.TestBase):
         app, command = make_app()
 
         app.clean_up = mock.MagicMock(name='clean_up')
-        try:
-            app.run(['--debug', 'error'])
-        except RuntimeError as err:
-            self.assertIs(err, app.clean_up.call_args_list[0][0][2])
-        else:
-            self.fail('Should have had an exception')
+        ret = app.run(['--debug', 'error'])
+        self.assertNotEqual(ret, 0)
 
         self.assertTrue(app.clean_up.called)
         call_args = app.clean_up.call_args_list[0]
@@ -157,7 +172,7 @@ class TestInitAndCleanup(base.TestBase):
             side_effect=RuntimeError('within clean_up'),
         )
         try:
-            app.run(['--debug', 'error'])
+            ret = app.run(['--debug', 'error'])
         except RuntimeError as err:
             if not hasattr(err, '__context__'):
                 # The exception passed to clean_up is not the exception
@@ -166,7 +181,7 @@ class TestInitAndCleanup(base.TestBase):
                 # with the new one as a __context__ attribute.
                 self.assertIsNot(err, app.clean_up.call_args_list[0][0][2])
         else:
-            self.fail('Should have had an exception')
+            self.assertNotEqual(ret, 0)
 
         self.assertTrue(app.clean_up.called)
         call_args = app.clean_up.call_args_list[0]
