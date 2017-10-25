@@ -352,31 +352,31 @@ def test_table_list_formatter_formattable_column(tw):
 @mock.patch('cliff.utils.terminal_width')
 def test_table_list_formatter_max_width(tw):
     # no resize
-    l = tw.return_value = 80
-    assert _expected_mv[l] == _table_tester_helper(_col_names, _col_data)
+    width = tw.return_value = 80
+    assert _expected_mv[width] == _table_tester_helper(_col_names, _col_data)
 
     # resize 1 column
-    l = tw.return_value = 50
+    width = tw.return_value = 50
     actual = _table_tester_helper(_col_names, _col_data)
-    assert _expected_mv[l] == actual
-    assert len(actual.splitlines()[0]) == l
+    assert _expected_mv[width] == actual
+    assert len(actual.splitlines()[0]) == width
 
     # resize 2 columns
-    l = tw.return_value = 45
+    width = tw.return_value = 45
     actual = _table_tester_helper(_col_names, _col_data)
-    assert _expected_mv[l] == actual
-    assert len(actual.splitlines()[0]) == l
+    assert _expected_mv[width] == actual
+    assert len(actual.splitlines()[0]) == width
 
     # resize all columns
-    l = tw.return_value = 40
+    width = tw.return_value = 40
     actual = _table_tester_helper(_col_names, _col_data)
-    assert _expected_mv[l] == actual
-    assert len(actual.splitlines()[0]) == l
+    assert _expected_mv[width] == actual
+    assert len(actual.splitlines()[0]) == width
 
     # resize all columns limited by min_width=8
-    l = tw.return_value = 10
+    width = tw.return_value = 10
     actual = _table_tester_helper(_col_names, _col_data)
-    assert _expected_mv[l] == actual
+    assert _expected_mv[width] == actual
     # 3 columns each 8 wide, plus table spacing and borders
     expected_width = 11 * 3 + 1
     assert len(actual.splitlines()[0]) == expected_width
