@@ -390,46 +390,46 @@ class TestListFormatter(base.TestBase):
     @mock.patch('cliff.utils.terminal_width')
     def test_max_width_80(self, tw):
         # no resize
-        l = tw.return_value = 80
+        width = tw.return_value = 80
         self.assertEqual(
-            self._expected_mv[l],
+            self._expected_mv[width],
             _table_tester_helper(self._col_names, self._col_data),
         )
 
     @mock.patch('cliff.utils.terminal_width')
     def test_max_width_50(self, tw):
         # resize 1 column
-        l = tw.return_value = 50
+        width = tw.return_value = 50
         actual = _table_tester_helper(self._col_names, self._col_data,
                                       extra_args=['--fit-width'])
-        self.assertEqual(self._expected_mv[l], actual)
-        self.assertEqual(l, len(actual.splitlines()[0]))
+        self.assertEqual(self._expected_mv[width], actual)
+        self.assertEqual(width, len(actual.splitlines()[0]))
 
     @mock.patch('cliff.utils.terminal_width')
     def test_max_width_45(self, tw):
         # resize 2 columns
-        l = tw.return_value = 45
+        width = tw.return_value = 45
         actual = _table_tester_helper(self._col_names, self._col_data,
                                       extra_args=['--fit-width'])
-        self.assertEqual(self._expected_mv[l], actual)
-        self.assertEqual(l, len(actual.splitlines()[0]))
+        self.assertEqual(self._expected_mv[width], actual)
+        self.assertEqual(width, len(actual.splitlines()[0]))
 
     @mock.patch('cliff.utils.terminal_width')
     def test_max_width_40(self, tw):
         # resize all columns
-        l = tw.return_value = 40
+        width = tw.return_value = 40
         actual = _table_tester_helper(self._col_names, self._col_data,
                                       extra_args=['--fit-width'])
-        self.assertEqual(self._expected_mv[l], actual)
-        self.assertEqual(l, len(actual.splitlines()[0]))
+        self.assertEqual(self._expected_mv[width], actual)
+        self.assertEqual(width, len(actual.splitlines()[0]))
 
     @mock.patch('cliff.utils.terminal_width')
     def test_max_width_10(self, tw):
         # resize all columns limited by min_width=8
-        l = tw.return_value = 10
+        width = tw.return_value = 10
         actual = _table_tester_helper(self._col_names, self._col_data,
                                       extra_args=['--fit-width'])
-        self.assertEqual(self._expected_mv[l], actual)
+        self.assertEqual(self._expected_mv[width], actual)
         # 3 columns each 8 wide, plus table spacing and borders
         expected_width = 11 * 3 + 1
         self.assertEqual(expected_width, len(actual.splitlines()[0]))
