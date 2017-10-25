@@ -73,9 +73,9 @@ class TestInteractiveMode(base.TestBase):
         app.interactive_app_factory = mock.MagicMock(
             name='interactive_app_factory'
         )
-        self.assertIs(None, app.interpreter)
+        self.assertIsNone(app.interpreter)
         app.run([])
-        self.assertIsNot(None, app.interpreter)
+        self.assertIsNotNone(app.interpreter)
         cmdloop = app.interactive_app_factory.return_value.cmdloop
         cmdloop.assert_called_once_with()
 
