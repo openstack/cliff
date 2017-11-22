@@ -45,13 +45,15 @@ class CommandManager(object):
     """
     def __init__(self, namespace, convert_underscores=True):
         self.commands = {}
+        self._legacy = {}
         self.namespace = namespace
         self.convert_underscores = convert_underscores
         self._load_commands()
 
     def _load_commands(self):
         # NOTE(jamielennox): kept for compatibility.
-        self.load_commands(self.namespace)
+        if self.namespace:
+            self.load_commands(self.namespace)
 
     def load_commands(self, namespace):
         """Load all the commands from an entrypoint"""
@@ -69,6 +71,17 @@ class CommandManager(object):
     def add_command(self, name, command_class):
         self.commands[name] = EntryPointWrapper(name, command_class)
 
+    def add_legacy_command(self, old_name, new_name):
+        """Map an old command name to the new name.
+
+        :param old_name: The old command name.
+        :type old_name: str
+        :param new_name: The new command name.
+        :type new_name: str
+
+        """
+        self._legacy[old_name] = new_name
+
     def find_command(self, argv):
         """Given an argument list, find a command and
         return the processor and any remaining arguments.
@@ -77,6 +90,12 @@ class CommandManager(object):
         for i in range(start, 0, -1):
             name = ' '.join(argv[:i])
             search_args = argv[i:]
+            # The legacy command handling may modify name, so remember
+            # the value we actually found in argv so we can return it.
+            return_name = name
+            # Convert the legacy command name to its new name.
+            if name in self._legacy:
+                name = self._legacy[name]
             if name in self.commands:
                 cmd_ep = self.commands[name]
                 if hasattr(cmd_ep, 'resolve'):
@@ -89,7 +108,7 @@ class CommandManager(object):
                         cmd_factory = cmd_ep.load(require=False)
                     else:
                         cmd_factory = cmd_ep.load()
-                return (cmd_factory, name, search_args)
+                return (cmd_factory, return_name, search_args)
         else:
             raise ValueError('Unknown command %r' %
                              (argv,))
