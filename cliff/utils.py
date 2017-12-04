@@ -11,10 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import codecs
 import ctypes
 import os
 import struct
 import sys
+
+import six
 
 # Each edit operation is assigned different cost, such as:
 #  'w' means swap operation, the cost is 0;
@@ -153,3 +156,52 @@ def _get_terminal_width_ioctl(stdout):
         return columns
     except IOError:
         return None
+
+
+if six.PY2:
+    def getwriter(encoding):
+        '''Override codecs.getwriter() to prevent codec errors.
+
+        The StreamWriter returned by codecs.getwriter has an unfortunate
+        property, it will attempt to encode every object presented to it's
+        write() function. Normally we only want unicode objects to be
+        encoded to a byte stream. If bytes are presented (e.g. str in
+        Python2) we make the assumption those bytes represent an already
+        encoded text stream or they are indeed binary bytes and hence
+        should not be encoded.
+
+        When the core StreamWriter attempts to encode a str object Python
+        will first promote the str object to a unicode object. The
+        promotion of str to unicode requires the str bytes to be
+        decoded. However the encoding associated with the str object is
+        not known therefore Python applies the default-encoding which is
+        ASCII. In the case where the str object contains utf-8 encoded
+        non-ASCII characters a decoding error is raised. By not attempting
+        to encode a byte stream we avoid this error.
+
+        It really does not make much sense to try and encode a byte
+        stream. First of all a byte stream should not be encoded if it's
+        not text (e.g. binary data). If the byte stream is encoded text
+        the only way to re-encode it is if we known it's encoding so we
+        can decode it into a canonical form (e.g. unicode). Thus to
+        re-encode it we encode from the canonical form (e.g. unicode) to
+        the new binary encoding. The problem in Python2 is we never know
+        if the bytes in a str object are text or binary data and if it's
+        text which encoding it is, hence we should not try to apply
+        an encoding to a str object.
+        '''
+        class _StreamWriter(codecs.StreamWriter):
+            def __init__(self, stream, errors='strict'):
+                codecs.StreamWriter.__init__(self, stream, errors)
+
+            def encode(self, msg, errors='strict'):
+                if isinstance(msg, six.text_type):
+                    return self.encoder(msg, errors)
+                return msg, len(msg)
+
+        _StreamWriter.encoder = codecs.getencoder(encoding)
+        _StreamWriter.encoding = encoding
+        return _StreamWriter
+
+else:
+    getwriter = codecs.getwriter

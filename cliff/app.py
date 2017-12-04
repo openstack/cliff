@@ -118,10 +118,10 @@ class App(object):
                     stdin = codecs.getreader(encoding)(sys.stdin)
 
                 if not (stdout or isinstance(sys.stdout, codecs.StreamWriter)):
-                    stdout = codecs.getwriter(encoding)(sys.stdout)
+                    stdout = utils.getwriter(encoding)(sys.stdout)
 
                 if not (stderr or isinstance(sys.stderr, codecs.StreamWriter)):
-                    stderr = codecs.getwriter(encoding)(sys.stderr)
+                    stderr = utils.getwriter(encoding)(sys.stderr)
 
         self.stdin = stdin or sys.stdin
         self.stdout = stdout or sys.stdout
