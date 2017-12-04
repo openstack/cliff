@@ -1,0 +1,33 @@
+- job:
+    name: cliff-tox-py27-neutronclient-tip
+    parent: openstack-tox-py27
+    description: |
+      Run unit tests for neutronclient with master branch of cliff
+
+      Uses tox with the ``unit-tips`` environment and master branch of
+      the required-projects below.
+    branches: ^master$
+    irrelevant-files:
+      - ^.*\.rst$
+      - ^doc/.*$
+      - ^releasenotes/.*$
+    required-projects:
+      - openstack/cliff
+      - openstack/python-neutronclient
+    vars:
+      # Set work dir to neutronclient so that if it's triggered by one of the
+      # other repos the tests will run in the same place
+      zuul_work_dir: src/git.openstack.org/openstack/python-neutronclient
+
+- project:
+    name: openstack/cliff
+    check:
+      jobs:
+        - cliff-tox-py27-neutronclient-tip
+        - osc-tox-unit-tips:
+            branches: ^master$
+    gate:
+      jobs:
+        - cliff-tox-py27-neutronclient-tip
+        - osc-tox-unit-tips:
+            branches: ^master$
