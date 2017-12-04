@@ -13,7 +13,9 @@
 # serve to show the default.
 
 import datetime
+import os.path
 import subprocess
+import sys
 
 # make openstackdocstheme an optional dependency. cliff is a low level lib
 # that is used outside of OpenStack. Not having something OpenStack specific
@@ -28,7 +30,10 @@ else:
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# sys.path.insert(0, os.path.abspath('.'))
+
+# NOTE(dhellmann): Add the demoapp directory to the import path so the
+# directive for documenting the app can find the modules.
+sys.path.insert(0, os.path.abspath('../../demoapp'))
 
 # -- General configuration ---------------------------------------------------
 
