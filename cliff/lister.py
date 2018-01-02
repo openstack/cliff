@@ -13,6 +13,7 @@
 """Application base class for providing a list of data as output.
 """
 import abc
+import operator
 import six
 
 from . import display
@@ -31,13 +32,41 @@ class Lister(display.DisplayCommandBase):
     def formatter_default(self):
         return 'table'
 
+    @property
+    def need_sort_by_cliff(self):
+        """Whether sort procedure is performed by cliff itself.
+
+        Should be overridden (return False) when there is a need to implement
+        custom sorting procedure or data is already sorted."""
+        return True
+
     @abc.abstractmethod
     def take_action(self, parsed_args):
         """Return a tuple containing the column names and an iterable
         containing the data to be listed.
         """
 
+    def get_parser(self, prog_name):
+        parser = super(Lister, self).get_parser(prog_name)
+        group = self._formatter_group
+        group.add_argument(
+            '-s', '--sort-column',
+            action='append',
+            default=[],
+            dest='sort_columns',
+            metavar='SORT_COLUMN',
+            help=("specify the column(s) to sort the data (columns specified "
+                  "first have a priority, non-existing columns are ignored), "
+                  "can be repeated")
+        )
+        return parser
+
     def produce_output(self, parsed_args, column_names, data):
+        if parsed_args.sort_columns and self.need_sort_by_cliff:
+            indexes = [column_names.index(c) for c in parsed_args.sort_columns
+                       if c in column_names]
+            if indexes:
+                data = sorted(data, key=operator.itemgetter(*indexes))
         (columns_to_include, selector) = self._generate_columns_and_selector(
             parsed_args, column_names)
         if selector:

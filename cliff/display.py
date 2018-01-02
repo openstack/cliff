@@ -52,6 +52,7 @@ class DisplayCommandBase(command.Command):
             title='output formatters',
             description='output formatter options',
         )
+        self._formatter_group = formatter_group
         formatter_choices = sorted(self._formatter_plugins.names())
         formatter_default = self.formatter_default
         if formatter_default not in formatter_choices:
