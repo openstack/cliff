@@ -10,6 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import argparse
 import functools
 
 from cliff import command
@@ -41,6 +42,10 @@ class TestCommand(command.Command):
             'regular_help_argument',
             help="The quick brown fox jumps "
                  "over the lazy dog.",
+        )
+        parser.add_argument(
+            '-z',
+            help='used in TestArgumentParser',
         )
         return parser
 
@@ -128,3 +133,18 @@ class TestHelp(base.TestBase):
             width=78,
         )
         self.assertIn(expected_help_message, parser.format_help())
+
+
+class TestArgumentParser(base.TestBase):
+
+    def test_option_name_collision(self):
+        cmd = TestCommand(None, None)
+        parser = cmd.get_parser('NAME')
+        # We should have an exception registering an option with a
+        # name that already exists because we do not want commands to
+        # override global options.
+        self.assertRaises(
+            argparse.ArgumentError,
+            parser.add_argument,
+            '-z',
+        )

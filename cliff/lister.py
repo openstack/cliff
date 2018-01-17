@@ -50,7 +50,7 @@ class Lister(display.DisplayCommandBase):
         parser = super(Lister, self).get_parser(prog_name)
         group = self._formatter_group
         group.add_argument(
-            '-s', '--sort-column',
+            '--sort-column',
             action='append',
             default=[],
             dest='sort_columns',
