@@ -20,7 +20,6 @@
       zuul_work_dir: src/git.openstack.org/openstack/python-neutronclient
 
 - project:
-    name: openstack/cliff
     check:
       jobs:
         - cliff-tox-py27-neutronclient-tip
