@@ -45,7 +45,9 @@ class TestCommand(command.Command):
         )
         parser.add_argument(
             '-z',
-            help='used in TestArgumentParser',
+            dest='zippy',
+            default='zippy-default',
+            help='defined in TestCommand and used in TestArgumentParser',
         )
         return parser
 
@@ -141,10 +143,32 @@ class TestArgumentParser(base.TestBase):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
         # We should have an exception registering an option with a
-        # name that already exists because we do not want commands to
-        # override global options.
+        # name that already exists because we configure the argument
+        # parser to ignore conflicts but this option has no other name
+        # to be used.
         self.assertRaises(
             argparse.ArgumentError,
             parser.add_argument,
             '-z',
         )
+
+    def test_option_name_collision_with_alias(self):
+        cmd = TestCommand(None, None)
+        parser = cmd.get_parser('NAME')
+        # We not should have an exception registering an option with a
+        # name that already exists because we configure the argument
+        # parser to ignore conflicts and this option can be added as
+        # --zero even if the -z is ignored.
+        parser.add_argument('-z', '--zero')
+
+    def test_resolve_option_with_name_collision(self):
+        cmd = TestCommand(None, None)
+        parser = cmd.get_parser('NAME')
+        parser.add_argument(
+            '-z', '--zero',
+            dest='zero',
+            default='zero-default',
+        )
+        args = parser.parse_args(['-z', 'foo', 'a', 'b'])
+        self.assertEqual(args.zippy, 'foo')
+        self.assertEqual(args.zero, 'zero-default')
