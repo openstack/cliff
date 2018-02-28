@@ -111,7 +111,13 @@ class InteractiveApp(cmd2.Cmd):
             # Dispatch to the underlying help command,
             # which knows how to provide help for extension
             # commands.
-            self.default(self.parsed('help ' + arg))
+            try:
+                # NOTE(coreycb): This try path can be removed once
+                # requirements.txt has cmd2 >= 0.7.3.
+                parsed = self.parsed
+            except AttributeError:
+                parsed = self.parser_manager.parsed
+            self.default(parsed('help ' + arg))
         else:
             cmd2.Cmd.do_help(self, arg)
             cmd_names = sorted([n for n, v in self.command_manager])
