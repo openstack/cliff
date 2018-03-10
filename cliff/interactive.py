@@ -26,7 +26,7 @@ class InteractiveApp(cmd2.Cmd):
     Refer to the cmd2_ and cmd_ documentation for details
     about subclassing and configuring this class.
 
-    .. _cmd2: http://packages.python.org/cmd2/index.html
+    .. _cmd2: https://cmd2.readthedocs.io/en/latest/
     .. _cmd: http://docs.python.org/library/cmd.html
 
     :param parent_app: The calling application (expected to be derived
