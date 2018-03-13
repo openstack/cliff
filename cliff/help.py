@@ -16,6 +16,7 @@ import sys
 import traceback
 
 from . import command
+from . import utils
 
 
 class HelpAction(argparse.Action):
@@ -47,7 +48,7 @@ class HelpAction(argparse.Action):
                 continue
             try:
                 kwargs = {}
-                if 'cmd_name' in inspect.getargspec(factory.__init__).args:
+                if 'cmd_name' in utils.getargspec(factory.__init__).args:
                     kwargs['cmd_name'] = name
                 cmd = factory(app, None, **kwargs)
                 if cmd.deprecated:
@@ -100,7 +101,7 @@ class HelpCommand(command.Command):
                 return
             self.app_args.cmd = search_args
             kwargs = {}
-            if 'cmd_name' in inspect.getargspec(cmd_factory.__init__).args:
+            if 'cmd_name' in utils.getargspec(cmd_factory.__init__).args:
                 kwargs['cmd_name'] = cmd_name
             cmd = cmd_factory(self.app, self.app_args, **kwargs)
             full_name = (cmd_name
