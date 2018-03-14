@@ -199,3 +199,57 @@ class TestLegacyCommand(base.TestBase):
             mgr.find_command,
             ['cmd2'],
         )
+
+
+class TestLookupAndFindPartialName(base.TestBase):
+
+    scenarios = [
+        ('one-word', {'argv': ['o']}),
+        ('two-words', {'argv': ['t', 'w']}),
+        ('three-words', {'argv': ['t', 'w', 'c']}),
+    ]
+
+    def test(self):
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+        cmd, name, remaining = mgr.find_command(self.argv)
+        self.assertTrue(cmd)
+        self.assertEqual(' '.join(self.argv), name)
+        self.assertFalse(remaining)
+
+
+class TestGetByPartialName(base.TestBase):
+
+    def setUp(self):
+        super(TestGetByPartialName, self).setUp()
+        self.commands = {
+            'resource provider list': 1,
+            'resource class list': 2,
+            'server list': 3,
+            'service list': 4}
+
+    def test_no_candidates(self):
+        self.assertEqual(
+            [], commandmanager._get_commands_by_partial_name(
+                ['r', 'p'], self.commands))
+        self.assertEqual(
+            [], commandmanager._get_commands_by_partial_name(
+                ['r', 'p', 'c'], self.commands))
+
+    def test_multiple_candidates(self):
+        self.assertEqual(
+            2, len(commandmanager._get_commands_by_partial_name(
+                ['se', 'li'], self.commands)))
+
+    def test_one_candidate(self):
+        self.assertEqual(
+            ['resource provider list'],
+            commandmanager._get_commands_by_partial_name(
+                ['r', 'p', 'l'], self.commands))
+        self.assertEqual(
+            ['resource provider list'],
+            commandmanager._get_commands_by_partial_name(
+                ['resource', 'provider', 'list'], self.commands))
+        self.assertEqual(
+            ['server list'],
+            commandmanager._get_commands_by_partial_name(
+                ['serve', 'l'], self.commands))
