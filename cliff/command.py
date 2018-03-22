@@ -191,7 +191,7 @@ class Command(object):
         This method is intended to be called from the run() method before
         take_action() is called.
 
-        This method should only be overriden by developers creating new
+        This method should only be overridden by developers creating new
         command base classes and only if it is necessary to have different
         hook processing behavior.
         """
@@ -209,7 +209,7 @@ class Command(object):
         This method is intended to be called from the run() method after
         take_action() is called.
 
-        This method should only be overriden by developers creating new
+        This method should only be overridden by developers creating new
         command base classes and only if it is necessary to have different
         hook processing behavior.
         """
