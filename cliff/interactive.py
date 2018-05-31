@@ -51,13 +51,24 @@ class InteractiveApp(cmd2.Cmd):
         self.command_manager = command_manager
         cmd2.Cmd.__init__(self, 'tab', stdin=stdin, stdout=stdout)
 
+    def _split_line(self, line):
+        try:
+            return shlex.split(line.parsed.raw)
+        except AttributeError:
+            # cmd2 >= 0.9.1 gives us a Statement not a PyParsing parse
+            # result.
+            parts = shlex.split(line)
+            if getattr(line, 'command', None):
+                parts.insert(0, line.command)
+            return parts
+
     def default(self, line):
         # Tie in the default command processor to
         # dispatch commands known to the command manager.
         # We send the message through our parent app,
         # since it already has the logic for executing
         # the subcommand.
-        line_parts = shlex.split(line.parsed.raw)
+        line_parts = self._split_line(line)
         self.parent_app.run_subcommand(line_parts)
 
     def completenames(self, text, line, begidx, endidx):
@@ -116,7 +127,11 @@ class InteractiveApp(cmd2.Cmd):
                 # requirements.txt has cmd2 >= 0.7.3.
                 parsed = self.parsed
             except AttributeError:
-                parsed = self.parser_manager.parsed
+                try:
+                    parsed = self.parser_manager.parsed
+                except AttributeError:
+                    # cmd2 >= 0.9.1 does not have a parser manager
+                    parsed = lambda x: x  # noqa
             self.default(parsed('help ' + arg))
         else:
             cmd2.Cmd.do_help(self, arg)
@@ -140,7 +155,7 @@ class InteractiveApp(cmd2.Cmd):
         # Pre-process the parsed command in case it looks like one of
         # our subcommands, since cmd2 does not handle multi-part
         # command names by default.
-        line_parts = shlex.split(statement.parsed.raw)
+        line_parts = self._split_line(statement)
         try:
             the_cmd = self.command_manager.find_command(line_parts)
             cmd_factory, cmd_name, sub_argv = the_cmd
@@ -148,8 +163,15 @@ class InteractiveApp(cmd2.Cmd):
             # Not a plugin command
             pass
         else:
-            statement.parsed.command = cmd_name
-            statement.parsed.args = ' '.join(sub_argv)
+            if hasattr(statement, 'parsed'):
+                # Older cmd2 uses PyParsing
+                statement.parsed.command = cmd_name
+                statement.parsed.args = ' '.join(sub_argv)
+            else:
+                # cmd2 >= 0.9.1 uses shlex and gives us a Statement.
+                statement.command = cmd_name
+                statement.argv = [cmd_name] + sub_argv
+                statement.args = ' '.join(statement.argv)
         return statement
 
     def cmdloop(self):
