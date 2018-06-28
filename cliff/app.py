@@ -54,6 +54,8 @@ class App(object):
     """
 
     NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+    if NAME == '__main__':
+        NAME = os.path.split(os.path.dirname(sys.argv[0]))[-1]
     LOG = logging.getLogger(NAME)
 
     CONSOLE_MESSAGE_FORMAT = '%(message)s'
@@ -150,7 +152,7 @@ class App(object):
         parser.add_argument(
             '--version',
             action='version',
-            version='%(prog)s {0}'.format(version),
+            version='{0} {1}'.format(App.NAME, version),
         )
         verbose_group = parser.add_mutually_exclusive_group()
         verbose_group.add_argument(
@@ -242,6 +244,7 @@ class App(object):
         :param argv: input arguments and options
         :paramtype argv: list of str
         """
+
         try:
             self.options, remainder = self.parser.parse_known_args(argv)
             self.configure_logging()
