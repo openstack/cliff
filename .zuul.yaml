@@ -24,7 +24,7 @@
       - openstack-python-jobs
       - openstack-python35-jobs
       - lib-forward-testing
-      - publish-openstack-sphinx-docs
+      - publish-openstack-docs-pti
       - check-requirements
     check:
       jobs:
