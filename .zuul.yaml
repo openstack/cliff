@@ -20,6 +20,12 @@
       zuul_work_dir: src/git.openstack.org/openstack/python-neutronclient
 
 - project:
+    templates:
+      - openstack-python-jobs
+      - openstack-python35-jobs
+      - lib-forward-testing
+      - publish-openstack-sphinx-docs
+      - check-requirements
     check:
       jobs:
         - cliff-tox-py27-neutronclient-tip
