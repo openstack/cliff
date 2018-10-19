@@ -10,10 +10,10 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Special argparse module that allows to bypass abbrev mode."""
+"""Overrides of standard argparse behavior."""
 
 from __future__ import absolute_import
-from argparse import *  # noqa
+
 import argparse
 import sys
 import warnings
@@ -104,3 +104,24 @@ class _MutuallyExclusiveGroup(argparse._MutuallyExclusiveGroup):
             action,
             conflicting_actions,
         )
+
+
+class SmartHelpFormatter(argparse.HelpFormatter):
+    """Smart help formatter to output raw help message if help contain \n.
+
+    Some command help messages maybe have multiple line content, the built-in
+    argparse.HelpFormatter wrap and split the content according to width, and
+    ignore \n in the raw help message, it merge multiple line content in one
+    line to output, that looks messy. SmartHelpFormatter keep the raw help
+    message format if it contain \n, and wrap long line like HelpFormatter
+    behavior.
+    """
+
+    def _split_lines(self, text, width):
+        lines = text.splitlines() if '\n' in text else [text]
+        wrap_lines = []
+        for each_line in lines:
+            wrap_lines.extend(
+                super(SmartHelpFormatter, self)._split_lines(each_line, width)
+            )
+        return wrap_lines
