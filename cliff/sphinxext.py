@@ -15,6 +15,7 @@
 import argparse
 import fnmatch
 import importlib
+import inspect
 import re
 import sys
 
@@ -241,6 +242,8 @@ class AutoprogramCliffDirective(rst.Directive):
         try:
             cliff_app_class = getattr(sys.modules[mod_str], class_str)
         except AttributeError:
+            return
+        if not inspect.isclass(cliff_app_class):
             return
         if not issubclass(cliff_app_class, app.App):
             return
