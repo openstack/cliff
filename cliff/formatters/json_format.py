@@ -52,3 +52,4 @@ class JSONFormatter(base.ListFormatter, base.SingleFormatter):
         }
         indent = None if parsed_args.noindent else 2
         json.dump(one, stdout, indent=indent)
+        stdout.write('\n')
