@@ -156,6 +156,7 @@ class Command(object):
             epilog=self.get_epilog(),
             prog=prog_name,
             formatter_class=_SmartHelpFormatter,
+            conflict_handler='ignore',
         )
         for hook in self._hooks:
             hook.obj.get_parser(parser)
