@@ -19,5 +19,5 @@ other extensions.
 
 * Free software: Apache license
 * Documentation: https://docs.openstack.org/cliff/latest/
-* Source: https://git.openstack.org/cgit/openstack/cliff
+* Source: https://opendev.org/openstack/cliff
 * Bugs: https://bugs.launchpad.net/python-cliff
