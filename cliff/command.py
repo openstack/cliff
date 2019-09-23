@@ -155,7 +155,7 @@ class Command(object):
             description=self.get_description(),
             epilog=self.get_epilog(),
             prog=prog_name,
-            formatter_class=_SmartHelpFormatter,
+            formatter_class=_argparse.SmartHelpFormatter,
             conflict_handler='ignore',
         )
         for hook in self._hooks:
@@ -221,24 +221,3 @@ class Command(object):
             if ret is not None:
                 return_code = ret
         return return_code
-
-
-class _SmartHelpFormatter(_argparse.HelpFormatter):
-    """Smart help formatter to output raw help message if help contain \n.
-
-    Some command help messages maybe have multiple line content, the built-in
-    argparse.HelpFormatter wrap and split the content according to width, and
-    ignore \n in the raw help message, it merge multiple line content in one
-    line to output, that looks messy. SmartHelpFormatter keep the raw help
-    message format if it contain \n, and wrap long line like HelpFormatter
-    behavior.
-    """
-
-    def _split_lines(self, text, width):
-        lines = text.splitlines() if '\n' in text else [text]
-        wrap_lines = []
-        for each_line in lines:
-            wrap_lines.extend(
-                super(_SmartHelpFormatter, self)._split_lines(each_line, width)
-            )
-        return wrap_lines
