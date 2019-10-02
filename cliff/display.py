@@ -71,7 +71,8 @@ class DisplayCommandBase(command.Command):
             default=[],
             dest='columns',
             metavar='COLUMN',
-            help='specify the column(s) to include, can be repeated',
+            help='specify the column(s) to include, can be '
+                 'repeated to show multiple columns',
         )
         for formatter in self._formatter_plugins:
             formatter.obj.add_argument_group(parser)
