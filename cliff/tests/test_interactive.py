@@ -24,13 +24,13 @@ class FakeApp(object):
 
 class TestInteractive(base.TestBase):
 
-    def make_interactive_app(self, *command_names):
+    def make_interactive_app(self, errexit, *command_names):
         fake_command_manager = [(x, None) for x in command_names]
         return InteractiveApp(FakeApp, fake_command_manager,
-                              stdin=None, stdout=None)
+                              stdin=None, stdout=None, errexit=errexit)
 
     def _test_completenames(self, expecteds, prefix):
-        app = self.make_interactive_app('hips', 'hippo', 'nonmatching')
+        app = self.make_interactive_app(False, 'hips', 'hippo', 'nonmatching')
         self.assertEqual(
             set(app.completenames(prefix, '', 0, 1)), set(expecteds))
 
@@ -58,7 +58,7 @@ class TestInteractive(base.TestBase):
     def _test_completedefault(self, expecteds, line, begidx):
         command_names = set(['show file', 'show folder', 'show  long',
                              'list all'])
-        app = self.make_interactive_app(*command_names)
+        app = self.make_interactive_app(False, *command_names)
         observeds = app.completedefault(None, line, begidx, None)
         self.assertEqual(set(expecteds), set(observeds))
         self.assertTrue(
@@ -78,3 +78,13 @@ class TestInteractive(base.TestBase):
 
     def test_no_completedefault(self):
         self._test_completedefault([], 'taz ', 4)
+
+    def test_no_errexit(self):
+        command_names = set(['show file', 'show folder', 'list all'])
+        app = self.make_interactive_app(False, *command_names)
+        self.assertFalse(app.errexit)
+
+    def test_errexit(self):
+        command_names = set(['show file', 'show folder', 'list all'])
+        app = self.make_interactive_app(True, *command_names)
+        self.assertTrue(app.errexit)

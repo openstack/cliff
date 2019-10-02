@@ -41,7 +41,8 @@ class InteractiveApp(cmd2.Cmd):
     doc_header = "Shell commands (type help <topic>):"
     app_cmd_header = "Application commands (type help <topic>):"
 
-    def __init__(self, parent_app, command_manager, stdin, stdout):
+    def __init__(self, parent_app, command_manager, stdin, stdout,
+                 errexit=False):
         self.parent_app = parent_app
         if not hasattr(sys.stdin, 'isatty') or sys.stdin.isatty():
             self.prompt = '(%s) ' % parent_app.NAME
@@ -49,6 +50,7 @@ class InteractiveApp(cmd2.Cmd):
             # batch/pipe mode
             self.prompt = ''
         self.command_manager = command_manager
+        self.errexit = errexit
         cmd2.Cmd.__init__(self, 'tab', stdin=stdin, stdout=stdout)
 
     def _split_line(self, line):
@@ -69,7 +71,11 @@ class InteractiveApp(cmd2.Cmd):
         # since it already has the logic for executing
         # the subcommand.
         line_parts = self._split_line(line)
-        self.parent_app.run_subcommand(line_parts)
+        ret = self.parent_app.run_subcommand(line_parts)
+        if self.errexit:
+            # Only provide this if errexit is enabled,
+            # otherise keep old behaviour
+            return ret
 
     def completenames(self, text, line, begidx, endidx):
         """Tab-completion for command prefix without completer delimiter.
@@ -175,4 +181,7 @@ class InteractiveApp(cmd2.Cmd):
         return statement
 
     def cmdloop(self):
-        self._cmdloop()
+        # We don't want the cmd2 cmdloop() behaviour, just call the old one
+        # directly.  In part this is because cmd2.cmdloop() doe not return
+        # anything useful and we want to have a useful exit code.
+        return self._cmdloop()
