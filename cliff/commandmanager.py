@@ -23,6 +23,18 @@ from . import utils
 LOG = logging.getLogger(__name__)
 
 
+def _get_commands_by_partial_name(args, commands):
+    n = len(args)
+    candidates = []
+    for command_name in commands:
+        command_parts = command_name.split()
+        if len(command_parts) != n:
+            continue
+        if all(command_parts[i].startswith(args[i]) for i in range(n)):
+            candidates.append(command_name)
+    return candidates
+
+
 class EntryPointWrapper(object):
     """Wrap up a command class already imported to make it look like a plugin.
     """
@@ -97,8 +109,17 @@ class CommandManager(object):
             # Convert the legacy command name to its new name.
             if name in self._legacy:
                 name = self._legacy[name]
+
+            found = None
             if name in self.commands:
-                cmd_ep = self.commands[name]
+                found = name
+            else:
+                candidates = _get_commands_by_partial_name(
+                    argv[:i], self.commands)
+                if len(candidates) == 1:
+                    found = candidates[0]
+            if found:
+                cmd_ep = self.commands[found]
                 if hasattr(cmd_ep, 'resolve'):
                     cmd_factory = cmd_ep.resolve()
                 else:
