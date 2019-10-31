@@ -125,6 +125,14 @@ Directive
 
      .. seealso:: The ``:ignored:`` directive option.
 
+   `autoprogram_cliff_app_dist_name`
+     The name of the python distribution (the name used with pip, as opposed to
+     the package name used for importing) providing the commands/applications
+     being documented. Generated documentation for plugin components includes
+     a message indicating the name of the plugin. Setting this option tells
+     cliff the name of the distribution providing components natively so their
+     documentation does not include this message.
+
 .. seealso::
 
     Module `sphinxcontrib.autoprogram`

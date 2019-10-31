@@ -137,8 +137,10 @@ class Command(object):
             (h.obj.get_epilog() for h in self._hooks),
         )
         parts.extend(hook_epilogs)
-        app_dist_name = _get_distribution_for_module(
-            inspect.getmodule(self.app)
+        app_dist_name = getattr(
+            self, 'app_dist_name', _get_distribution_for_module(
+                inspect.getmodule(self.app)
+            )
         )
         dist_name = _get_distribution_for_module(inspect.getmodule(self))
         if dist_name and dist_name != app_dist_name:
