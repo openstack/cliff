@@ -21,3 +21,4 @@ other extensions.
 * Documentation: https://docs.openstack.org/cliff/latest/
 * Source: https://opendev.org/openstack/cliff
 * Bugs: https://bugs.launchpad.net/python-cliff
+* Contributors: https://github.com/openstack/cliff/graphs/contributors
