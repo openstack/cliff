@@ -322,6 +322,9 @@ class AutoprogramCliffDirective(rst.Directive):
         :returns: A list of nested docutil nodes
         """
         command = command_class(None, None)
+        if not getattr(command, 'app_dist_name', None):
+            command.app_dist_name = (
+                self.env.config.autoprogram_cliff_app_dist_name)
         parser = command.get_parser(command_name)
         ignored_opts = ignored_opts or []
 
@@ -375,3 +378,4 @@ def setup(app):
     app.add_directive('autoprogram-cliff', AutoprogramCliffDirective)
     app.add_config_value('autoprogram_cliff_application', '', True)
     app.add_config_value('autoprogram_cliff_ignored', ['--help'], True)
+    app.add_config_value('autoprogram_cliff_app_dist_name', None, True)
