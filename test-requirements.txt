@@ -12,8 +12,7 @@ coverage!=4.4,>=4.0 # Apache-2.0
 
 # sphinx is required in test-requirements in addition to doc/requirements
 # because there is a sphinx extension that has tests
-sphinx!=1.6.6,!=1.6.7,<2.0.0,>=1.6.2;python_version=='2.7'  # BSD
-sphinx!=1.6.6,!=1.6.7,!=2.1.0,>=1.6.2;python_version>='3.4'  # BSD
+sphinx!=1.6.6,!=1.6.7,!=2.1.0,>=1.6.2  # BSD
 
 # Bandit security code scanner
 bandit>=1.1.0 # Apache-2.0
