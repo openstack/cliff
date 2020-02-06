@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Support for Python 2.7 has been dropped. The minimum version of Python now
+    supported is Python 3.6.
