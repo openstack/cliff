@@ -19,18 +19,7 @@ import sys
 import warnings
 
 
-class ArgumentParser(argparse.ArgumentParser):
-
-    if sys.version_info < (3, 5):
-        def __init__(self, *args, **kwargs):
-            self.allow_abbrev = kwargs.pop("allow_abbrev", True)
-            super(ArgumentParser, self).__init__(*args, **kwargs)
-
-        def _get_option_tuples(self, option_string):
-            if self.allow_abbrev:
-                return super(ArgumentParser, self)._get_option_tuples(
-                    option_string)
-            return ()
+class _ArgumentContainerMixIn(object):
 
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
@@ -53,6 +42,20 @@ class ArgumentParser(argparse.ArgumentParser):
             action,
             conflicting_actions,
         )
+
+
+class ArgumentParser(_ArgumentContainerMixIn, argparse.ArgumentParser):
+
+    if sys.version_info < (3, 5):
+        def __init__(self, *args, **kwargs):
+            self.allow_abbrev = kwargs.pop("allow_abbrev", True)
+            super(ArgumentParser, self).__init__(*args, **kwargs)
+
+        def _get_option_tuples(self, option_string):
+            if self.allow_abbrev:
+                return super(ArgumentParser, self)._get_option_tuples(
+                    option_string)
+            return ()
 
 
 def _handle_conflict_ignore(container, option_string_actions,
@@ -84,26 +87,13 @@ def _handle_conflict_ignore(container, option_string_actions,
             )
 
 
-class _ArgumentGroup(argparse._ArgumentGroup):
-
-    def _handle_conflict_ignore(self, action, conflicting_actions):
-        _handle_conflict_ignore(
-            self,
-            self._option_string_actions,
-            action,
-            conflicting_actions,
-        )
+class _ArgumentGroup(_ArgumentContainerMixIn, argparse._ArgumentGroup):
+    pass
 
 
-class _MutuallyExclusiveGroup(argparse._MutuallyExclusiveGroup):
-
-    def _handle_conflict_ignore(self, action, conflicting_actions):
-        _handle_conflict_ignore(
-            self,
-            self._option_string_actions,
-            action,
-            conflicting_actions,
-        )
+class _MutuallyExclusiveGroup(_ArgumentContainerMixIn,
+                              argparse._MutuallyExclusiveGroup):
+    pass
 
 
 class SmartHelpFormatter(argparse.HelpFormatter):
