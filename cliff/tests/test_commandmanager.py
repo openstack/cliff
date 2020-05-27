@@ -10,8 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-import mock
 import testscenarios
+from unittest import mock
 
 from cliff import command
 from cliff import commandmanager

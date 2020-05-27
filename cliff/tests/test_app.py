@@ -21,8 +21,8 @@ except ImportError:
     from io import StringIO
 import sys
 
-import mock
 import six
+from unittest import mock
 
 from cliff import app as application
 from cliff import command as c_cmd

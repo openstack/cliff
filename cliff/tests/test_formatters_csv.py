@@ -16,8 +16,8 @@
 import argparse
 import unittest
 
-import mock
 import six
+from unittest import mock
 
 from cliff.formatters import commaseparated
 from cliff.tests import test_columns

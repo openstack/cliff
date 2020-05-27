@@ -17,7 +17,7 @@ import struct
 import sys
 import unittest
 
-import mock
+from unittest import mock
 
 from cliff import utils
 from cliff.tests import base

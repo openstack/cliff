@@ -16,8 +16,8 @@ import argparse
 import os
 import textwrap
 
-import mock
 from six import StringIO
+from unittest import mock
 
 from cliff.formatters import table
 from cliff.tests import base

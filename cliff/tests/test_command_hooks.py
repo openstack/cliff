@@ -18,8 +18,8 @@ from cliff import lister
 from cliff import show
 from cliff.tests import base
 
-import mock
 from stevedore import extension
+from unittest import mock
 
 
 def make_app(**kwargs):

@@ -13,7 +13,7 @@
 """Bash completion tests
 """
 
-import mock
+from unittest import mock
 
 from cliff import app as application
 from cliff import commandmanager

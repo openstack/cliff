@@ -15,11 +15,11 @@
 import six
 import yaml
 
+from unittest import mock
+
 from cliff.formatters import yaml_format
 from cliff.tests import base
 from cliff.tests import test_columns
-
-import mock
 
 
 class TestYAMLFormatter(base.TestBase):

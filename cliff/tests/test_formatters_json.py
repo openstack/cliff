@@ -18,8 +18,8 @@ from cliff.formatters import json_format
 from cliff.tests import base
 from cliff.tests import test_columns
 
-import mock
 import six
+from unittest import mock
 
 
 class TestJSONFormatter(base.TestBase):

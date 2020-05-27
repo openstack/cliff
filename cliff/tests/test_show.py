@@ -14,10 +14,10 @@
 
 import weakref
 
+from unittest import mock
+
 from cliff import show
 from cliff.tests import base
-
-import mock
 
 
 class FauxFormatter(object):

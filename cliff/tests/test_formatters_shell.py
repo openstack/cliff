@@ -15,11 +15,11 @@
 import argparse
 import six
 
+from unittest import mock
+
 from cliff.formatters import shell
 from cliff.tests import base
 from cliff.tests import test_columns
-
-import mock
 
 
 class TestShellFormatter(base.TestBase):
