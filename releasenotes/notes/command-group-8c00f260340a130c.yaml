@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Added support for command groups. This was originally added
+    in osc_lib downstream.
