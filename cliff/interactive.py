@@ -175,9 +175,18 @@ class InteractiveApp(cmd2.Cmd):
                 statement.parsed.args = ' '.join(sub_argv)
             else:
                 # cmd2 >= 0.9.1 uses shlex and gives us a Statement.
-                statement.command = cmd_name
-                statement.argv = [cmd_name] + sub_argv
-                statement.args = ' '.join(statement.argv)
+                statement = cmd2.Statement(
+                    ' '.join(sub_argv),
+                    raw=statement.raw,
+                    command=cmd_name,
+                    arg_list=sub_argv,
+                    multiline_command=statement.multiline_command,
+                    terminator=statement.terminator,
+                    suffix=statement.suffix,
+                    pipe_to=statement.pipe_to,
+                    output=statement.output,
+                    output_to=statement.output_to,
+                )
         return statement
 
     def cmdloop(self):
