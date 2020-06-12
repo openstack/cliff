@@ -158,6 +158,16 @@ class InteractiveApp(cmd2.Cmd):
                 ]
 
     def precmd(self, statement):
+        """Hook method executed just before the command is executed by
+        :meth:`~cmd2.Cmd.onecmd` and after adding it to history.
+
+        :param statement: subclass of str which also contains the parsed input
+        :return: a potentially modified version of the input Statement object
+        """
+        # NOTE(mordred): The above docstring is copied in from cmd2 because
+        # current cmd2 has a docstring that sphinx finds if we don't override
+        # it, and it breaks sphinx.
+
         # Pre-process the parsed command in case it looks like one of
         # our subcommands, since cmd2 does not handle multi-part
         # command names by default.
