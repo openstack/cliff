@@ -116,39 +116,39 @@ class TestLoad(base.TestBase):
     def test_load_commands(self):
         testcmd = mock.Mock(name='testcmd')
         testcmd.name.replace.return_value = 'test'
-        mock_pkg_resources = mock.Mock(return_value=[testcmd])
-        with mock.patch('pkg_resources.iter_entry_points',
-                        mock_pkg_resources) as iter_entry_points:
+        mock_get_group_all = mock.Mock(return_value=[testcmd])
+        with mock.patch('stevedore.ExtensionManager',
+                        mock_get_group_all) as mock_manager:
             mgr = commandmanager.CommandManager('test')
-            iter_entry_points.assert_called_once_with('test')
+            mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
             self.assertEqual(['test'], names)
 
     def test_load_commands_keep_underscores(self):
         testcmd = mock.Mock()
         testcmd.name = 'test_cmd'
-        mock_pkg_resources = mock.Mock(return_value=[testcmd])
-        with mock.patch('pkg_resources.iter_entry_points',
-                        mock_pkg_resources) as iter_entry_points:
+        mock_get_group_all = mock.Mock(return_value=[testcmd])
+        with mock.patch('stevedore.ExtensionManager',
+                        mock_get_group_all) as mock_manager:
             mgr = commandmanager.CommandManager(
                 'test',
                 convert_underscores=False,
             )
-            iter_entry_points.assert_called_once_with('test')
+            mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
             self.assertEqual(['test_cmd'], names)
 
     def test_load_commands_replace_underscores(self):
         testcmd = mock.Mock()
         testcmd.name = 'test_cmd'
-        mock_pkg_resources = mock.Mock(return_value=[testcmd])
-        with mock.patch('pkg_resources.iter_entry_points',
-                        mock_pkg_resources) as iter_entry_points:
+        mock_get_group_all = mock.Mock(return_value=[testcmd])
+        with mock.patch('stevedore.ExtensionManager',
+                        mock_get_group_all) as mock_manager:
             mgr = commandmanager.CommandManager(
                 'test',
                 convert_underscores=True,
             )
-            iter_entry_points.assert_called_once_with('test')
+            mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
             self.assertEqual(['test cmd'], names)
 
@@ -331,14 +331,14 @@ class TestCommandManagerGroups(base.TestBase):
         mock_cmd_one.name = 'one'
         mock_cmd_two = mock.Mock()
         mock_cmd_two.name = 'cmd two'
-        mock_pkg_resources = mock.Mock(
+        mock_get_group_all = mock.Mock(
             return_value=[mock_cmd_one, mock_cmd_two],
         )
         with mock.patch(
-            'pkg_resources.iter_entry_points',
-            mock_pkg_resources,
-        ) as iter_entry_points:
+            'stevedore.ExtensionManager',
+            mock_get_group_all,
+        ) as mock_manager:
             mgr = commandmanager.CommandManager('test')
-            iter_entry_points.assert_called_once_with('test')
+            mock_manager.assert_called_once_with('test')
             cmds = mgr.get_command_names('test')
             self.assertEqual(['one', 'cmd two'], cmds)

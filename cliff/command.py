@@ -13,7 +13,6 @@
 import abc
 import inspect
 
-import pkg_resources
 import six
 from stevedore import extension
 
@@ -31,6 +30,7 @@ def _get_distributions_by_modules():
     command to be installed, so we need to look up the values.
 
     """
+    import pkg_resources
     global _dists_by_mods
     if _dists_by_mods is None:
         results = {}

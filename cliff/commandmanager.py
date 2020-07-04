@@ -15,7 +15,7 @@
 
 import logging
 
-import pkg_resources
+import stevedore
 
 from . import utils
 
@@ -72,12 +72,12 @@ class CommandManager(object):
     def load_commands(self, namespace):
         """Load all the commands from an entrypoint"""
         self.group_list.append(namespace)
-        for ep in pkg_resources.iter_entry_points(namespace):
+        for ep in stevedore.ExtensionManager(namespace):
             LOG.debug('found command %r', ep.name)
             cmd_name = (ep.name.replace('_', ' ')
                         if self.convert_underscores
                         else ep.name)
-            self.commands[cmd_name] = ep
+            self.commands[cmd_name] = ep.entry_point
         return
 
     def __iter__(self):
@@ -159,7 +159,7 @@ class CommandManager(object):
         """Returns a list of commands loaded for the specified group"""
         group_list = []
         if group is not None:
-            for ep in pkg_resources.iter_entry_points(group):
+            for ep in stevedore.ExtensionManager(group):
                 cmd_name = (
                     ep.name.replace('_', ' ')
                     if self.convert_underscores
