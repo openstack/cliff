@@ -276,11 +276,16 @@ class App(object):
             else:
                 self.LOG.error(err)
             return 1
+        except KeyboardInterrupt:
+            return 130
         result = 1
         if self.interactive_mode:
             result = self.interact()
         else:
-            result = self.run_subcommand(remainder)
+            try:
+                result = self.run_subcommand(remainder)
+            except KeyboardInterrupt:
+                return 130
         return result
 
     # FIXME(dhellmann): Consider moving these command handling methods
@@ -391,6 +396,7 @@ class App(object):
             kwargs['cmd_name'] = cmd_name
         cmd = cmd_factory(self, self.options, **kwargs)
         result = 1
+        err = None
         try:
             self.prepare_to_run_command(cmd)
             full_name = (cmd_name
@@ -398,17 +404,24 @@ class App(object):
                          else ' '.join([self.NAME, cmd_name])
                          )
             cmd_parser = cmd.get_parser(full_name)
-            parsed_args = cmd_parser.parse_args(sub_argv)
+            try:
+                parsed_args = cmd_parser.parse_args(sub_argv)
+            except SystemExit as ex:
+                raise cmd2.exceptions.Cmd2ArgparseError from ex
             result = cmd.run(parsed_args)
         except help.HelpExit:
             result = 0
-        except SystemExit as ex:
-            raise cmd2.exceptions.Cmd2ArgparseError from ex
-        except Exception as err:
+        except Exception as err1:
+            err = err1
             if self.options.debug:
                 self.LOG.exception(err)
             else:
                 self.LOG.error(err)
+        except KeyboardInterrupt as err1:
+            result = 130
+            err = err1
+            raise
+        finally:
             try:
                 self.clean_up(cmd, result, err)
             except Exception as err2:
@@ -416,15 +429,5 @@ class App(object):
                     self.LOG.exception(err2)
                 else:
                     self.LOG.error('Could not clean up: %s', err2)
-            if self.options.debug:
-                # 'raise' here gets caught and does not exit like we want
-                return result
-        else:
-            try:
-                self.clean_up(cmd, result, None)
-            except Exception as err3:
-                if self.options.debug:
-                    self.LOG.exception(err3)
-                else:
-                    self.LOG.error('Could not clean up: %s', err3)
+            del err
         return result
