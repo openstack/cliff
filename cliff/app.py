@@ -21,6 +21,8 @@ import os
 import six
 import sys
 
+import cmd2
+
 from cliff import _argparse
 from . import complete
 from . import help
@@ -398,6 +400,8 @@ class App(object):
             cmd_parser = cmd.get_parser(full_name)
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)
+        except SystemExit as ex:
+            raise cmd2.exceptions.Cmd2ArgparseError from ex
         except Exception as err:
             if self.options.debug:
                 self.LOG.exception(err)
