@@ -12,14 +12,24 @@
 
 import argparse
 import inspect
-import sys
 import traceback
 
 from . import command
 from . import utils
 
 
+class HelpExit(SystemExit):
+    """Special exception type to trigger quick exit from the application
+
+    We subclass from SystemExit to preserve API compatibility for
+    anything that used to catch SystemExit, but use a different class
+    so that cliff's Application can tell the difference between
+    something trying to hard-exit and help saying it's done.
+    """
+
+
 class HelpAction(argparse.Action):
+
     """Provide a custom action so the -h and --help options
     to the main app will print a list of the commands.
 
@@ -65,7 +75,7 @@ class HelpAction(argparse.Action):
             else:
                 dist_info = ''
             app.stdout.write('  %-13s  %s%s\n' % (name, one_liner, dist_info))
-        sys.exit(0)
+        raise HelpExit()
 
 
 class HelpCommand(command.Command):

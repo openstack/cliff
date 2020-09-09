@@ -400,6 +400,8 @@ class App(object):
             cmd_parser = cmd.get_parser(full_name)
             parsed_args = cmd_parser.parse_args(sub_argv)
             result = cmd.run(parsed_args)
+        except help.HelpExit:
+            result = 0
         except SystemExit as ex:
             raise cmd2.exceptions.Cmd2ArgparseError from ex
         except Exception as err:

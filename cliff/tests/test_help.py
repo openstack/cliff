@@ -42,7 +42,7 @@ class TestHelp(base.TestBase):
         parsed_args = parser.parse_args(['one'])
         try:
             help_cmd.run(parsed_args)
-        except SystemExit:
+        except help.HelpExit:
             pass
         self.assertEqual('TestParser', stdout.getvalue())
 
@@ -60,7 +60,7 @@ class TestHelp(base.TestBase):
         parsed_args = parser.parse_args(['t'])
         try:
             help_cmd.run(parsed_args)
-        except SystemExit:
+        except help.HelpExit:
             pass
         help_output = stdout.getvalue()
         self.assertIn('Command "t" matches:', help_output)
@@ -99,7 +99,7 @@ class TestHelp(base.TestBase):
         parsed_args = parser.parse_args([])
         try:
             help_cmd.run(parsed_args)
-        except SystemExit:
+        except help.HelpExit:
             pass
         help_text = stdout.getvalue()
         basecommand = os.path.split(sys.argv[0])[1]
@@ -122,7 +122,7 @@ class TestHelp(base.TestBase):
         app.NAME = 'test'
         try:
             app.run(['--help'])
-        except SystemExit:
+        except help.HelpExit:
             pass
         help_output = stdout.getvalue()
         self.assertIn('two words', help_output)
@@ -144,7 +144,7 @@ class TestHelp(base.TestBase):
         parsed_args = parser.parse_args([])
         try:
             help_cmd.run(parsed_args)
-        except SystemExit:
+        except help.HelpExit:
             pass
         help_output = stdout.getvalue()
         self.assertIn('Commands:', help_output)
@@ -166,7 +166,7 @@ class TestHelp(base.TestBase):
         parsed_args = parser.parse_args([])
         try:
             help_cmd.run(parsed_args)
-        except SystemExit:
+        except help.HelpExit:
             pass
         help_output = stdout.getvalue()
         self.assertIn('Commands:', help_output)
