@@ -32,6 +32,10 @@ from . import utils
 logging.getLogger('cliff').addHandler(logging.NullHandler())
 
 
+# Exit code for exiting due to a signal is 128 + the signal number
+_SIGINT_EXIT = 130
+
+
 class App(object):
     """Application base class.
 
@@ -277,7 +281,7 @@ class App(object):
                 self.LOG.error(err)
             return 1
         except KeyboardInterrupt:
-            return 130
+            return _SIGINT_EXIT
         result = 1
         if self.interactive_mode:
             result = self.interact()
@@ -285,7 +289,7 @@ class App(object):
             try:
                 result = self.run_subcommand(remainder)
             except KeyboardInterrupt:
-                return 130
+                return _SIGINT_EXIT
         return result
 
     # FIXME(dhellmann): Consider moving these command handling methods
@@ -418,7 +422,7 @@ class App(object):
             else:
                 self.LOG.error(err)
         except KeyboardInterrupt as err1:
-            result = 130
+            result = _SIGINT_EXIT
             err = err1
             raise
         finally:
