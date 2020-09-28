@@ -14,13 +14,10 @@
 """
 import abc
 
-import six
-
 from . import display
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ShowOne(display.DisplayCommandBase):
+class ShowOne(display.DisplayCommandBase, metaclass=abc.ABCMeta):
     """Command base class for displaying data about a single object.
     """
 

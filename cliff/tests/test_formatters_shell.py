@@ -13,8 +13,7 @@
 #  under the License.
 
 import argparse
-import six
-
+import io
 from unittest import mock
 
 from cliff.formatters import shell
@@ -29,7 +28,7 @@ class TestShellFormatter(base.TestBase):
         c = ('a', 'b', 'c', 'd')
         d = ('A', 'B', 'C', '"escape me"')
         expected = 'a="A"\nb="B"\nd="\\"escape me\\""\n'
-        output = six.StringIO()
+        output = io.StringIO()
         args = mock.Mock()
         args.variables = ['a', 'b', 'd']
         args.prefix = ''
@@ -42,7 +41,7 @@ class TestShellFormatter(base.TestBase):
         c = ('a', 'b', 'c', 'd')
         d = ('A', 'B', 'C', '"escape me"')
         expected = 'Xd="\\"escape me\\""\n'
-        output = six.StringIO()
+        output = io.StringIO()
         # Parse arguments as if passed on the command-line
         parser = argparse.ArgumentParser(description='Testing...')
         sf.add_argument_group(parser)
@@ -60,7 +59,7 @@ class TestShellFormatter(base.TestBase):
             'b="B"',
             'c="[\'the\', \'value\']"\n',
         ])
-        output = six.StringIO()
+        output = io.StringIO()
         args = mock.Mock()
         args.variables = ['a', 'b', 'c']
         args.prefix = ''
@@ -71,10 +70,10 @@ class TestShellFormatter(base.TestBase):
     def test_non_string_values(self):
         sf = shell.ShellFormatter()
         c = ('a', 'b', 'c', 'd', 'e')
-        d = (True, False, 100, '"esc"', six.text_type('"esc"'))
+        d = (True, False, 100, '"esc"', str('"esc"'))
         expected = ('a="True"\nb="False"\nc="100"\n'
                     'd="\\"esc\\""\ne="\\"esc\\""\n')
-        output = six.StringIO()
+        output = io.StringIO()
         args = mock.Mock()
         args.variables = ['a', 'b', 'c', 'd', 'e']
         args.prefix = ''
@@ -87,7 +86,7 @@ class TestShellFormatter(base.TestBase):
         c = ('a', 'foo-bar', 'provider:network_type')
         d = (True, 'baz', 'vxlan')
         expected = 'a="True"\nfoo_bar="baz"\nprovider_network_type="vxlan"\n'
-        output = six.StringIO()
+        output = io.StringIO()
         args = mock.Mock()
         args.variables = ['a', 'foo-bar', 'provider:network_type']
         args.prefix = ''

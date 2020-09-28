@@ -15,7 +15,6 @@
 
 import logging
 
-import six
 import stevedore
 
 from cliff import command
@@ -40,7 +39,7 @@ class CompleteDictionary:
             # For example, {'cmd': 'action'}, and we add the command
             # 'cmd_other'. We want the result to be
             # {'cmd': 'action other', 'cmd_other': 'sub_action'}
-            if isinstance(subdata, six.string_types):
+            if isinstance(subdata, str):
                 subdata += ' ' + last_cmd
                 dicto[subcmd] = subdata
                 last_cmd = subcmd + '_' + last_cmd
@@ -57,7 +56,7 @@ class CompleteDictionary:
         for cmd in keys:
             name = path + "_" + cmd if path else cmd
             value = dictionary[cmd]
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 ray.append((name, value))
             else:
                 cmdlist = ' '.join(sorted(value.keys()))

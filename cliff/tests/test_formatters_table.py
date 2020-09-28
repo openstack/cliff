@@ -16,7 +16,7 @@ import argparse
 import os
 import textwrap
 
-from six import StringIO
+from io import StringIO
 from unittest import mock
 
 from cliff.formatters import table

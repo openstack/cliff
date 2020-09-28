@@ -14,7 +14,6 @@
 """
 
 import prettytable
-import six
 import os
 
 from cliff import utils
@@ -27,7 +26,7 @@ def _format_row(row):
     for r in row:
         if isinstance(r, columns.FormattableColumn):
             r = r.human_readable()
-        if isinstance(r, six.string_types):
+        if isinstance(r, str):
             r = r.replace('\r\n', '\n').replace('\r', ' ')
         new_row.append(r)
     return new_row

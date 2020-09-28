@@ -21,7 +21,6 @@ python-subunit==1.0.0
 pytz==2013.6
 PyYAML==3.12
 requests==2.14.2
-six==1.10.0
 smmap==0.9.0
 snowballstemmer==1.2.1
 Sphinx==2.0.0

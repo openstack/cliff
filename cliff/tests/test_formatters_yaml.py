@@ -12,7 +12,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-import six
+from io import StringIO
 import yaml
 
 from unittest import mock
@@ -34,7 +34,7 @@ class TestYAMLFormatter(base.TestBase):
             'c': 'C',
             'd': '"escape me"'
         }
-        output = six.StringIO()
+        output = StringIO()
         args = mock.Mock()
         sf.emit_one(c, d, output, args)
         actual = yaml.safe_load(output.getvalue())
@@ -54,7 +54,7 @@ class TestYAMLFormatter(base.TestBase):
         sf.add_argument_group(args)
 
         args.noindent = True
-        output = six.StringIO()
+        output = StringIO()
         sf.emit_one(c, d, output, args)
         value = output.getvalue()
         print(len(value.splitlines()))
@@ -74,7 +74,7 @@ class TestYAMLFormatter(base.TestBase):
             {'a': 'A2', 'b': 'B2', 'c': 'C2'},
             {'a': 'A3', 'b': 'B3', 'c': 'C3'}
         ]
-        output = six.StringIO()
+        output = StringIO()
         args = mock.Mock()
         sf.add_argument_group(args)
         sf.emit_list(c, d, output, args)
@@ -94,7 +94,7 @@ class TestYAMLFormatter(base.TestBase):
         sf.add_argument_group(args)
 
         args.noindent = True
-        output = six.StringIO()
+        output = StringIO()
         sf.emit_list(c, d, output, args)
         actual = yaml.safe_load(output.getvalue())
         self.assertEqual(expected, actual)

@@ -14,9 +14,8 @@
 #  under the License.
 
 import argparse
+import io
 import unittest
-
-import six
 from unittest import mock
 
 from cliff.formatters import commaseparated
@@ -32,7 +31,7 @@ class TestCSVFormatter(unittest.TestCase):
         d2 = ('D', 'E', 'F')
         data = [d1, d2]
         expected = 'a,b,c\nA,B,C\nD,E,F\n'
-        output = six.StringIO()
+        output = io.StringIO()
         parsed_args = mock.Mock()
         parsed_args.quote_mode = 'none'
         sf.emit_list(c, data, output, parsed_args)
@@ -46,7 +45,7 @@ class TestCSVFormatter(unittest.TestCase):
         d2 = ('D', 'E', 'F')
         data = [d1, d2]
         expected = '"a","b","c"\n"A","B","C"\n"D","E","F"\n'
-        output = six.StringIO()
+        output = io.StringIO()
         # Parse arguments as if passed on the command-line
         parser = argparse.ArgumentParser(description='Testing...')
         sf.add_argument_group(parser)
@@ -61,7 +60,7 @@ class TestCSVFormatter(unittest.TestCase):
         d1 = ('A', 'B', test_columns.FauxColumn(['the', 'value']))
         data = [d1]
         expected = 'a,b,c\nA,B,[\'the\'\\, \'value\']\n'
-        output = six.StringIO()
+        output = io.StringIO()
         parsed_args = mock.Mock()
         parsed_args.quote_mode = 'none'
         sf.emit_list(c, data, output, parsed_args)
@@ -76,11 +75,9 @@ class TestCSVFormatter(unittest.TestCase):
         d2 = (u'D', u'E', happy)
         data = [d1, d2]
         expected = u'a,b,c\nA,B,C\nD,E,%s\n' % happy
-        output = six.StringIO()
+        output = io.StringIO()
         parsed_args = mock.Mock()
         parsed_args.quote_mode = 'none'
         sf.emit_list(c, data, output, parsed_args)
         actual = output.getvalue()
-        if six.PY2:
-            actual = actual.decode('utf-8')
         self.assertEqual(expected, actual)

@@ -15,14 +15,12 @@
 import abc
 from itertools import compress
 
-import six
 import stevedore
 
 from . import command
 
 
-@six.add_metaclass(abc.ABCMeta)
-class DisplayCommandBase(command.Command):
+class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     """Command base class for displaying data about a single object.
     """
 
