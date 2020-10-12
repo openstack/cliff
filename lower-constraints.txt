@@ -1,5 +1,4 @@
 alabaster==0.7.10
-Babel==2.3.4
 bandit==1.1.0
 cmd2==0.8.0
 coverage==4.0
