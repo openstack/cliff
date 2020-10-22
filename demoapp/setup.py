@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+from setuptools import find_packages
+from setuptools import setup
+
 PROJECT = 'cliffdemo'
 
 # Change docs/sphinx/conf.py too!
 VERSION = '0.1'
-
-from setuptools import setup, find_packages
 
 try:
     long_description = open('README.rst', 'rt').read()

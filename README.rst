@@ -11,11 +11,11 @@ Team and repository tags
  cliff -- Command Line Interface Formulation Framework
 =======================================================
 
-cliff is a framework for building command line programs. It uses
-`setuptools entry points`_ to provide subcommands, output formatters, and
-other extensions.
+cliff is a framework for building command line programs.
+It uses `entry points`_ to provide subcommands, output formatters, and other
+extensions.
 
-.. _setuptools entry points: http://setuptools.readthedocs.io/en/latest/pkg_resources.html#convenience-api
+.. _entry points: https://packaging.python.org/specifications/entry-points/
 
 * Free software: Apache license
 * Documentation: https://docs.openstack.org/cliff/latest/

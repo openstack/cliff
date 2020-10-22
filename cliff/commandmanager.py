@@ -50,11 +50,10 @@ class EntryPointWrapper(object):
 class CommandManager(object):
     """Discovers commands and handles lookup based on argv data.
 
-    :param namespace: String containing the setuptools entrypoint namespace
-                      for the plugins to be loaded. For example,
-                      ``'cliff.formatter.list'``.
+    :param namespace: String containing the entrypoint namespace for the
+        plugins to be loaded. For example, ``'cliff.formatter.list'``.
     :param convert_underscores: Whether cliff should convert underscores to
-                                spaces in entry_point commands.
+        spaces in entry_point commands.
     """
     def __init__(self, namespace, convert_underscores=True):
         self.commands = {}
@@ -93,7 +92,6 @@ class CommandManager(object):
         :type old_name: str
         :param new_name: The new command name.
         :type new_name: str
-
         """
         self._legacy[old_name] = new_name
 

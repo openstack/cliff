@@ -35,7 +35,7 @@ The CommandManager
 
 The :class:`cliff.commandmanager.CommandManager` knows how to load
 individual command plugins. The default implementation uses
-`setuptools entry points`_ but any mechanism for loading commands can
+`entry points`_ but any mechanism for loading commands can
 be used by replacing the default :class:`CommandManager` when
 instantiating an :class:`App`.
 
@@ -71,6 +71,5 @@ multiple commands before the program exits. Many cliff-based
 applications will be able to use the default implementation of
 :class:`InteractiveApp` without subclassing it.
 
-.. _setuptools entry points: https://setuptools.readthedocs.io/en/latest/pkg_resources.html#entry-points
-
+.. _entry points: https://packaging.python.org/specifications/entry-points/
 .. _argparse: http://docs.python.org/library/argparse.html
