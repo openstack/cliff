@@ -29,5 +29,5 @@ The source is hosted on OpenDev: https://opendev.org/openstack/cliff
 Reporting Bugs
 ==============
 
-Please report bugs through the Launchpad project:
-https://bugs.launchpad.net/python-cliff
+Please report bugs through the storyboard:
+https://storyboard.openstack.org/#!/project/openstack/cliff

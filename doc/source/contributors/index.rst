@@ -4,9 +4,9 @@
 
 If you would like to contribute to cliff directly, these instructions
 should help you get started.  Bug reports, and feature requests are
-all welcome through the `Launchpad project`_.
+all welcome through the `Storyboard project`_.
 
-.. _Launchpad project: https://launchpad.net/python-cliff
+.. _Storyboard project: https://storyboard.openstack.org/#!/project/openstack/cliff
 
 Changes to cliff should be submitted for review via the Gerrit tool,
 following the workflow documented at
@@ -14,7 +14,7 @@ https://docs.openstack.org/infra/manual/developers.html#development-workflow
 
 Pull requests submitted through GitHub will be ignored.
 
-Bugs should be filed under the `Launchpad project`_.
+Bugs should be filed under the `Storyboard project`_.
 
 
 .. note::
