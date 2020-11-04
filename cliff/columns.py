@@ -24,10 +24,14 @@ class FormattableColumn(object):
     def __init__(self, value):
         self._value = value
 
+    def __eq__(self, other):
+        return (
+            self.__class__ == other.__class__ and self._value == other._value
+        )
+
     @abc.abstractmethod
     def human_readable(self):
-        """Return a basic human readable version of the data.
-        """
+        """Return a basic human readable version of the data."""
 
     def machine_readable(self):
         """Return a raw data structure using only Python built-in types.
@@ -35,6 +39,5 @@ class FormattableColumn(object):
         It must be possible to serialize the return value directly
         using a formatter like JSON, and it will be up to the
         formatter plugin to decide how to make that transformation.
-
         """
         return self._value
