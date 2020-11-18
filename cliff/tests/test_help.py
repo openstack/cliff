@@ -10,10 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+import io
 import os
 import sys
 
@@ -32,7 +29,7 @@ class TestHelp(base.TestBase):
         # FIXME(dhellmann): Are commands tied too closely to the app? Or
         # do commands know too much about apps by using them to get to the
         # command manager?
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)
@@ -50,7 +47,7 @@ class TestHelp(base.TestBase):
         # FIXME(dhellmann): Are commands tied too closely to the app? Or
         # do commands know too much about apps by using them to get to the
         # command manager?
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)
@@ -70,7 +67,7 @@ class TestHelp(base.TestBase):
         # FIXME(dhellmann): Are commands tied too closely to the app? Or
         # do commands know too much about apps by using them to get to the
         # command manager?
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)
@@ -88,7 +85,7 @@ class TestHelp(base.TestBase):
         # FIXME(dhellmann): Are commands tied too closely to the app? Or
         # do commands know too much about apps by using them to get to the
         # command manager?
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)
@@ -115,7 +112,7 @@ class TestHelp(base.TestBase):
         # FIXME(dhellmann): Are commands tied too closely to the app? Or
         # do commands know too much about apps by using them to get to the
         # command manager?
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)
@@ -132,7 +129,7 @@ class TestHelp(base.TestBase):
     @mock.patch.object(commandmanager.EntryPointWrapper, 'load',
                        side_effect=Exception('Could not load EntryPoint'))
     def test_show_help_with_ep_load_fail(self, mock_load):
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)
@@ -154,7 +151,7 @@ class TestHelp(base.TestBase):
     @mock.patch.object(commandmanager.EntryPointWrapper, 'load',
                        side_effect=Exception('Could not load EntryPoint'))
     def test_show_help_print_exc_with_ep_load_fail(self, mock_load):
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               utils.TestCommandManager(utils.TEST_NAMESPACE),
                               stdout=stdout)

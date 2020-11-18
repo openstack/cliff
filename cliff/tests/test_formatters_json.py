@@ -12,14 +12,13 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import io
 import json
+from unittest import mock
 
 from cliff.formatters import json_format
 from cliff.tests import base
 from cliff.tests import test_columns
-
-import six
-from unittest import mock
 
 
 class TestJSONFormatter(base.TestBase):
@@ -38,7 +37,7 @@ class TestJSONFormatter(base.TestBase):
         sf.add_argument_group(args)
 
         args.noindent = True
-        output = six.StringIO()
+        output = io.StringIO()
         sf.emit_one(c, d, output, args)
         value = output.getvalue()
         print(len(value.splitlines()))
@@ -47,7 +46,7 @@ class TestJSONFormatter(base.TestBase):
         self.assertEqual(expected, actual)
 
         args.noindent = False
-        output = six.StringIO()
+        output = io.StringIO()
         sf.emit_one(c, d, output, args)
         value = output.getvalue()
         self.assertEqual(6, len(value.splitlines()))
@@ -68,7 +67,7 @@ class TestJSONFormatter(base.TestBase):
         sf.add_argument_group(args)
 
         args.noindent = True
-        output = six.StringIO()
+        output = io.StringIO()
         sf.emit_one(c, d, output, args)
         value = output.getvalue()
         print(len(value.splitlines()))
@@ -93,7 +92,7 @@ class TestJSONFormatter(base.TestBase):
         sf.add_argument_group(args)
 
         args.noindent = True
-        output = six.StringIO()
+        output = io.StringIO()
         sf.emit_list(c, d, output, args)
         value = output.getvalue()
         self.assertEqual(1, len(value.splitlines()))
@@ -101,7 +100,7 @@ class TestJSONFormatter(base.TestBase):
         self.assertEqual(expected, actual)
 
         args.noindent = False
-        output = six.StringIO()
+        output = io.StringIO()
         sf.emit_list(c, d, output, args)
         value = output.getvalue()
         self.assertEqual(17, len(value.splitlines()))
@@ -121,7 +120,7 @@ class TestJSONFormatter(base.TestBase):
         sf.add_argument_group(args)
 
         args.noindent = True
-        output = six.StringIO()
+        output = io.StringIO()
         sf.emit_list(c, d, output, args)
         value = output.getvalue()
         self.assertEqual(1, len(value.splitlines()))

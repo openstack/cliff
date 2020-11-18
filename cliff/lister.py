@@ -14,13 +14,11 @@
 """
 import abc
 import operator
-import six
 
 from . import display
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Lister(display.DisplayCommandBase):
+class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
     """Command base class for providing a list of data as output.
     """
 

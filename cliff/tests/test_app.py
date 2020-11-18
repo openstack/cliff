@@ -14,14 +14,7 @@
 
 import argparse
 import codecs
-import locale
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-import sys
-
-import six
+import io
 from unittest import mock
 
 from cliff import app as application
@@ -30,6 +23,7 @@ from cliff import commandmanager
 from cliff.tests import base
 from cliff.tests import utils as test_utils
 from cliff import utils
+import sys
 
 
 def make_app(**kwargs):
@@ -395,7 +389,7 @@ class TestCommandLookup(base.TestBase):
             self.assertIn("['hell']", str(err))
 
     def test_list_matching_commands(self):
-        stdout = StringIO()
+        stdout = io.StringIO()
         app = application.App('testing', '1',
                               test_utils.TestCommandManager(
                                   test_utils.TEST_NAMESPACE),
@@ -473,86 +467,27 @@ class TestIO(base.TestBase):
         cmd_mgr = commandmanager.CommandManager('cliff.tests')
         io = mock.Mock()
 
-        if six.PY2:
-            stdin_save = sys.stdin
-            stdout_save = sys.stdout
-            stderr_save = sys.stderr
-            encoding = locale.getpreferredencoding() or 'utf-8'
+        app = application.App('no io streams', 1, cmd_mgr)
+        self.assertIs(sys.stdin, app.stdin)
+        self.assertIs(sys.stdout, app.stdout)
+        self.assertIs(sys.stderr, app.stderr)
 
-            app = application.App('no io streams', 1, cmd_mgr)
-            self.assertIsInstance(app.stdin, codecs.StreamReader)
-            self.assertIsInstance(app.stdout, codecs.StreamWriter)
-            self.assertIsInstance(app.stderr, codecs.StreamWriter)
+        app = application.App('with stdin io stream', 1, cmd_mgr, stdin=io)
+        self.assertIs(io, app.stdin)
+        self.assertIs(sys.stdout, app.stdout)
+        self.assertIs(sys.stderr, app.stderr)
 
-            app = application.App('with stdin io stream', 1, cmd_mgr, stdin=io)
-            self.assertIs(io, app.stdin)
-            self.assertIsInstance(app.stdout, codecs.StreamWriter)
-            self.assertIsInstance(app.stderr, codecs.StreamWriter)
+        app = application.App('with stdout io stream', 1, cmd_mgr,
+                              stdout=io)
+        self.assertIs(sys.stdin, app.stdin)
+        self.assertIs(io, app.stdout)
+        self.assertIs(sys.stderr, app.stderr)
 
-            app = application.App('with stdout io stream', 1, cmd_mgr,
-                                  stdout=io)
-            self.assertIsInstance(app.stdin, codecs.StreamReader)
-            self.assertIs(io, app.stdout)
-            self.assertIsInstance(app.stderr, codecs.StreamWriter)
-
-            app = application.App('with stderr io stream', 1, cmd_mgr,
-                                  stderr=io)
-            self.assertIsInstance(app.stdin, codecs.StreamReader)
-            self.assertIsInstance(app.stdout, codecs.StreamWriter)
-            self.assertIs(io, app.stderr)
-
-            try:
-                sys.stdin = codecs.getreader(encoding)(sys.stdin)
-                app = application.App(
-                    'with wrapped sys.stdin io stream', 1, cmd_mgr)
-                self.assertIs(sys.stdin, app.stdin)
-                self.assertIsInstance(app.stdout, codecs.StreamWriter)
-                self.assertIsInstance(app.stderr, codecs.StreamWriter)
-            finally:
-                sys.stdin = stdin_save
-
-            try:
-                sys.stdout = codecs.getwriter(encoding)(sys.stdout)
-                app = application.App('with wrapped stdout io stream', 1,
-                                      cmd_mgr)
-                self.assertIsInstance(app.stdin, codecs.StreamReader)
-                self.assertIs(sys.stdout, app.stdout)
-                self.assertIsInstance(app.stderr, codecs.StreamWriter)
-            finally:
-                sys.stdout = stdout_save
-
-            try:
-                sys.stderr = codecs.getwriter(encoding)(sys.stderr)
-                app = application.App('with wrapped stderr io stream', 1,
-                                      cmd_mgr)
-                self.assertIsInstance(app.stdin, codecs.StreamReader)
-                self.assertIsInstance(app.stdout, codecs.StreamWriter)
-                self.assertIs(sys.stderr, app.stderr)
-            finally:
-                sys.stderr = stderr_save
-
-        else:
-            app = application.App('no io streams', 1, cmd_mgr)
-            self.assertIs(sys.stdin, app.stdin)
-            self.assertIs(sys.stdout, app.stdout)
-            self.assertIs(sys.stderr, app.stderr)
-
-            app = application.App('with stdin io stream', 1, cmd_mgr, stdin=io)
-            self.assertIs(io, app.stdin)
-            self.assertIs(sys.stdout, app.stdout)
-            self.assertIs(sys.stderr, app.stderr)
-
-            app = application.App('with stdout io stream', 1, cmd_mgr,
-                                  stdout=io)
-            self.assertIs(sys.stdin, app.stdin)
-            self.assertIs(io, app.stdout)
-            self.assertIs(sys.stderr, app.stderr)
-
-            app = application.App('with stderr io stream', 1, cmd_mgr,
-                                  stderr=io)
-            self.assertIs(sys.stdin, app.stdin)
-            self.assertIs(sys.stdout, app.stdout)
-            self.assertIs(io, app.stderr)
+        app = application.App('with stderr io stream', 1, cmd_mgr,
+                              stderr=io)
+        self.assertIs(sys.stdin, app.stdin)
+        self.assertIs(sys.stdout, app.stdout)
+        self.assertIs(io, app.stderr)
 
     def test_writer_encoding(self):
         # The word "test" with the e replaced by
@@ -561,45 +496,12 @@ class TestIO(base.TestBase):
         text = u't\u00E9st'
         text_utf8 = text.encode('utf-8')
 
-        if six.PY2:
-            # In PY2 StreamWriter can't accept non-ASCII encoded characters
-            # because it must first promote the encoded byte stream to
-            # unicode in order to encode it in the desired encoding.
-            # Because the encoding of the byte stream is not known at this
-            # point the default-encoding of ASCII is utilized, but you can't
-            # decode a non-ASCII charcater to ASCII.
-            io = six.StringIO()
-            writer = codecs.getwriter('utf-8')(io)
-            self.assertRaises(UnicodeDecodeError,
-                              writer.write,
-                              text_utf8)
+        # In PY3 you can't write encoded bytes to a text writer
+        # instead text functions require text.
+        out = io.StringIO()
+        writer = codecs.getwriter('utf-8')(out)
+        self.assertRaises(TypeError, writer.write, text)
 
-            # In PY2 with our override of codecs.getwriter we do not
-            # attempt to encode bytes in a str object (only unicode
-            # objects) therefore the final output string should be the
-            # utf-8 encoded byte sequence
-            io = six.StringIO()
-            writer = utils.getwriter('utf-8')(io)
-            writer.write(text)
-            output = io.getvalue()
-            self.assertEqual(text_utf8, output)
-
-            io = six.StringIO()
-            writer = utils.getwriter('utf-8')(io)
-            writer.write(text_utf8)
-            output = io.getvalue()
-            self.assertEqual(text_utf8, output)
-        else:
-            # In PY3 you can't write encoded bytes to a text writer
-            # instead text functions require text.
-            io = six.StringIO()
-            writer = utils.getwriter('utf-8')(io)
-            self.assertRaises(TypeError,
-                              writer.write,
-                              text)
-
-            io = six.StringIO()
-            writer = utils.getwriter('utf-8')(io)
-            self.assertRaises(TypeError,
-                              writer.write,
-                              text_utf8)
+        out = io.StringIO()
+        writer = codecs.getwriter('utf-8')(out)
+        self.assertRaises(TypeError, writer.write, text_utf8)

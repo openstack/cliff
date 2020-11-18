@@ -13,12 +13,10 @@
 """Application base class.
 """
 
-import codecs
 import locale
 import logging
 import logging.handlers
 import os
-import six
 import sys
 
 import cmd2
@@ -117,18 +115,6 @@ class App(object):
         # would do. We also check to make sure the main Python program
         # has not already already wrapped sys.stdin, sys.stdout and
         # sys.stderr as this is a common recommendation.
-
-        if six.PY2:
-            encoding = locale.getpreferredencoding()
-            if encoding:
-                if not (stdin or isinstance(sys.stdin, codecs.StreamReader)):
-                    stdin = codecs.getreader(encoding)(sys.stdin)
-
-                if not (stdout or isinstance(sys.stdout, codecs.StreamWriter)):
-                    stdout = utils.getwriter(encoding)(sys.stdout)
-
-                if not (stderr or isinstance(sys.stderr, codecs.StreamWriter)):
-                    stderr = utils.getwriter(encoding)(sys.stderr)
 
         self.stdin = stdin or sys.stdin
         self.stdout = stdout or sys.stdout

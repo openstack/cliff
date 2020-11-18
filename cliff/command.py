@@ -13,7 +13,6 @@
 import abc
 import inspect
 
-import six
 from stevedore import extension
 
 from cliff import _argparse
@@ -60,8 +59,7 @@ def _get_distribution_for_module(module):
     return dist_name
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Command(object):
+class Command(object, metaclass=abc.ABCMeta):
     """Base class for command plugins.
 
     When the command is instantiated, it loads extensions from a

@@ -13,18 +13,11 @@
 """Output formatters using csv format.
 """
 
+import csv
 import os
-import sys
 
 from .base import ListFormatter
 from cliff import columns
-
-import six
-
-if sys.version_info[0] == 3:
-    import csv
-else:
-    import unicodecsv as csv
 
 
 class CSVLister(ListFormatter):
@@ -53,22 +46,11 @@ class CSVLister(ListFormatter):
             escapechar='\\',
         )
 
-        # In Py2 we replace the csv module with unicodecsv because the
-        # Py2 csv module cannot handle unicode. unicodecsv encodes
-        # unicode objects based on the value of it's encoding keyword
-        # with the result unicodecsv emits encoded bytes in a str
-        # object. The utils.getwriter assures no attempt is made to
-        # re-encode the encoded bytes in the str object.
-
-        if six.PY2:
-            writer_kwargs['encoding'] = (getattr(stdout, 'encoding', None)
-                                         or 'utf-8')
-
         writer = csv.writer(stdout, **writer_kwargs)
         writer.writerow(column_names)
         for row in data:
             writer.writerow(
-                [(six.text_type(c.machine_readable())
+                [(str(c.machine_readable())
                   if isinstance(c, columns.FormattableColumn)
                   else c)
                  for c in row]

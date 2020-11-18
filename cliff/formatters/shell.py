@@ -17,7 +17,6 @@ from . import base
 from cliff import columns
 
 import argparse
-import six
 
 
 class ShellFormatter(base.SingleFormatter):
@@ -50,12 +49,12 @@ class ShellFormatter(base.SingleFormatter):
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):
             if name in desired_columns or not desired_columns:
-                value = (six.text_type(value.machine_readable())
+                value = (str(value.machine_readable())
                          if isinstance(value, columns.FormattableColumn)
                          else value)
-                if isinstance(value, six.string_types):
+                if isinstance(value, str):
                     value = value.replace('"', '\\"')
-                if isinstance(name, six.string_types):
+                if isinstance(name, str):
                     # Colons and dashes may appear as a resource property but
                     # are invalid to use in a shell, replace them with an
                     # underscore.

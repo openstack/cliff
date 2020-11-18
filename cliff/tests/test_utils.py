@@ -14,11 +14,10 @@
 
 import os
 import sys
-
 from unittest import mock
 
-from cliff import utils
 from cliff.tests import base
+from cliff import utils
 
 
 class TestTerminalWidth(base.TestBase):

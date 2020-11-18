@@ -12,11 +12,8 @@
 
 import abc
 
-import six
 
-
-@six.add_metaclass(abc.ABCMeta)
-class CommandHook(object):
+class CommandHook(object, metaclass=abc.ABCMeta):
     """Base class for command hooks.
 
     :param app: Command instance being invoked

@@ -15,11 +15,8 @@
 
 import abc
 
-import six
 
-
-@six.add_metaclass(abc.ABCMeta)
-class FormattableColumn(object):
+class FormattableColumn(object, metaclass=abc.ABCMeta):
 
     def __init__(self, value):
         self._value = value
