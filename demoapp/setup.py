@@ -26,16 +26,15 @@ setup(
     url='https://github.com/openstack/cliff',
     download_url='https://github.com/openstack/cliff/tarball/master',
 
-    classifiers=['Development Status :: 3 - Alpha',
-                 'License :: OSI Approved :: Apache Software License',
-                 'Programming Language :: Python',
-                 'Programming Language :: Python :: 2',
-                 'Programming Language :: Python :: 2.7',
-                 'Programming Language :: Python :: 3',
-                 'Programming Language :: Python :: 3.2',
-                 'Intended Audience :: Developers',
-                 'Environment :: Console',
-                 ],
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Intended Audience :: Developers',
+        'Environment :: Console',
+    ],
 
     platforms=['Any'],
 
