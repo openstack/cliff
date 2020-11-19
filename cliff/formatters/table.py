@@ -10,11 +10,11 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Output formatters using prettytable.
-"""
+"""Output formatters using prettytable."""
+
+import os
 
 import prettytable
-import os
 
 from cliff import utils
 from . import base
@@ -39,10 +39,6 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         str: 'l',
         float: 'r',
     }
-    try:
-        ALIGNMENTS[unicode] = 'l'
-    except NameError:
-        pass
 
     def add_argument_group(self, parser):
         group = parser.add_argument_group('table formatter')
@@ -175,9 +171,6 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
 
     @staticmethod
     def _assign_max_widths(stdout, x, max_width, min_width=0, fit_width=False):
-        if min_width:
-            x.min_width = min_width
-
         if max_width > 0:
             term_width = max_width
         elif not fit_width:

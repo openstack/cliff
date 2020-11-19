@@ -49,7 +49,7 @@ table
 The ``table`` formatter uses PrettyTable_ to produce output formatted
 for human consumption.
 
-.. _PrettyTable: http://code.google.com/p/prettytable/
+.. _PrettyTable: https://pypi.org/project/prettytable/
 
 ::
     

@@ -34,7 +34,7 @@ table
 The ``table`` formatter uses PrettyTable_ to produce output
 formatted for human consumption.  This is the default formatter.
 
-.. _PrettyTable: http://code.google.com/p/prettytable/
+.. _PrettyTable: https://pypi.org/project/prettytable
 
 ::
 
