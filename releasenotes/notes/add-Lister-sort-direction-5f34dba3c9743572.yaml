@@ -1,0 +1,21 @@
+---
+features:
+  - |
+    The ``cliff.lister.Lister`` base class now implements ``--sort-ascending``
+    and ``--sort-descending`` options, which can be used to configure the sort
+    direction. For example::
+
+      $ hello-world list-users --sort-column email --sort-descending
+      +----------------+-----------------------------+
+      | Name           | Email                       |
+      +----------------+-----------------------------+
+      | Charles Xavier | therealcharliex@example.com |
+      | Jim Hendrix    | jim@example.com             |
+      | John Doe       | doe.john@example.com        |
+      | Alice Baker    | abaker@example.com          |
+      +----------------+-----------------------------+
+upgrade:
+  - |
+    ``cliff.lister.Lister`` implementations that override the
+    ``need_sort_by_cliff`` property should now consider the
+    ``--sort-ascending`` and ``--sort-descending`` options.
