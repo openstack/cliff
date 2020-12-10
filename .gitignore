@@ -23,16 +23,13 @@ pip-log.txt
 #Translations
 *.mo
 
-#Mr Developer
-.mr.developer.cfg
-
-#sample output
-*.log
-*.log.*
-
 # pbr output
 AUTHORS
 ChangeLog
+
+# reno output
+RELEASENOTES.rst
+releasenotes/notes/reno.cache
 
 # Editors
 *~
