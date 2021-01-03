@@ -69,12 +69,12 @@ class TestCSVFormatter(unittest.TestCase):
 
     def test_commaseparated_list_formatter_unicode(self):
         sf = commaseparated.CSVLister()
-        c = (u'a', u'b', u'c')
-        d1 = (u'A', u'B', u'C')
-        happy = u'高兴'
-        d2 = (u'D', u'E', happy)
+        c = ('a', 'b', 'c')
+        d1 = ('A', 'B', 'C')
+        happy = '高兴'
+        d2 = ('D', 'E', happy)
         data = [d1, d2]
-        expected = u'a,b,c\nA,B,C\nD,E,%s\n' % happy
+        expected = 'a,b,c\nA,B,C\nD,E,%s\n' % happy
         output = io.StringIO()
         parsed_args = mock.Mock()
         parsed_args.quote_mode = 'none'

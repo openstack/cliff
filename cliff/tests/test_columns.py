@@ -18,7 +18,7 @@ from cliff import columns
 class FauxColumn(columns.FormattableColumn):
 
     def human_readable(self):
-        return u'I made this string myself: {}'.format(self._value)
+        return 'I made this string myself: {}'.format(self._value)
 
 
 class TestColumns(unittest.TestCase):

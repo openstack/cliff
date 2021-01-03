@@ -493,7 +493,7 @@ class TestIO(base.TestBase):
         # The word "test" with the e replaced by
         # Unicode latin small letter e with acute,
         # U+00E9, utf-8 encoded as 0xC3 0xA9
-        text = u't\u00E9st'
+        text = 't\u00E9st'
         text_utf8 = text.encode('utf-8')
 
         # In PY3 you can't write encoded bytes to a text writer

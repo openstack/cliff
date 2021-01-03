@@ -13,8 +13,8 @@ class Encoding(Lister):
 
     def take_action(self, parsed_args):
         messages = [
-            u'pi: π',
-            u'GB18030:鼀丅㐀ٸཌྷᠧꌢ€',
+            'pi: π',
+            'GB18030:鼀丅㐀ٸཌྷᠧꌢ€',
         ]
         return (
             ('UTF-8', 'Unicode'),

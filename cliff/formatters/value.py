@@ -29,7 +29,7 @@ class ValueFormatter(base.ListFormatter, base.SingleFormatter):
                     str(c.machine_readable()
                         if isinstance(c, columns.FormattableColumn)
                         else c)
-                    for c in row) + u'\n')
+                    for c in row) + '\n')
         return
 
     def emit_one(self, column_names, data, stdout, parsed_args):
