@@ -24,7 +24,6 @@
       - check-requirements
       - lib-forward-testing
       - lib-forward-testing-python3
-      - openstack-lower-constraints-jobs
       - openstack-python-jobs
       - openstack-python3-train-jobs
       - publish-openstack-docs-pti
