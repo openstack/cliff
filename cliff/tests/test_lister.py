@@ -32,21 +32,30 @@ class FauxFormatter(object):
 
 class ExerciseLister(lister.Lister):
 
+    data = [('a', 'A'), ('b', 'B'), ('c', 'A')]
+
     def _load_formatter_plugins(self):
         return {
             'test': FauxFormatter(),
         }
 
     def take_action(self, parsed_args):
-        return (
-            parsed_args.columns,
-            [('a', 'A'), ('b', 'B'), ('c', 'A')],
-        )
+        return (parsed_args.columns, self.data)
 
 
 class ExerciseListerCustomSort(ExerciseLister):
 
     need_sort_by_cliff = False
+
+
+class ExerciseListerNullValues(ExerciseLister):
+
+    data = ExerciseLister.data + [(None, None)]
+
+
+class ExerciseListerDifferentTypes(ExerciseLister):
+
+    data = ExerciseLister.data + [(1, 0)]
 
 
 class TestLister(base.TestBase):
@@ -110,6 +119,43 @@ class TestLister(base.TestBase):
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
+
+    def test_sort_by_column_with_null(self):
+        test_lister = ExerciseListerNullValues(mock.Mock(), [])
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Col1', 'Col2')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = ['Col2', 'Col1']
+
+        test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        args = f.args[0]
+        data = list(args[1])
+        self.assertEqual(
+            [['a', 'A'], ['c', 'A'], ['b', 'B'], [None, None]], data)
+
+    def test_sort_by_column_with_different_types(self):
+        test_lister = ExerciseListerDifferentTypes(mock.Mock(), [])
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Col1', 'Col2')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = ['Col2', 'Col1']
+
+        with mock.patch.object(lister.Lister, 'log') as mock_log:
+            test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        args = f.args[0]
+        data = list(args[1])
+        # The output should be unchanged
+        self.assertEqual(
+            [['a', 'A'], ['b', 'B'], ['c', 'A'], [1, 0]], data)
+        # but we should have logged a warning
+        mock_log.warning.assert_has_calls([
+            mock.call("Could not sort on field '%s'; unsortable types", col)
+            for col in parsed_args.sort_columns
+        ])
 
     def test_sort_by_non_displayed_column(self):
         test_lister = ExerciseLister(mock.Mock(), [])

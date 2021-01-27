@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Sorting output using the ``--sort-column`` option will now handle ``None``
+    values. This was supported implicitly in Python 2 but was broken in the
+    move to Python 3. In addition, requests to sort a column containing
+    non-comparable types will now be ignored. Previously, these request would
+    result in a ``TypeError``.
