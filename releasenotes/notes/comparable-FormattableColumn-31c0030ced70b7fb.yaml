@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Instances of ``cliff.columns.FormattableColumn`` are now comparable. This
+    allows implementations of ``FormattableColumn`` storing primitive data
+    types or containers with primitive data types to be sorted using the
+    ``--sort-column`` option. Implementations of ``FormattableColumn`` that
+    store other types of data will still need to implement their own rich
+    comparison magic methods.
