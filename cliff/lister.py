@@ -10,8 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Application base class for providing a list of data as output.
-"""
+"""Application base class for providing a list of data as output."""
+
 import abc
 import logging
 
@@ -19,8 +19,7 @@ from . import display
 
 
 class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
-    """Command base class for providing a list of data as output.
-    """
+    """Command base class for providing a list of data as output."""
 
     log = logging.getLogger(__name__)
 
@@ -37,13 +36,16 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
         """Whether sort procedure is performed by cliff itself.
 
         Should be overridden (return False) when there is a need to implement
-        custom sorting procedure or data is already sorted."""
+        custom sorting procedure or data is already sorted.
+        """
         return True
 
     @abc.abstractmethod
     def take_action(self, parsed_args):
-        """Return a tuple containing the column names and an iterable
-        containing the data to be listed.
+        """Run command.
+
+        Return a tuple containing the column names and an iterable containing
+        the data to be listed.
         """
 
     def get_parser(self, prog_name):
@@ -55,16 +57,36 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
             default=[],
             dest='sort_columns',
             metavar='SORT_COLUMN',
-            help=("specify the column(s) to sort the data (columns specified "
-                  "first have a priority, non-existing columns are ignored), "
-                  "can be repeated")
+            help=(
+                'specify the column(s) to sort the data (columns specified '
+                'first have a priority, non-existing columns are ignored), '
+                'can be repeated'
+            ),
+        )
+        sort_dir_group = group.add_mutually_exclusive_group()
+        sort_dir_group.add_argument(
+            '--sort-ascending',
+            action='store_const',
+            dest='sort_direction',
+            const='asc',
+            help=('sort the column(s) in ascending order'),
+        )
+        sort_dir_group.add_argument(
+            '--sort-descending',
+            action='store_const',
+            dest='sort_direction',
+            const='desc',
+            help=('sort the column(s) in descending order'),
         )
         return parser
 
     def produce_output(self, parsed_args, column_names, data):
         if parsed_args.sort_columns and self.need_sort_by_cliff:
-            indexes = [column_names.index(c) for c in parsed_args.sort_columns
-                       if c in column_names]
+            indexes = [
+                column_names.index(c) for c in parsed_args.sort_columns
+                if c in column_names
+            ]
+            reverse = parsed_args.sort_direction == 'desc'
             for index in indexes[::-1]:
                 try:
                     # We need to handle unset values (i.e. None) so we sort on
@@ -76,6 +98,7 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
                     # the same, i.e. both None or both not-None
                     data = sorted(
                         data, key=lambda k: (k[index] is None, k[index]),
+                        reverse=reverse,
                     )
                 except TypeError:
                     # Simply log and then ignore this; sorting is best effort
@@ -84,18 +107,20 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
                         parsed_args.sort_columns[index],
                     )
 
-        (columns_to_include, selector) = self._generate_columns_and_selector(
-            parsed_args, column_names)
+        columns_to_include, selector = self._generate_columns_and_selector(
+            parsed_args, column_names,
+        )
         if selector:
             # Generator expression to only return the parts of a row
             # of data that the user has expressed interest in
             # seeing. We have to convert the compress() output to a
             # list so the table formatter can ask for its length.
-            data = (list(self._compress_iterable(row, selector))
-                    for row in data)
-        self.formatter.emit_list(columns_to_include,
-                                 data,
-                                 self.app.stdout,
-                                 parsed_args,
-                                 )
+            data = (
+                list(self._compress_iterable(row, selector)) for row in data
+            )
+
+        self.formatter.emit_list(
+            columns_to_include, data, self.app.stdout, parsed_args,
+        )
+
         return 0
