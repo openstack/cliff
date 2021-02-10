@@ -26,6 +26,11 @@ class FormattableColumn(object, metaclass=abc.ABCMeta):
             self.__class__ == other.__class__ and self._value == other._value
         )
 
+    def __lt__(self, other):
+        return (
+            self.__class__ == other.__class__ and self._value < other._value
+        )
+
     @abc.abstractmethod
     def human_readable(self):
         """Return a basic human readable version of the data."""

@@ -33,3 +33,16 @@ class TestColumns(unittest.TestCase):
             u"I made this string myself: ['list', 'of', 'values']",
             c.human_readable(),
         )
+
+    def test_sorting(self):
+        cols = [
+            FauxColumn('foo'),
+            FauxColumn('bar'),
+            FauxColumn('baz'),
+            FauxColumn('foo'),
+        ]
+        cols.sort()
+        self.assertEqual(
+            ['bar', 'baz', 'foo', 'foo'],
+            [c.machine_readable() for c in cols],
+        )
