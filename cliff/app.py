@@ -13,6 +13,7 @@
 """Application base class.
 """
 
+import inspect
 import locale
 import logging
 import logging.handlers
@@ -382,7 +383,7 @@ class App(object):
             return 2
         cmd_factory, cmd_name, sub_argv = subcommand
         kwargs = {}
-        if 'cmd_name' in utils.getargspec(cmd_factory.__init__).args:
+        if 'cmd_name' in inspect.getfullargspec(cmd_factory.__init__).args:
             kwargs['cmd_name'] = cmd_name
         cmd = cmd_factory(self, self.options, **kwargs)
         result = 1

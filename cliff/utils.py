@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import ctypes
-import inspect
 import os
 import struct
 import sys
@@ -24,12 +23,6 @@ import sys
 #  'd' means deletion operation, the cost is 3;
 # The smaller cost results in the better similarity.
 COST = {'w': 0, 's': 2, 'a': 1, 'd': 3}
-
-
-if hasattr(inspect, 'getfullargspec'):
-    getargspec = inspect.getfullargspec
-else:
-    getargspec = inspect.getargspec
 
 
 def damerau_levenshtein(s1, s2, cost):

@@ -13,11 +13,10 @@
 """Discover and lookup command plugins.
 """
 
+import inspect
 import logging
 
 import stevedore
-
-from . import utils
 
 
 LOG = logging.getLogger(__name__)
@@ -125,7 +124,7 @@ class CommandManager(object):
                 else:
                     # NOTE(dhellmann): Some fake classes don't take
                     # require as an argument. Yay?
-                    arg_spec = utils.getargspec(cmd_ep.load)
+                    arg_spec = inspect.getfullargspec(cmd_ep.load)
                     if 'require' in arg_spec[0]:
                         cmd_factory = cmd_ep.load(require=False)
                     else:
