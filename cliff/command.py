@@ -74,6 +74,7 @@ class Command(object, metaclass=abc.ABCMeta):
     """
 
     deprecated = False
+    conflict_handler = 'ignore'
 
     _description = ''
     _epilog = None
@@ -156,7 +157,7 @@ class Command(object, metaclass=abc.ABCMeta):
             epilog=self.get_epilog(),
             prog=prog_name,
             formatter_class=_argparse.SmartHelpFormatter,
-            conflict_handler='ignore',
+            conflict_handler=self.conflict_handler,
         )
         for hook in self._hooks:
             hook.obj.get_parser(parser)
