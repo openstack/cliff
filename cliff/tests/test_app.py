@@ -54,6 +54,15 @@ def make_app(**kwargs):
     interrupt_command.return_value = interrupt_command_inst
     cmd_mgr.add_command('interrupt', interrupt_command)
 
+    # Register a command that is interrrupted by a broken pipe
+    pipeclose_command = mock.Mock(name='pipeclose_command', spec=c_cmd.Command)
+    pipeclose_command_inst = mock.Mock(spec=c_cmd.Command)
+    pipeclose_command_inst.run = mock.Mock(
+        side_effect=BrokenPipeError
+    )
+    pipeclose_command.return_value = pipeclose_command_inst
+    cmd_mgr.add_command('pipe-close', pipeclose_command)
+
     app = application.App('testing interactive mode',
                           '1',
                           cmd_mgr,
@@ -121,6 +130,11 @@ class TestInitAndCleanup(base.TestBase):
         result = app.run(['interrupt'])
         self.assertEqual(result, 130)
 
+    def test_pipeclose_command(self):
+        app, command = make_app()
+        result = app.run(['pipe-close'])
+        self.assertEqual(result, 141)
+
     def test_clean_up_success(self):
         app, command = make_app()
         app.clean_up = mock.MagicMock(name='clean_up')
@@ -168,6 +182,19 @@ class TestInitAndCleanup(base.TestBase):
         self.assertEqual(mock.call(mock.ANY, 130, mock.ANY), call_args)
         args, kwargs = call_args
         self.assertIsInstance(args[2], KeyboardInterrupt)
+
+    def test_clean_up_pipeclose(self):
+        app, command = make_app()
+
+        app.clean_up = mock.MagicMock(name='clean_up')
+        ret = app.run(['pipe-close'])
+        self.assertNotEqual(ret, 0)
+
+        app.clean_up.assert_called_once_with(mock.ANY, mock.ANY, mock.ANY)
+        call_args = app.clean_up.call_args_list[0]
+        self.assertEqual(mock.call(mock.ANY, 141, mock.ANY), call_args)
+        args, kwargs = call_args
+        self.assertIsInstance(args[2], BrokenPipeError)
 
     def test_error_handling_clean_up_raises_exception(self):
         app, command = make_app()
@@ -355,6 +382,18 @@ class TestHelpHandling(base.TestBase):
 
     def test_interrupted_deferred_help(self):
         self._test_interrupted_help(True)
+
+    def _test_pipeclose_help(self, deferred_help):
+        app, _ = make_app(deferred_help=deferred_help)
+        with mock.patch('cliff.help.HelpAction.__call__',
+                        side_effect=BrokenPipeError):
+            app.run(['--help'])
+
+    def test_pipeclose_help(self):
+        self._test_pipeclose_help(False)
+
+    def test_pipeclose_deferred_help(self):
+        self._test_pipeclose_help(True)
 
     def test_subcommand_help(self):
         app, _ = make_app(deferred_help=False)

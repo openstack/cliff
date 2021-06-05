@@ -33,6 +33,7 @@ logging.getLogger('cliff').addHandler(logging.NullHandler())
 
 # Exit code for exiting due to a signal is 128 + the signal number
 _SIGINT_EXIT = 130
+_SIGPIPE_EXIT = 141
 
 
 class App(object):
@@ -256,6 +257,8 @@ class App(object):
                 remainder.insert(0, "help")
             self.initialize_app(remainder)
             self.print_help_if_requested()
+        except BrokenPipeError:
+            return _SIGPIPE_EXIT
         except Exception as err:
             if hasattr(self, 'options'):
                 debug = self.options.debug
@@ -275,6 +278,8 @@ class App(object):
         else:
             try:
                 result = self.run_subcommand(remainder)
+            except BrokenPipeError:
+                return _SIGPIPE_EXIT
             except KeyboardInterrupt:
                 return _SIGINT_EXIT
         return result
@@ -400,6 +405,10 @@ class App(object):
             except SystemExit as ex:
                 raise cmd2.exceptions.Cmd2ArgparseError from ex
             result = cmd.run(parsed_args)
+        except BrokenPipeError as err1:
+            result = _SIGPIPE_EXIT
+            err = err1
+            raise
         except help.HelpExit:
             result = 0
         except Exception as err1:
