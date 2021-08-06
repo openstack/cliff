@@ -14,6 +14,8 @@ import argparse
 import inspect
 import traceback
 
+import autopage.argparse
+
 from . import command
 
 
@@ -37,43 +39,53 @@ class HelpAction(argparse.Action):
     """
     def __call__(self, parser, namespace, values, option_string=None):
         app = self.default
-        parser.print_help(app.stdout)
-        app.stdout.write('\nCommands:\n')
-        dists_by_module = command._get_distributions_by_modules()
+        pager = autopage.argparse.help_pager(app.stdout)
+        color = pager.to_terminal()
+        autopage.argparse.use_color_for_parser(parser, color)
+        with pager as out:
+            parser.print_help(out)
+            title_hl = ('\033[4m', '\033[0m') if color else ('', '')
+            out.write('\n%sCommands%s:\n' % title_hl)
+            dists_by_module = command._get_distributions_by_modules()
 
-        def dist_for_obj(obj):
-            name = inspect.getmodule(obj).__name__.partition('.')[0]
-            return dists_by_module.get(name)
+            def dist_for_obj(obj):
+                name = inspect.getmodule(obj).__name__.partition('.')[0]
+                return dists_by_module.get(name)
 
-        app_dist = dist_for_obj(app)
-        command_manager = app.command_manager
-        for name, ep in sorted(command_manager):
-            try:
-                factory = ep.load()
-            except Exception:
-                app.stdout.write('Could not load %r\n' % ep)
-                if namespace.debug:
-                    traceback.print_exc(file=app.stdout)
-                continue
-            try:
-                kwargs = {}
-                if 'cmd_name' in inspect.getfullargspec(factory.__init__).args:
-                    kwargs['cmd_name'] = name
-                cmd = factory(app, None, **kwargs)
-                if cmd.deprecated:
+            app_dist = dist_for_obj(app)
+            command_manager = app.command_manager
+            for name, ep in sorted(command_manager):
+                try:
+                    factory = ep.load()
+                except Exception:
+                    out.write('Could not load %r\n' % ep)
+                    if namespace.debug:
+                        traceback.print_exc(file=out)
                     continue
-            except Exception as err:
-                app.stdout.write('Could not instantiate %r: %s\n' % (ep, err))
-                if namespace.debug:
-                    traceback.print_exc(file=app.stdout)
-                continue
-            one_liner = cmd.get_description().split('\n')[0]
-            dist_name = dist_for_obj(factory)
-            if dist_name and dist_name != app_dist:
-                dist_info = ' (' + dist_name + ')'
-            else:
-                dist_info = ''
-            app.stdout.write('  %-13s  %s%s\n' % (name, one_liner, dist_info))
+                try:
+                    kwargs = {}
+                    fact_args = inspect.getfullargspec(factory.__init__).args
+                    if 'cmd_name' in fact_args:
+                        kwargs['cmd_name'] = name
+                    cmd = factory(app, None, **kwargs)
+                    if cmd.deprecated:
+                        continue
+                except Exception as err:
+                    out.write('Could not instantiate %r: %s\n' % (ep, err))
+                    if namespace.debug:
+                        traceback.print_exc(file=out)
+                    continue
+                one_liner = cmd.get_description().split('\n')[0]
+                dist_name = dist_for_obj(factory)
+                if dist_name and dist_name != app_dist:
+                    dist_info = ' (' + dist_name + ')'
+                    if color:
+                        dist_info = '\033[90m%s\033[39m' % dist_info
+                else:
+                    dist_info = ''
+                if color:
+                    name = '\033[36m%s\033[39m' % name
+                out.write('  %-13s  %s%s\n' % (name, one_liner, dist_info))
         raise HelpExit()
 
 
@@ -118,7 +130,11 @@ class HelpCommand(command.Command):
                          else ' '.join([self.app.NAME, cmd_name])
                          )
             cmd_parser = cmd.get_parser(full_name)
-            cmd_parser.print_help(self.app.stdout)
+            pager = autopage.argparse.help_pager(self.app.stdout)
+            with pager as out:
+                autopage.argparse.use_color_for_parser(cmd_parser,
+                                                       pager.to_terminal())
+                cmd_parser.print_help(out)
         else:
             action = HelpAction(None, None, default=self.app)
             action(self.app.parser, self.app.options, None, None)

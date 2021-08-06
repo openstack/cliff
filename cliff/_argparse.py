@@ -12,8 +12,10 @@
 
 """Overrides of standard argparse behavior."""
 
-import argparse
+import argparse as orig_argparse
 import warnings
+
+from autopage import argparse
 
 
 class _ArgumentContainerMixIn(object):
@@ -75,12 +77,12 @@ def _handle_conflict_ignore(container, option_string_actions,
             )
 
 
-class _ArgumentGroup(_ArgumentContainerMixIn, argparse._ArgumentGroup):
+class _ArgumentGroup(_ArgumentContainerMixIn, orig_argparse._ArgumentGroup):
     pass
 
 
 class _MutuallyExclusiveGroup(_ArgumentContainerMixIn,
-                              argparse._MutuallyExclusiveGroup):
+                              orig_argparse._MutuallyExclusiveGroup):
     pass
 
 
