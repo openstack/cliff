@@ -17,6 +17,7 @@ import itertools
 import shlex
 import sys
 
+import autopage.argparse
 import cmd2
 
 
@@ -140,9 +141,16 @@ class InteractiveApp(cmd2.Cmd):
                     parsed = lambda x: x  # noqa
             self.default(parsed('help ' + arg))
         else:
-            cmd2.Cmd.do_help(self, arg)
-            cmd_names = sorted([n for n, v in self.command_manager])
-            self.print_topics(self.app_cmd_header, cmd_names, 15, 80)
+            stdout = self.stdout
+            try:
+                with autopage.argparse.help_pager(stdout) as paged_out:
+                    self.stdout = paged_out
+
+                    cmd2.Cmd.do_help(self, arg)
+                    cmd_names = sorted([n for n, v in self.command_manager])
+                    self.print_topics(self.app_cmd_header, cmd_names, 15, 80)
+            finally:
+                self.stdout = stdout
         return
 
     # Create exit alias to quit the interactive shell.
