@@ -1,0 +1,25 @@
+
+# dev devcontainer convenience
+# ~~~~~~~ tox.ini ~~~~~~~
+tox==3.24.5
+
+# ~~~~~~~ setup.py ~~~~~~~
+# none
+
+# ~~~~~~~ setup.cfg ~~~~~~~
+# none
+
+# ~~~~~~~ pyproject.toml ~~~~~~~
+# none
+
+# ~~~~~~~ mkdocs.yml ~~~~~~~
+# none
+
+# ~~~~~~~ pre-commit-config.yaml ~~~~~~~
+# none
+
+# ~~~~~~~ bitbucket-pipelines.yml ~~~~~~~
+# none
+
+# ~~~~~~~ future use ~~~~~~~
+# none

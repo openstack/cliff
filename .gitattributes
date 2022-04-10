@@ -1,0 +1,49 @@
+# Set the default behavior, in case local git does not set core.autocrlf
+* text=auto
+
+# Explicitly declare text files to always be normalized and 
+# converted to native line endings on checkout
+# =============================================================================
+# =============================================================================
+
+# Environment Ignore 
+# =============================================================================
+.gitattributes text
+.gitignore     text
+.gitmodules    text
+.dockerignore  text
+
+# Docs
+# =============================================================================
+*.md           text
+*.txt          text
+*.html         text
+
+# C++
+# =============================================================================
+*.c            text
+*.cpp          text
+*.h            text
+
+# Python
+# =============================================================================
+*.py           text
+*.ipynb        text
+
+# Windows only files, CRLF line endings on checkout
+# Visual Studio 2017
+# =============================================================================
+*.sln             text eol=crlf
+*.vcxproj         text eol=crlf
+*.vcxproj.filters text eol=crlf
+*.vcxproj.user    text eol=crlf
+
+# Binary files, should not be modified
+# =============================================================================
+# Compressed
+*.zip binary
+
+# Images
+# =============================================================================
+*.png binary
+*.jpg binary
