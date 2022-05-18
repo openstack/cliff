@@ -20,8 +20,6 @@ import logging.handlers
 import os
 import sys
 
-import cmd2
-
 from cliff import _argparse
 from . import complete
 from . import help
@@ -403,7 +401,12 @@ class App(object):
             try:
                 parsed_args = cmd_parser.parse_args(sub_argv)
             except SystemExit as ex:
-                raise cmd2.exceptions.Cmd2ArgparseError from ex
+                if self.interactive_mode:
+                    # Defer importing cmd2 as it is a slow import
+                    import cmd2
+                    raise cmd2.exceptions.Cmd2ArgparseError from ex
+                else:
+                    raise ex
             result = cmd.run(parsed_args)
         except BrokenPipeError as err1:
             result = _SIGPIPE_EXIT
