@@ -13,8 +13,6 @@
 """Output formatters using PyYAML.
 """
 
-import yaml
-
 from . import base
 from cliff import columns
 
@@ -25,6 +23,9 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
         pass
 
     def emit_list(self, column_names, data, stdout, parsed_args):
+        # the yaml import is slow, so defer loading until we know we want it
+        import yaml
+
         items = []
         for item in data:
             items.append(
@@ -36,6 +37,9 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
         yaml.safe_dump(items, stream=stdout, default_flow_style=False)
 
     def emit_one(self, column_names, data, stdout, parsed_args):
+        # the yaml import is slow, so defer loading until we know we want it
+        import yaml
+
         for key, value in zip(column_names, data):
             dict_data = {
                 key: (value.machine_readable()
