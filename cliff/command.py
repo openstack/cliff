@@ -13,6 +13,7 @@
 import abc
 import inspect
 
+import importlib_metadata
 from stevedore import extension
 
 from cliff import _argparse
@@ -27,26 +28,15 @@ def _get_distributions_by_modules():
     distribution name (the name used with pip and PyPI) do not
     always match. We want to report which distribution caused the
     command to be installed, so we need to look up the values.
-
     """
-    import pkg_resources
     global _dists_by_mods
     if _dists_by_mods is None:
-        results = {}
-        for dist in pkg_resources.working_set:
-            try:
-                mod_names = dist.get_metadata('top_level.txt').strip()
-            except Exception:
-                # Could not retrieve metadata. Either the file is not
-                # present or we cannot read it. Ignore the
-                # distribution.
-                pass
-            else:
-                # Distributions may include multiple top-level
-                # packages (see setuptools for an example).
-                for mod_name in mod_names.splitlines():
-                    results[mod_name] = dist.project_name
-        _dists_by_mods = results
+        # There can be multiple distribution in the case of namespace packages
+        # so we'll just grab the first one
+        _dists_by_mods = {
+            k: v[0] for k, v in
+            importlib_metadata.packages_distributions().items()
+        }
     return _dists_by_mods
 
 
