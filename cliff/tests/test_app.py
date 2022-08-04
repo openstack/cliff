@@ -321,7 +321,7 @@ class TestOptionParser(base.TestBase):
                 return parser
 
             def take_action(self, parsed_args):
-                assert(parsed_args.end == '123')
+                assert parsed_args.end == '123'
 
         class MyCommandManager(commandmanager.CommandManager):
             def load_commands(self, namespace):
