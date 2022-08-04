@@ -29,11 +29,13 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
                                                  cmd_name=cmd_name)
         self._formatter_plugins = self._load_formatter_plugins()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def formatter_namespace(self):
         "String specifying the namespace to use for loading formatter plugins."
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def formatter_default(self):
         "String specifying the name of the default formatter."
 
