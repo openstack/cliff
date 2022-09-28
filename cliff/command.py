@@ -13,7 +13,13 @@
 import abc
 import inspect
 
-import importlib_metadata
+try:
+    # Python 3.10 and later
+    from importlib.metadata import packages_distributions
+except ImportError:
+    # Python 3.9 and older
+    from importlib_metadata import packages_distributions
+
 from stevedore import extension
 
 from cliff import _argparse
@@ -34,8 +40,7 @@ def _get_distributions_by_modules():
         # There can be multiple distribution in the case of namespace packages
         # so we'll just grab the first one
         _dists_by_mods = {
-            k: v[0] for k, v in
-            importlib_metadata.packages_distributions().items()
+            k: v[0] for k, v in packages_distributions().items()
         }
     return _dists_by_mods
 
