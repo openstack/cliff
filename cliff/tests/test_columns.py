@@ -23,15 +23,29 @@ class FauxColumn(columns.FormattableColumn):
 
 class TestColumns(unittest.TestCase):
 
-    def test_faux_column_machine(self):
+    def test_machine_readable(self):
         c = FauxColumn(['list', 'of', 'values'])
         self.assertEqual(['list', 'of', 'values'], c.machine_readable())
 
-    def test_faux_column_human(self):
+    def test_human_readable(self):
         c = FauxColumn(['list', 'of', 'values'])
         self.assertEqual(
-            u"I made this string myself: ['list', 'of', 'values']",
+            "I made this string myself: ['list', 'of', 'values']",
             c.human_readable(),
+        )
+
+    def test_str(self):
+        c = FauxColumn(['list', 'of', 'values'])
+        self.assertEqual(
+            "I made this string myself: ['list', 'of', 'values']",
+            str(c),
+        )
+
+    def test_repr(self):
+        c = FauxColumn(['list', 'of', 'values'])
+        self.assertEqual(
+            "FauxColumn(['list', 'of', 'values'])",
+            repr(c),
         )
 
     def test_sorting(self):
