@@ -100,7 +100,7 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         # preference to wrapping columns smaller than 8 characters.
         min_width = 8
         self._assign_max_widths(
-            stdout, x, int(parsed_args.max_width), min_width,
+            x, int(parsed_args.max_width), min_width,
             parsed_args.fit_width)
 
         formatted = x.get_string()
@@ -125,7 +125,7 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         # the Field column readable.
         min_width = 16
         self._assign_max_widths(
-            stdout, x, int(parsed_args.max_width), min_width,
+            x, int(parsed_args.max_width), min_width,
             parsed_args.fit_width)
 
         formatted = x.get_string()
@@ -170,14 +170,18 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         return shrink_fields, shrink_remaining
 
     @staticmethod
-    def _assign_max_widths(stdout, x, max_width, min_width=0, fit_width=False):
+    def _assign_max_widths(x, max_width, min_width=0, fit_width=False):
+        """Set maximum widths for columns of table `x`,
+        with the last column recieving either leftover columns
+        or `min_width`, depending on what offers more space.
+        """
         if max_width > 0:
             term_width = max_width
         elif not fit_width:
             # Fitting is disabled
             return
         else:
-            term_width = utils.terminal_width(stdout)
+            term_width = utils.terminal_width()
             if not term_width:
                 # not a tty, so do not set any max widths
                 return
@@ -204,6 +208,6 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
             x.max_width[field] = max(min_width, shrink_to)
             shrink_remaining -= shrink_to
 
-        # give the last shrinkable column shrink_to plus any remaining
+        # give the last shrinkable column any remaining shrink or min_width
         field = shrink_fields[-1]
         x.max_width[field] = max(min_width, shrink_remaining)
