@@ -75,7 +75,7 @@ class HelpAction(argparse.Action):
                     if namespace.debug:
                         traceback.print_exc(file=out)
                     continue
-                one_liner = cmd.get_description().split('\n')[0]
+                one_liner = cmd.get_description().split('\n')[0].rstrip('.')
                 dist_name = dist_for_obj(factory)
                 if dist_name and dist_name != app_dist:
                     dist_info = ' (' + dist_name + ')'

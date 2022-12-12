@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Trailing periods will now be stripped from the oneline summary shown
+    for the help command. This better aligns with the format used by
+    argparse itself.

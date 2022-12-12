@@ -103,8 +103,8 @@ class TestHelp(base.TestBase):
         self.assertIn('usage: %s [--version]' % basecommand, help_text)
         self.assertRegex(help_text, 'option(s|al arguments):\n  --version')
         expected = (
-            '  one            Test command.\n'
-            '  three word command  Test command.\n'
+            '  one            Test command\n'
+            '  three word command  Test command\n'
         )
         self.assertIn(expected, help_text)
 
