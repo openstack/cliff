@@ -50,7 +50,7 @@ def _table_tester_helper(tags, data, extra_args=None):
     if extra_args is None:
         # Default to no CLI arguments
         parsed_args = args()
-    elif type(extra_args) == args:
+    elif isinstance(extra_args, args):
         # Use the given CLI arguments
         parsed_args = extra_args
     else:
