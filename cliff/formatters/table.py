@@ -13,6 +13,7 @@
 """Output formatters using prettytable."""
 
 import os
+import sys
 
 import prettytable
 
@@ -30,6 +31,14 @@ def _format_row(row):
             r = r.replace('\r\n', '\n').replace('\r', ' ')
         new_row.append(r)
     return new_row
+
+
+def _do_fit(fit_width):
+    if os.name == 'nt':
+        # NOTE(pas-ha) the isatty is not reliable enough on Windows,
+        # so do not try to auto-fit
+        return fit_width
+    return sys.stdout.isatty() or fit_width
 
 
 class TableFormatter(base.ListFormatter, base.SingleFormatter):
@@ -177,7 +186,7 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         """
         if max_width > 0:
             term_width = max_width
-        elif not fit_width:
+        elif not _do_fit(fit_width):
             # Fitting is disabled
             return
         else:
