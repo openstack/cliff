@@ -12,7 +12,7 @@ First, you need to create a virtual environment and activate it.
   $ pip install virtualenv
   $ virtualenv .venv
   $ . .venv/bin/activate
-  (.venv)$ 
+  (.venv)$
 
 Next, install ``cliff`` in the environment.
 

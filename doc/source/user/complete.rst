@@ -29,7 +29,7 @@ When you run the command, it will generate a bash-completion script:
       local cur prev words
       COMPREPLY=()
       _get_comp_words_by_ref -n : cur prev words
-    
+
       # Command data:
       cmds='agent aggregate backup'
       cmds_agent='--name'

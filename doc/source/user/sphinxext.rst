@@ -7,6 +7,8 @@ Usage
 
 cliff supports integration with Sphinx by way of a `Sphinx directives`__.
 
+__ http://www.sphinx-doc.org/en/stable/extdev/markupapi.html
+
 Preparation
 -----------
 
@@ -67,6 +69,8 @@ Directive
      information.
 
      This option is effective only in the **command** mode.
+
+     __ https://docs.python.org/3/library/fnmatch.html
 
    `:arguments`
      The arguments to be passed when the cliff application is instantiated.
@@ -154,8 +158,8 @@ Examples
 Simple Example (`demoapp`)
 --------------------------
 
-`cliff` provides a sample application, :doc:`demoapp`, to demonstrate some of the
-features of `cliff`. This application :ref:`is documented <demoapp-sphinx>`
+`cliff` provides a sample application, :doc:`demoapp`, to demonstrate some of
+the features of `cliff`. This application :ref:`is documented <demoapp-sphinx>`
 using the `cliff.sphinxext` Sphinx extension.
 
 Advanced Example (`python-openstackclient`)
@@ -206,6 +210,4 @@ usage examples show the full command name:
 
     autoprogram_cliff_application = 'openstack'
 
-__ http://www.sphinx-doc.org/en/stable/extdev/markupapi.html
-__ https://docs.python.org/3/library/fnmatch.html
 __ https://docs.openstack.org/python-openstackclient/
