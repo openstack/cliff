@@ -22,6 +22,23 @@ from cliff.tests import base
 from cliff.tests import test_columns
 
 
+class _toDict:
+
+    def __init__(self, **kwargs):
+        self._data = kwargs
+
+    def toDict(self):
+        return self._data
+
+
+class _to_Dict:
+    def __init__(self, **kwargs):
+        self._data = kwargs
+
+    def to_dict(self):
+        return self._data
+
+
 class TestYAMLFormatter(base.TestBase):
 
     def test_format_one(self):
@@ -95,6 +112,42 @@ class TestYAMLFormatter(base.TestBase):
 
         args.noindent = True
         output = StringIO()
+        sf.emit_list(c, d, output, args)
+        actual = yaml.safe_load(output.getvalue())
+        self.assertEqual(expected, actual)
+
+    def test_one_custom_object(self):
+        sf = yaml_format.YAMLFormatter()
+        c = ('a', 'b', 'toDict', 'to_dict')
+        d = ('A', 'B', _toDict(spam="ham"), _to_Dict(ham="eggs"))
+        expected = {
+            'a': 'A',
+            'b': 'B',
+            'toDict': {"spam": "ham"},
+            'to_dict': {"ham": "eggs"}
+        }
+        output = StringIO()
+        args = mock.Mock()
+        sf.emit_one(c, d, output, args)
+        actual = yaml.safe_load(output.getvalue())
+        self.assertEqual(expected, actual)
+
+    def test_list_custom_object(self):
+        sf = yaml_format.YAMLFormatter()
+        c = ('a', 'toDict', 'to_dict')
+        d = (
+            ('A1', _toDict(B=1), _to_Dict(C=1)),
+            ('A2', _toDict(B=2), _to_Dict(C=2)),
+            ('A3', _toDict(B=3), _to_Dict(C=3))
+        )
+        expected = [
+            {'a': 'A1', 'toDict': {'B': 1}, 'to_dict': {'C': 1}},
+            {'a': 'A2', 'toDict': {'B': 2}, 'to_dict': {'C': 2}},
+            {'a': 'A3', 'toDict': {'B': 3}, 'to_dict': {'C': 3}}
+        ]
+        output = StringIO()
+        args = mock.Mock()
+        sf.add_argument_group(args)
         sf.emit_list(c, d, output, args)
         actual = yaml.safe_load(output.getvalue())
         self.assertEqual(expected, actual)
