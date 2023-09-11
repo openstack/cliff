@@ -25,9 +25,9 @@ COST = {'w': 0, 's': 2, 'a': 1, 'd': 3}
 def damerau_levenshtein(s1, s2, cost):
     """Calculates the Damerau-Levenshtein distance between two strings.
 
-    The Levenshtein distance says the minimum number of single-character edits
-    (i.e. insertions, deletions, swap or substitution) required to change one
-    string to the other.
+    The Damerau-Levenshtein distance says the minimum number of single
+    character edits (i.e. insertions, deletions, swap or substitution)
+    required to change one string to the other.
     The idea is to reserve a matrix to hold the Levenshtein distances between
     all prefixes of the first string and all prefixes of the second, then we
     can compute the values in the matrix in a dynamic programming fashion. To
@@ -36,7 +36,7 @@ def damerau_levenshtein(s1, s2, cost):
     the row before that.)
 
     More details:
-        https://en.wikipedia.org/wiki/Levenshtein_distance
+        https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
         https://github.com/git/git/commit/8af84dadb142f7321ff0ce8690385e99da8ede2f
     """
 
