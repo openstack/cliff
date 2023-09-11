@@ -17,6 +17,17 @@ from . import base
 from cliff import columns
 
 
+def _yaml_friendly(value):
+    if isinstance(value, columns.FormattableColumn):
+        return value.machine_readable()
+    elif hasattr(value, "toDict"):
+        return value.toDict()
+    elif hasattr(value, "to_dict"):
+        return value.to_dict()
+    else:
+        return value
+
+
 class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
 
     def add_argument_group(self, parser):
@@ -29,10 +40,7 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
         items = []
         for item in data:
             items.append(
-                {n: (i.machine_readable()
-                     if isinstance(i, columns.FormattableColumn)
-                     else i)
-                 for n, i in zip(column_names, item)}
+                {n: _yaml_friendly(i) for n, i in zip(column_names, item)}
             )
         yaml.safe_dump(items, stream=stdout, default_flow_style=False)
 
@@ -41,9 +49,5 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
         import yaml
 
         for key, value in zip(column_names, data):
-            dict_data = {
-                key: (value.machine_readable()
-                      if isinstance(value, columns.FormattableColumn)
-                      else value)
-            }
+            dict_data = {key: _yaml_friendly(value)}
             yaml.safe_dump(dict_data, stream=stdout, default_flow_style=False)
