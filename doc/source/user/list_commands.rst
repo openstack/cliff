@@ -35,7 +35,7 @@ output. CSV data can be imported into a database or spreadsheet for
 further manipulation.
 
 ::
-    
+
     (.venv)$ cliffdemo files -f csv
     "Name","Size"
     "build",136
@@ -52,7 +52,7 @@ for human consumption.
 .. _PrettyTable: https://pypi.org/project/prettytable/
 
 ::
-    
+
     (.venv)$ cliffdemo files
     +---------------+------+
     |      Name     | Size |
@@ -69,7 +69,7 @@ value
 The ``value`` formatter produces a space separated output with no headers.
 
 ::
-    
+
     (.venv)$ cliffdemo files -f value
     build 136
     cliffdemo.log 2690
@@ -80,7 +80,7 @@ This format can be very convenient when you want to pipe the output to
 a script.
 
 ::
-    
+
     (.venv)$ cliffdemo files -f value | while read NAME SIZE
     do
       echo $NAME is $SIZE bytes
@@ -125,15 +125,15 @@ format.
     (.venv)$ cliffdemo files -f json
     [
       {
-        "Name": "source", 
+        "Name": "source",
         "Size": 4096
-      }, 
+      },
       {
-        "Name": "Makefile", 
+        "Name": "Makefile",
         "Size": 5569
-      }, 
+      },
       {
-        "Name": "build", 
+        "Name": "build",
         "Size": 4096
       }
     ]

@@ -23,16 +23,16 @@ specified on the command line.
 
     (.venv)$ cliffdemo
     (cliffdemo) help
-    
+
     Shell commands (type help <topic>):
     ===================================
     cmdenvironment  edit  hi       l   list  pause  r    save  shell      show
     ed              help  history  li  load  py     run  set   shortcuts
-    
+
     Undocumented commands:
     ======================
     EOF  eof  exit  q  quit
-    
+
     Application commands (type help <topic>):
     =========================================
     files  help  simple  file  error  two part
@@ -41,12 +41,12 @@ To obtain instructions for a built-in or application command, use the
 ``help`` command:
 
 ::
-    
+
     (cliffdemo) help simple
     usage: simple [-h]
-    
+
     A simple command that prints a message.
-    
+
     optional arguments:
       -h, --help  Show help message and exit.
 
@@ -54,7 +54,7 @@ The commands can be run, including options and arguments, as on the
 regular command line:
 
 ::
-    
+
     (cliffdemo) simple
     sending greeting
     hi!
@@ -89,4 +89,4 @@ regular command line:
     | tox.ini              |    76 |
     | tox.ini~             |   421 |
     +----------------------+-------+
-    (cliffdemo) 
+    (cliffdemo)

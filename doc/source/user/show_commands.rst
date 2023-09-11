@@ -110,10 +110,10 @@ is the key.
 
     (.venv)$ cliffdemo file -f json setup.py
     {
-      "Modified Time": 1438726433.8055942, 
-      "GID": 1000, 
-      "UID": 1000, 
-      "Name": "setup.py", 
+      "Modified Time": 1438726433.8055942,
+      "GID": 1000,
+      "UID": 1000,
+      "Name": "setup.py",
       "Size": 1028
     }
 
