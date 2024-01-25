@@ -21,7 +21,6 @@ from cliff.tests import base
 
 
 class FauxFormatter(object):
-
     def __init__(self):
         self.args = []
         self.obj = weakref.proxy(self)
@@ -31,7 +30,6 @@ class FauxFormatter(object):
 
 
 class ExerciseShowOne(show.ShowOne):
-
     def _load_formatter_plugins(self):
         return {
             'test': FauxFormatter(),
@@ -45,7 +43,6 @@ class ExerciseShowOne(show.ShowOne):
 
 
 class TestShow(base.TestBase):
-
     def test_formatter_args(self):
         app = mock.Mock()
         test_show = ExerciseShowOne(app, [])

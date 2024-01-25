@@ -6,8 +6,7 @@ from cliff.lister import Lister
 
 
 class Encoding(Lister):
-    """Show some unicode text
-    """
+    """Show some unicode text"""
 
     log = logging.getLogger(__name__)
 
@@ -18,6 +17,5 @@ class Encoding(Lister):
         ]
         return (
             ('UTF-8', 'Unicode'),
-            [(repr(t.encode('utf-8')), t)
-             for t in messages],
+            [(repr(t.encode('utf-8')), t) for t in messages],
         )

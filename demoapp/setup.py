@@ -16,16 +16,12 @@ except IOError:
 setup(
     name=PROJECT,
     version=VERSION,
-
     description='Demo app for cliff',
     long_description=long_description,
-
     author='Doug Hellmann',
     author_email='doug.hellmann@gmail.com',
-
     url='https://github.com/openstack/cliff',
     download_url='https://github.com/openstack/cliff/tarball/master',
-
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: Apache Software License',
@@ -35,22 +31,15 @@ setup(
         'Intended Audience :: Developers',
         'Environment :: Console',
     ],
-
     platforms=['Any'],
-
     scripts=[],
-
     provides=[],
     install_requires=['cliff'],
-
     namespace_packages=[],
     packages=find_packages(),
     include_package_data=True,
-
     entry_points={
-        'console_scripts': [
-            'cliffdemo = cliffdemo.main:main'
-        ],
+        'console_scripts': ['cliffdemo = cliffdemo.main:main'],
         'cliff.demo': [
             'simple = cliffdemo.simple:Simple',
             'two_part = cliffdemo.simple:Simple',
@@ -66,6 +55,5 @@ setup(
             'sample-hook = cliffdemo.hook:Hook',
         ],
     },
-
     zip_safe=False,
 )

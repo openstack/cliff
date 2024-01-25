@@ -30,13 +30,13 @@ class HelpExit(SystemExit):
 
 
 class HelpAction(argparse.Action):
-
     """Provide a custom action so the -h and --help options
     to the main app will print a list of the commands.
 
     The commands are determined by checking the CommandManager
     instance, passed in as the "default" value for the action.
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
         app = self.default
         pager = autopage.argparse.help_pager(app.stdout)
@@ -90,15 +90,15 @@ class HelpAction(argparse.Action):
 
 
 class HelpCommand(command.Command):
-    """print detailed help for another command
-    """
+    """print detailed help for another command"""
 
     def get_parser(self, prog_name):
         parser = super(HelpCommand, self).get_parser(prog_name)
-        parser.add_argument('cmd',
-                            nargs='*',
-                            help='name of the command',
-                            )
+        parser.add_argument(
+            'cmd',
+            nargs='*',
+            help='name of the command',
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -111,9 +111,11 @@ class HelpCommand(command.Command):
             except ValueError:
                 # Did not find an exact match
                 cmd = parsed_args.cmd[0]
-                fuzzy_matches = [k[0] for k in self.app.command_manager
-                                 if k[0].startswith(cmd)
-                                 ]
+                fuzzy_matches = [
+                    k[0]
+                    for k in self.app.command_manager
+                    if k[0].startswith(cmd)
+                ]
                 if not fuzzy_matches:
                     raise
                 self.app.stdout.write('Command "%s" matches:\n' % cmd)
@@ -125,15 +127,17 @@ class HelpCommand(command.Command):
             if 'cmd_name' in inspect.getfullargspec(cmd_factory.__init__).args:
                 kwargs['cmd_name'] = cmd_name
             cmd = cmd_factory(self.app, self.app_args, **kwargs)
-            full_name = (cmd_name
-                         if self.app.interactive_mode
-                         else ' '.join([self.app.NAME, cmd_name])
-                         )
+            full_name = (
+                cmd_name
+                if self.app.interactive_mode
+                else ' '.join([self.app.NAME, cmd_name])
+            )
             cmd_parser = cmd.get_parser(full_name)
             pager = autopage.argparse.help_pager(self.app.stdout)
             with pager as out:
-                autopage.argparse.use_color_for_parser(cmd_parser,
-                                                       pager.to_terminal())
+                autopage.argparse.use_color_for_parser(
+                    cmd_parser, pager.to_terminal()
+                )
                 cmd_parser.print_help(out)
         else:
             action = HelpAction(None, None, default=self.app)

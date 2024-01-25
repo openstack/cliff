@@ -66,13 +66,13 @@ def _table_tester_helper(tags, data, extra_args=None):
 
 
 class TestTableFormatter(base.TestBase):
-
     @mock.patch('cliff.utils.terminal_width')
     def test(self, tw):
         tw.return_value = 80
         c = ('a', 'b', 'c', 'd')
         d = ('A', 'B', 'C', 'test\rcarriage\r\nreturn')
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +-------+---------------+
         | Field | Value         |
         +-------+---------------+
@@ -82,14 +82,15 @@ class TestTableFormatter(base.TestBase):
         | d     | test carriage |
         |       | return        |
         +-------+---------------+
-        ''')
+        '''
+        )
         self.assertEqual(expected, _table_tester_helper(c, d))
 
 
 class TestTerminalWidth(base.TestBase):
-
     # Multi-line output when width is restricted to 42 columns
-    expected_ml_val = textwrap.dedent('''\
+    expected_ml_val = textwrap.dedent(
+        '''\
     +-------+--------------------------------+
     | Field | Value                          |
     +-------+--------------------------------+
@@ -100,10 +101,12 @@ class TestTerminalWidth(base.TestBase):
     |       | dddddddddddddddddddddddddddddd |
     |       | ddddddddddddddddd              |
     +-------+--------------------------------+
-    ''')
+    '''
+    )
 
     # Multi-line output when width is restricted to 80 columns
-    expected_ml_80_val = textwrap.dedent('''\
+    expected_ml_80_val = textwrap.dedent(
+        '''\
     +-------+----------------------------------------------------------------------+
     | Field | Value                                                                |
     +-------+----------------------------------------------------------------------+
@@ -113,10 +116,12 @@ class TestTerminalWidth(base.TestBase):
     | d     | dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd |
     |       | ddddddddd                                                            |
     +-------+----------------------------------------------------------------------+
-    ''')  # noqa
+    '''
+    )  # noqa
 
     # Single-line output, for when no line length restriction apply
-    expected_sl_val = textwrap.dedent('''\
+    expected_sl_val = textwrap.dedent(
+        '''\
     +-------+-------------------------------------------------------------------------------+
     | Field | Value                                                                         |
     +-------+-------------------------------------------------------------------------------+
@@ -125,7 +130,8 @@ class TestTerminalWidth(base.TestBase):
     | c     | C                                                                             |
     | d     | ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd |
     +-------+-------------------------------------------------------------------------------+
-    ''')  # noqa
+    '''
+    )  # noqa
 
     @mock.patch('cliff.utils.terminal_width')
     def test_table_formatter_no_cli_param(self, tw):
@@ -192,15 +198,16 @@ class TestTerminalWidth(base.TestBase):
 
 
 class TestMaxWidth(base.TestBase):
-
-    expected_80 = textwrap.dedent('''\
+    expected_80 = textwrap.dedent(
+        '''\
     +--------------------------+---------------------------------------------+
     | Field                    | Value                                       |
     +--------------------------+---------------------------------------------+
     | field_name               | the value                                   |
     | a_really_long_field_name | a value significantly longer than the field |
     +--------------------------+---------------------------------------------+
-    ''')
+    '''
+    )
 
     @mock.patch('cliff.utils.terminal_width')
     def test_80(self, tw):
@@ -215,7 +222,8 @@ class TestMaxWidth(base.TestBase):
         tw.return_value = 70
         c = ('field_name', 'a_really_long_field_name')
         d = ('the value', 'a value significantly longer than the field')
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +--------------------------+-----------------------------------------+
         | Field                    | Value                                   |
         +--------------------------+-----------------------------------------+
@@ -223,7 +231,8 @@ class TestMaxWidth(base.TestBase):
         | a_really_long_field_name | a value significantly longer than the   |
         |                          | field                                   |
         +--------------------------+-----------------------------------------+
-        ''')
+        '''
+        )
         self.assertEqual(
             expected,
             _table_tester_helper(c, d, extra_args=['--fit-width']),
@@ -235,7 +244,8 @@ class TestMaxWidth(base.TestBase):
         tw.return_value = 50
         c = ('field_name', 'a_really_long_field_name')
         d = ('the value', 'a value significantly longer than the field')
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +-----------------------+------------------------+
         | Field                 | Value                  |
         +-----------------------+------------------------+
@@ -243,7 +253,8 @@ class TestMaxWidth(base.TestBase):
         | a_really_long_field_n | a value significantly  |
         | ame                   | longer than the field  |
         +-----------------------+------------------------+
-        ''')
+        '''
+        )
         self.assertEqual(
             expected,
             _table_tester_helper(c, d, extra_args=['--fit-width']),
@@ -255,7 +266,8 @@ class TestMaxWidth(base.TestBase):
         tw.return_value = 10
         c = ('field_name', 'a_really_long_field_name')
         d = ('the value', 'a value significantly longer than the field')
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +------------------+------------------+
         | Field            | Value            |
         +------------------+------------------+
@@ -265,7 +277,8 @@ class TestMaxWidth(base.TestBase):
         |                  | longer than the  |
         |                  | field            |
         +------------------+------------------+
-        ''')
+        '''
+        )
         self.assertEqual(
             expected,
             _table_tester_helper(c, d, extra_args=['--fit-width']),
@@ -273,50 +286,51 @@ class TestMaxWidth(base.TestBase):
 
 
 class TestListFormatter(base.TestBase):
-
     _col_names = ('one', 'two', 'three')
-    _col_data = [(
-        'one one one one one',
-        'two two two two',
-        'three three')]
+    _col_data = [('one one one one one', 'two two two two', 'three three')]
 
     _expected_mv = {
-        80: textwrap.dedent('''\
+        80: textwrap.dedent(
+            '''\
         +---------------------+-----------------+-------------+
         | one                 | two             | three       |
         +---------------------+-----------------+-------------+
         | one one one one one | two two two two | three three |
         +---------------------+-----------------+-------------+
-        '''),
-
-        50: textwrap.dedent('''\
+        '''
+        ),
+        50: textwrap.dedent(
+            '''\
         +----------------+-----------------+-------------+
         | one            | two             | three       |
         +----------------+-----------------+-------------+
         | one one one    | two two two two | three three |
         | one one        |                 |             |
         +----------------+-----------------+-------------+
-        '''),
-
-        47: textwrap.dedent('''\
+        '''
+        ),
+        47: textwrap.dedent(
+            '''\
         +---------------+---------------+-------------+
         | one           | two           | three       |
         +---------------+---------------+-------------+
         | one one one   | two two two   | three three |
         | one one       | two           |             |
         +---------------+---------------+-------------+
-        '''),
-
-        45: textwrap.dedent('''\
+        '''
+        ),
+        45: textwrap.dedent(
+            '''\
         +--------------+--------------+-------------+
         | one          | two          | three       |
         +--------------+--------------+-------------+
         | one one one  | two two two  | three three |
         | one one      | two          |             |
         +--------------+--------------+-------------+
-        '''),
-
-        40: textwrap.dedent('''\
+        '''
+        ),
+        40: textwrap.dedent(
+            '''\
         +------------+------------+------------+
         | one        | two        | three      |
         +------------+------------+------------+
@@ -324,9 +338,10 @@ class TestListFormatter(base.TestBase):
         | one one    | two two    | three      |
         | one        |            |            |
         +------------+------------+------------+
-        '''),
-
-        10: textwrap.dedent('''\
+        '''
+        ),
+        10: textwrap.dedent(
+            '''\
         +----------+----------+----------+
         | one      | two      | three    |
         +----------+----------+----------+
@@ -334,7 +349,8 @@ class TestListFormatter(base.TestBase):
         | one one  | two two  | three    |
         | one      |          |          |
         +----------+----------+----------+
-        '''),
+        '''
+        ),
     }
 
     @mock.patch('cliff.utils.terminal_width')
@@ -344,7 +360,8 @@ class TestListFormatter(base.TestBase):
         d1 = ('A', 'B', 'C')
         d2 = ('D', 'E', 'test\rcarriage\r\nreturn')
         data = [d1, d2]
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +---+---+---------------+
         | a | b | c             |
         +---+---+---------------+
@@ -352,7 +369,8 @@ class TestListFormatter(base.TestBase):
         | D | E | test carriage |
         |   |   | return        |
         +---+---+---------------+
-        ''')
+        '''
+        )
         self.assertEqual(expected, _table_tester_helper(c, data))
 
     @mock.patch('cliff.utils.terminal_width')
@@ -360,7 +378,8 @@ class TestListFormatter(base.TestBase):
         tw.return_value = 0
         c = ('a', 'b', 'c', 'd')
         d = ('A', 'B', 'C', test_columns.FauxColumn(['the', 'value']))
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +-------+---------------------------------------------+
         | Field | Value                                       |
         +-------+---------------------------------------------+
@@ -369,7 +388,8 @@ class TestListFormatter(base.TestBase):
         | c     | C                                           |
         | d     | I made this string myself: ['the', 'value'] |
         +-------+---------------------------------------------+
-        ''')
+        '''
+        )
         self.assertEqual(expected, _table_tester_helper(c, d))
 
     @mock.patch('cliff.utils.terminal_width')
@@ -378,13 +398,15 @@ class TestListFormatter(base.TestBase):
         c = ('a', 'b', 'c')
         d1 = ('A', 'B', test_columns.FauxColumn(['the', 'value']))
         data = [d1]
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +---+---+---------------------------------------------+
         | a | b | c                                           |
         +---+---+---------------------------------------------+
         | A | B | I made this string myself: ['the', 'value'] |
         +---+---+---------------------------------------------+
-        ''')
+        '''
+        )
         self.assertEqual(expected, _table_tester_helper(c, data))
 
     @mock.patch('cliff.utils.terminal_width')
@@ -400,8 +422,9 @@ class TestListFormatter(base.TestBase):
     def test_max_width_50(self, tw):
         # resize 1 column
         width = tw.return_value = 50
-        actual = _table_tester_helper(self._col_names, self._col_data,
-                                      extra_args=['--fit-width'])
+        actual = _table_tester_helper(
+            self._col_names, self._col_data, extra_args=['--fit-width']
+        )
         self.assertEqual(self._expected_mv[width], actual)
         self.assertEqual(width, len(actual.splitlines()[0]))
 
@@ -409,8 +432,9 @@ class TestListFormatter(base.TestBase):
     def test_max_width_45(self, tw):
         # resize 2 columns
         width = tw.return_value = 45
-        actual = _table_tester_helper(self._col_names, self._col_data,
-                                      extra_args=['--fit-width'])
+        actual = _table_tester_helper(
+            self._col_names, self._col_data, extra_args=['--fit-width']
+        )
         self.assertEqual(self._expected_mv[width], actual)
         self.assertEqual(width, len(actual.splitlines()[0]))
 
@@ -418,8 +442,9 @@ class TestListFormatter(base.TestBase):
     def test_max_width_40(self, tw):
         # resize all columns
         width = tw.return_value = 40
-        actual = _table_tester_helper(self._col_names, self._col_data,
-                                      extra_args=['--fit-width'])
+        actual = _table_tester_helper(
+            self._col_names, self._col_data, extra_args=['--fit-width']
+        )
         self.assertEqual(self._expected_mv[width], actual)
         self.assertEqual(width, len(actual.splitlines()[0]))
 
@@ -427,8 +452,9 @@ class TestListFormatter(base.TestBase):
     def test_max_width_10(self, tw):
         # resize all columns limited by min_width=8
         width = tw.return_value = 10
-        actual = _table_tester_helper(self._col_names, self._col_data,
-                                      extra_args=['--fit-width'])
+        actual = _table_tester_helper(
+            self._col_names, self._col_data, extra_args=['--fit-width']
+        )
         self.assertEqual(self._expected_mv[width], actual)
         # 3 columns each 8 wide, plus table spacing and borders
         expected_width = 11 * 3 + 1
@@ -550,16 +576,18 @@ class TestListFormatter(base.TestBase):
     def test_env_maxwidth_args_big(self):
         self.assertEqual(
             self._expected_mv[80],
-            _table_tester_helper(self._col_names, self._col_data,
-                                 extra_args=args(666)),
+            _table_tester_helper(
+                self._col_names, self._col_data, extra_args=args(666)
+            ),
         )
 
     @mock.patch.dict(os.environ, {'CLIFF_MAX_TERM_WIDTH': '42'})
     def test_env_maxwidth_args_tiny(self):
         self.assertEqual(
             self._expected_mv[40],
-            _table_tester_helper(self._col_names, self._col_data,
-                                 extra_args=args(40)),
+            _table_tester_helper(
+                self._col_names, self._col_data, extra_args=args(40)
+            ),
         )
 
     @mock.patch('cliff.utils.terminal_width')
@@ -575,46 +603,35 @@ class TestListFormatter(base.TestBase):
         tw.return_value = 80
         c = ('a', 'b', 'c')
         data = []
-        expected = textwrap.dedent('''\
+        expected = textwrap.dedent(
+            '''\
         +---+---+---+
         | a | b | c |
         +---+---+---+
         +---+---+---+
-        ''')
+        '''
+        )
         self.assertEqual(
             expected,
-            _table_tester_helper(c, data,
-                                 extra_args=['--print-empty']),
+            _table_tester_helper(c, data, extra_args=['--print-empty']),
         )
 
 
 class TestFieldWidths(base.TestBase):
-
     def test(self):
         tf = table.TableFormatter
         self.assertEqual(
-            {
-                'a': 1,
-                'b': 2,
-                'c': 3,
-                'd': 10
-            },
+            {'a': 1, 'b': 2, 'c': 3, 'd': 10},
             tf._field_widths(
-                ('a', 'b', 'c', 'd'),
-                '+---+----+-----+------------+'),
+                ('a', 'b', 'c', 'd'), '+---+----+-----+------------+'
+            ),
         )
 
     def test_zero(self):
         tf = table.TableFormatter
         self.assertEqual(
-            {
-                'a': 0,
-                'b': 0,
-                'c': 0
-            },
-            tf._field_widths(
-                ('a', 'b', 'c'),
-                '+--+-++'),
+            {'a': 0, 'b': 0, 'c': 0},
+            tf._field_widths(('a', 'b', 'c'), '+--+-++'),
         )
 
     def test_info(self):

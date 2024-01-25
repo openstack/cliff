@@ -17,7 +17,6 @@ import abc
 
 
 class Formatter(object, metaclass=abc.ABCMeta):
-
     @abc.abstractmethod
     def add_argument_group(self, parser):
         """Add any options to the argument parser.
@@ -27,8 +26,7 @@ class Formatter(object, metaclass=abc.ABCMeta):
 
 
 class ListFormatter(Formatter, metaclass=abc.ABCMeta):
-    """Base class for formatters that know how to deal with multiple objects.
-    """
+    """Base class for formatters that know how to deal with multiple objects."""
 
     @abc.abstractmethod
     def emit_list(self, column_names, data, stdout, parsed_args):
@@ -50,8 +48,7 @@ class ListFormatter(Formatter, metaclass=abc.ABCMeta):
 
 
 class SingleFormatter(Formatter, metaclass=abc.ABCMeta):
-    """Base class for formatters that work with single objects.
-    """
+    """Base class for formatters that work with single objects."""
 
     @abc.abstractmethod
     def emit_one(self, column_names, data, stdout, parsed_args):

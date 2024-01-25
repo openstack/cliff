@@ -29,7 +29,6 @@ def _yaml_friendly(value):
 
 
 class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
-
     def add_argument_group(self, parser):
         pass
 

@@ -46,7 +46,8 @@ def _format_description(parser):
     information in their help messages if they so choose.
     """
     for line in statemachine.string2lines(
-            parser.description, tab_width=4, convert_whitespace=True):
+        parser.description, tab_width=4, convert_whitespace=True
+    ):
         yield line
 
 
@@ -64,12 +65,15 @@ def _format_usage(parser):
     # becomes ['--format <FORMAT>'] and not ['--format', '<FORMAT>'].
     # Yes, they really do use regexes to break apart and rewrap their help
     # string. Don't ask me why.
-    part_regexp = re.compile(r"""
+    part_regexp = re.compile(
+        r"""
         \(.*?\)+ |
         \[.*?\]+ |
         (?:(?:-\w|--\w+(?:-\w+)*)(?:\s+<?\w[\w-]*>?)?) |
         \S+
-    """, re.VERBOSE)
+    """,
+        re.VERBOSE,
+    )
 
     opt_usage = fmt._format_actions_usage(optionals, groups)
     pos_usage = fmt._format_actions_usage(positionals, groups)
@@ -91,7 +95,8 @@ def _format_epilog(parser):
     information in their help messages if they so choose.
     """
     for line in statemachine.string2lines(
-            parser.epilog, tab_width=4, convert_whitespace=True):
+        parser.epilog, tab_width=4, convert_whitespace=True
+    ):
         yield line
 
 
@@ -104,11 +109,13 @@ def _format_positional_action(action):
     # the 'option' directive dictates that only option argument names should be
     # surrounded by angle brackets
     yield '.. option:: {}'.format(
-        (action.metavar or action.dest).strip('<>[]() '))
+        (action.metavar or action.dest).strip('<>[]() ')
+    )
     if action.help:
         yield ''
         for line in statemachine.string2lines(
-                action.help, tab_width=4, convert_whitespace=True):
+            action.help, tab_width=4, convert_whitespace=True
+        ):
             yield _indent(line)
 
 
@@ -123,15 +130,17 @@ def _format_optional_action(action):
         # TODO(stephenfin): At some point, we may wish to provide more
         # information about the options themselves, for example, if nargs is
         # specified
-        option_strings = [' '.join(
-            [x, action.metavar or '<{}>'.format(action.dest.upper())])
-            for x in action.option_strings]
+        option_strings = [
+            ' '.join([x, action.metavar or '<{}>'.format(action.dest.upper())])
+            for x in action.option_strings
+        ]
         yield '.. option:: {}'.format(', '.join(option_strings))
 
     if action.help:
         yield ''
         for line in statemachine.string2lines(
-                action.help, tab_width=4, convert_whitespace=True):
+            action.help, tab_width=4, convert_whitespace=True
+        ):
             yield _indent(line)
 
 
@@ -220,8 +229,9 @@ class AutoprogramCliffDirective(rst.Directive):
     def _get_ignored_opts(self):
         global_ignored = self.env.config.autoprogram_cliff_ignored
         local_ignored = self.options.get('ignored', '')
-        local_ignored = [x.strip() for x in local_ignored.split(',')
-                         if x.strip()]
+        local_ignored = [
+            x.strip() for x in local_ignored.split(',') if x.strip()
+        ]
         return list(set(global_ignored + local_ignored))
 
     def _drop_ignored_options(self, parser, ignored_opts):
@@ -256,9 +266,10 @@ class AutoprogramCliffDirective(rst.Directive):
             # find_command expects the value of argv so split to emulate that
             return manager.find_command(command_name.split())[0]
         except ValueError:
-            raise self.error('"{}" is not a valid command in the "{}" '
-                             'namespace'.format(
-                                 command_name, manager.namespace))
+            raise self.error(
+                '"{}" is not a valid command in the "{}" '
+                'namespace'.format(command_name, manager.namespace)
+            )
 
     def _load_commands(self):
         # TODO(sfinucan): We should probably add this wildcarding functionality
@@ -267,8 +278,11 @@ class AutoprogramCliffDirective(rst.Directive):
         command_pattern = self.options.get('command')
         manager = commandmanager.CommandManager(self.arguments[0])
         if command_pattern:
-            commands = [x for x in manager.commands
-                        if fnmatch.fnmatch(x, command_pattern)]
+            commands = [
+                x
+                for x in manager.commands
+                if fnmatch.fnmatch(x, command_pattern)
+            ]
         else:
             commands = manager.commands.keys()
 
@@ -276,12 +290,15 @@ class AutoprogramCliffDirective(rst.Directive):
             msg = 'No commands found in the "{}" namespace'
             if command_pattern:
                 msg += ' using the "{}" command name/pattern'
-            msg += ('. Are you sure this is correct and the application being '
-                    'documented is installed?')
+            msg += (
+                '. Are you sure this is correct and the application being '
+                'documented is installed?'
+            )
             raise self.warning(msg.format(self.arguments[0], command_pattern))
 
-        return dict((name, self._load_command(manager, name))
-                    for name in commands)
+        return dict(
+            (name, self._load_command(manager, name)) for name in commands
+        )
 
     def _generate_app_node(self, app, application_name):
         ignored_opts = self._get_ignored_opts()
@@ -303,8 +320,9 @@ class AutoprogramCliffDirective(rst.Directive):
         # return [section.children]
         return section.children
 
-    def _generate_nodes_per_command(self, title, command_name, command_class,
-                                    ignored_opts):
+    def _generate_nodes_per_command(
+        self, title, command_name, command_class, ignored_opts
+    ):
         """Generate the relevant Sphinx nodes.
 
         This doesn't bother using raw docutils nodes as they simply don't offer
@@ -324,7 +342,8 @@ class AutoprogramCliffDirective(rst.Directive):
         command = command_class(None, None)
         if not getattr(command, 'app_dist_name', None):
             command.app_dist_name = (
-                self.env.config.autoprogram_cliff_app_dist_name)
+                self.env.config.autoprogram_cliff_app_dist_name
+            )
         parser = command.get_parser(command_name)
         ignored_opts = ignored_opts or []
 
@@ -334,7 +353,8 @@ class AutoprogramCliffDirective(rst.Directive):
             '',
             nodes.title(text=title),
             ids=[nodes.make_id(title)],
-            names=[nodes.fully_normalize_name(title)])
+            names=[nodes.fully_normalize_name(title)],
+        )
 
         source_name = '<{}>'.format(command.__class__.__name__)
         result = statemachine.ViewList()
@@ -355,16 +375,21 @@ class AutoprogramCliffDirective(rst.Directive):
             if application_name:
                 command_name = ' '.join([application_name, command_name])
 
-            output.extend(self._generate_nodes_per_command(
-                title, command_name, command_class, ignored_opts))
+            output.extend(
+                self._generate_nodes_per_command(
+                    title, command_name, command_class, ignored_opts
+                )
+            )
 
         return output
 
     def run(self):
         self.env = self.state.document.settings.env
 
-        application_name = (self.options.get('application')
-                            or self.env.config.autoprogram_cliff_application)
+        application_name = (
+            self.options.get('application')
+            or self.env.config.autoprogram_cliff_application
+        )
 
         app = self._load_app()
         if app:

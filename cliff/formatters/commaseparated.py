@@ -21,7 +21,6 @@ from cliff import columns
 
 
 class CSVLister(ListFormatter):
-
     QUOTE_MODES = {
         'all': csv.QUOTE_ALL,
         'minimal': csv.QUOTE_MINIMAL,
@@ -50,9 +49,13 @@ class CSVLister(ListFormatter):
         writer.writerow(column_names)
         for row in data:
             writer.writerow(
-                [(str(c.machine_readable())
-                  if isinstance(c, columns.FormattableColumn)
-                  else c)
-                 for c in row]
+                [
+                    (
+                        str(c.machine_readable())
+                        if isinstance(c, columns.FormattableColumn)
+                        else c
+                    )
+                    for c in row
+                ]
             )
         return

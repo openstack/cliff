@@ -35,8 +35,7 @@ def _get_commands_by_partial_name(args, commands):
 
 
 class EntryPointWrapper(object):
-    """Wrap up a command class already imported to make it look like a plugin.
-    """
+    """Wrap up a command class already imported to make it look like a plugin."""
 
     def __init__(self, name, command_class):
         self.name = name
@@ -54,6 +53,7 @@ class CommandManager(object):
     :param convert_underscores: Whether cliff should convert underscores to
         spaces in entry_point commands.
     """
+
     def __init__(self, namespace, convert_underscores=True):
         self.commands = {}
         self._legacy = {}
@@ -72,9 +72,11 @@ class CommandManager(object):
         self.group_list.append(namespace)
         for ep in stevedore.ExtensionManager(namespace):
             LOG.debug('found command %r', ep.name)
-            cmd_name = (ep.name.replace('_', ' ')
-                        if self.convert_underscores
-                        else ep.name)
+            cmd_name = (
+                ep.name.replace('_', ' ')
+                if self.convert_underscores
+                else ep.name
+            )
             self.commands[cmd_name] = ep.entry_point
         return
 
@@ -114,7 +116,8 @@ class CommandManager(object):
                 found = name
             else:
                 candidates = _get_commands_by_partial_name(
-                    argv[:i], self.commands)
+                    argv[:i], self.commands
+                )
                 if len(candidates) == 1:
                     found = candidates[0]
             if found:
@@ -131,8 +134,7 @@ class CommandManager(object):
                         cmd_factory = cmd_ep.load()
                 return (cmd_factory, return_name, search_args)
         else:
-            raise ValueError('Unknown command %r' %
-                             (argv,))
+            raise ValueError('Unknown command %r' % (argv,))
 
     def _get_last_possible_command_index(self, argv):
         """Returns the index after the last argument

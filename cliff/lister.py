@@ -83,7 +83,8 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
     def produce_output(self, parsed_args, column_names, data):
         if parsed_args.sort_columns and self.need_sort_by_cliff:
             indexes = [
-                column_names.index(c) for c in parsed_args.sort_columns
+                column_names.index(c)
+                for c in parsed_args.sort_columns
                 if c in column_names
             ]
             reverse = parsed_args.sort_direction == 'desc'
@@ -97,7 +98,8 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
                     # returns from the 'is None' check on the two values are
                     # the same, i.e. both None or both not-None
                     data = sorted(
-                        data, key=lambda k: (k[index] is None, k[index]),
+                        data,
+                        key=lambda k: (k[index] is None, k[index]),
                         reverse=reverse,
                     )
                 except TypeError:
@@ -108,7 +110,8 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
                     )
 
         columns_to_include, selector = self._generate_columns_and_selector(
-            parsed_args, column_names,
+            parsed_args,
+            column_names,
         )
         if selector:
             # Generator expression to only return the parts of a row
@@ -120,7 +123,10 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
             )
 
         self.formatter.emit_list(
-            columns_to_include, data, self.app.stdout, parsed_args,
+            columns_to_include,
+            data,
+            self.app.stdout,
+            parsed_args,
         )
 
         return 0

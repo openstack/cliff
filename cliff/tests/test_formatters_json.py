@@ -22,17 +22,11 @@ from cliff.tests import test_columns
 
 
 class TestJSONFormatter(base.TestBase):
-
     def test_one(self):
         sf = json_format.JSONFormatter()
         c = ('a', 'b', 'c', 'd')
         d = ('A', 'B', 'C', '"escape me"')
-        expected = {
-            'a': 'A',
-            'b': 'B',
-            'c': 'C',
-            'd': '"escape me"'
-        }
+        expected = {'a': 'A', 'b': 'B', 'c': 'C', 'd': '"escape me"'}
         args = mock.Mock()
         sf.add_argument_group(args)
 
@@ -78,15 +72,11 @@ class TestJSONFormatter(base.TestBase):
     def test_list(self):
         sf = json_format.JSONFormatter()
         c = ('a', 'b', 'c')
-        d = (
-            ('A1', 'B1', 'C1'),
-            ('A2', 'B2', 'C2'),
-            ('A3', 'B3', 'C3')
-        )
+        d = (('A1', 'B1', 'C1'), ('A2', 'B2', 'C2'), ('A3', 'B3', 'C3'))
         expected = [
             {'a': 'A1', 'b': 'B1', 'c': 'C1'},
             {'a': 'A2', 'b': 'B2', 'c': 'C2'},
-            {'a': 'A3', 'b': 'B3', 'c': 'C3'}
+            {'a': 'A3', 'b': 'B3', 'c': 'C3'},
         ]
         args = mock.Mock()
         sf.add_argument_group(args)
@@ -110,9 +100,7 @@ class TestJSONFormatter(base.TestBase):
     def test_formattablecolumn_list(self):
         sf = json_format.JSONFormatter()
         c = ('a', 'b', 'c')
-        d = (
-            ('A1', 'B1', test_columns.FauxColumn(['the', 'value'])),
-        )
+        d = (('A1', 'B1', test_columns.FauxColumn(['the', 'value'])),)
         expected = [
             {'a': 'A1', 'b': 'B1', 'c': ['the', 'value']},
         ]

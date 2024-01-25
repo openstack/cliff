@@ -17,7 +17,6 @@ TEST_NAMESPACE = 'cliff.test'
 
 
 class TestParser(object):
-
     def print_help(self, stdout):
         stdout.write('TestParser')
 
@@ -35,12 +34,10 @@ class TestCommand(Command):
 
 
 class TestDeprecatedCommand(TestCommand):
-
     deprecated = True
 
 
 class TestCommandManager(CommandManager):
-
     def load_commands(self, namespace):
         if namespace == TEST_NAMESPACE:
             for key in ('one', 'two words', 'three word command'):

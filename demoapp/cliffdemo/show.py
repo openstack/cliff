@@ -16,16 +16,18 @@ class File(ShowOne):
 
     def take_action(self, parsed_args):
         stat_data = os.stat(parsed_args.filename)
-        columns = ('Name',
-                   'Size',
-                   'UID',
-                   'GID',
-                   'Modified Time',
-                   )
-        data = (parsed_args.filename,
-                stat_data.st_size,
-                stat_data.st_uid,
-                stat_data.st_gid,
-                stat_data.st_mtime,
-                )
+        columns = (
+            'Name',
+            'Size',
+            'UID',
+            'GID',
+            'Modified Time',
+        )
+        data = (
+            parsed_args.filename,
+            stat_data.st_size,
+            stat_data.st_uid,
+            stat_data.st_gid,
+            stat_data.st_mtime,
+        )
         return (columns, data)

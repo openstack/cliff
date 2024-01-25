@@ -17,7 +17,6 @@ import abc
 
 
 class FormattableColumn(object, metaclass=abc.ABCMeta):
-
     def __init__(self, value):
         self._value = value
 
@@ -27,9 +26,7 @@ class FormattableColumn(object, metaclass=abc.ABCMeta):
         )
 
     def __lt__(self, other):
-        return (
-            self.__class__ == other.__class__ and self._value < other._value
-        )
+        return self.__class__ == other.__class__ and self._value < other._value
 
     def __str__(self):
         return self.human_readable()

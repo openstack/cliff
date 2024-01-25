@@ -16,13 +16,11 @@ from cliff import columns
 
 
 class FauxColumn(columns.FormattableColumn):
-
     def human_readable(self):
         return 'I made this string myself: {}'.format(self._value)
 
 
 class TestColumns(unittest.TestCase):
-
     def test_machine_readable(self):
         c = FauxColumn(['list', 'of', 'values'])
         self.assertEqual(['list', 'of', 'values'], c.machine_readable())

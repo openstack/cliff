@@ -63,17 +63,24 @@ class App(object):
     LOG = logging.getLogger(NAME)
 
     CONSOLE_MESSAGE_FORMAT = '%(message)s'
-    LOG_FILE_MESSAGE_FORMAT = \
+    LOG_FILE_MESSAGE_FORMAT = (
         '[%(asctime)s] %(levelname)-8s %(name)s %(message)s'
+    )
     DEFAULT_VERBOSE_LEVEL = 1
     DEFAULT_OUTPUT_ENCODING = 'utf-8'
 
-    def __init__(self, description, version, command_manager,
-                 stdin=None, stdout=None, stderr=None,
-                 interactive_app_factory=None,
-                 deferred_help=False):
-        """Initialize the application.
-        """
+    def __init__(
+        self,
+        description,
+        version,
+        command_manager,
+        stdin=None,
+        stdout=None,
+        stderr=None,
+        interactive_app_factory=None,
+        deferred_help=False,
+    ):
+        """Initialize the application."""
         self.command_manager = command_manager
         self.command_manager.add_command('help', help.HelpCommand)
         self.command_manager.add_command('complete', complete.CompleteCommand)
@@ -120,8 +127,7 @@ class App(object):
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
 
-    def build_option_parser(self, description, version,
-                            argparse_kwargs=None):
+    def build_option_parser(self, description, version, argparse_kwargs=None):
         """Return an argparse option parser for this application.
 
         Subclasses may override this method to extend
@@ -137,9 +143,7 @@ class App(object):
         """
         argparse_kwargs = argparse_kwargs or {}
         parser = _argparse.ArgumentParser(
-            description=description,
-            add_help=False,
-            **argparse_kwargs
+            description=description, add_help=False, **argparse_kwargs
         )
         parser.add_argument(
             '--version',
@@ -148,14 +152,16 @@ class App(object):
         )
         verbose_group = parser.add_mutually_exclusive_group()
         verbose_group.add_argument(
-            '-v', '--verbose',
+            '-v',
+            '--verbose',
             action='count',
             dest='verbose_level',
             default=self.DEFAULT_VERBOSE_LEVEL,
             help='Increase verbosity of output. Can be repeated.',
         )
         verbose_group.add_argument(
-            '-q', '--quiet',
+            '-q',
+            '--quiet',
             action='store_const',
             dest='verbose_level',
             const=0,
@@ -169,14 +175,16 @@ class App(object):
         )
         if self.deferred_help:
             parser.add_argument(
-                '-h', '--help',
+                '-h',
+                '--help',
                 dest='deferred_help',
                 action='store_true',
                 help="Show help message and exit.",
             )
         else:
             parser.add_argument(
-                '-h', '--help',
+                '-h',
+                '--help',
                 action=help.HelpAction,
                 nargs=0,
                 default=self,  # tricky
@@ -191,8 +199,7 @@ class App(object):
         return parser
 
     def configure_logging(self):
-        """Create logging handlers for any log output.
-        """
+        """Create logging handlers for any log output."""
         root_logger = logging.getLogger('')
         root_logger.setLevel(logging.DEBUG)
 
@@ -207,10 +214,11 @@ class App(object):
 
         # Always send higher-level messages to the console via stderr
         console = logging.StreamHandler(self.stderr)
-        console_level = {0: logging.WARNING,
-                         1: logging.INFO,
-                         2: logging.DEBUG,
-                         }.get(self.options.verbose_level, logging.DEBUG)
+        console_level = {
+            0: logging.WARNING,
+            1: logging.INFO,
+            2: logging.DEBUG,
+        }.get(self.options.verbose_level, logging.DEBUG)
         console.setLevel(console_level)
         formatter = logging.Formatter(self.CONSOLE_MESSAGE_FORMAT)
         console.setFormatter(formatter)
@@ -320,16 +328,16 @@ class App(object):
 
         if self.interactive_app_factory is None:
             self.interactive_app_factory = InteractiveApp
-        self.interpreter = self.interactive_app_factory(self,
-                                                        self.command_manager,
-                                                        self.stdin,
-                                                        self.stdout,
-                                                        )
+        self.interpreter = self.interactive_app_factory(
+            self,
+            self.command_manager,
+            self.stdin,
+            self.stdout,
+        )
         return self.interpreter.cmdloop()
 
     def get_fuzzy_matches(self, cmd):
-        """return fuzzy matches of unknown command
-        """
+        """return fuzzy matches of unknown command"""
 
         sep = '_'
         if self.command_manager.convert_underscores:
@@ -343,8 +351,12 @@ class App(object):
                 dist.append((0, candidate))
                 continue
             # Levenshtein distance
-            dist.append((utils.damerau_levenshtein(cmd, prefix, utils.COST)+1,
-                         candidate))
+            dist.append(
+                (
+                    utils.damerau_levenshtein(cmd, prefix, utils.COST) + 1,
+                    candidate,
+                )
+            )
 
         matches = []
         match_distance = 0
@@ -371,10 +383,17 @@ class App(object):
                 article = 'a'
                 if self.NAME[0] in 'aeiou':
                     article = 'an'
-                self.stdout.write('%s: \'%s\' is not %s %s command. '
-                                  'See \'%s --help\'.\n'
-                                  % (self.NAME, ' '.join(argv), article,
-                                      self.NAME, self.NAME))
+                self.stdout.write(
+                    '%s: \'%s\' is not %s %s command. '
+                    'See \'%s --help\'.\n'
+                    % (
+                        self.NAME,
+                        ' '.join(argv),
+                        article,
+                        self.NAME,
+                        self.NAME,
+                    )
+                )
                 self.stdout.write('Did you mean one of these?\n')
                 for match in fuzzy_matches:
                     self.stdout.write('  %s\n' % match)
@@ -393,10 +412,11 @@ class App(object):
         err = None
         try:
             self.prepare_to_run_command(cmd)
-            full_name = (cmd_name
-                         if self.interactive_mode
-                         else ' '.join([self.NAME, cmd_name])
-                         )
+            full_name = (
+                cmd_name
+                if self.interactive_mode
+                else ' '.join([self.NAME, cmd_name])
+            )
             cmd_parser = cmd.get_parser(full_name)
             try:
                 parsed_args = cmd_parser.parse_args(sub_argv)
@@ -404,6 +424,7 @@ class App(object):
                 if self.interactive_mode:
                     # Defer importing cmd2 as it is a slow import
                     import cmd2
+
                     raise cmd2.exceptions.Cmd2ArgparseError from ex
                 else:
                     raise ex

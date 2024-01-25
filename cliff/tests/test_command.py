@@ -18,30 +18,28 @@ from cliff.tests import base
 
 
 class TestCommand(command.Command):
-    """Description of command.
-    """
+    """Description of command."""
 
     def get_parser(self, prog_name):
         parser = super(TestCommand, self).get_parser(prog_name)
         parser.add_argument(
             'long_help_argument',
             help="Create a NIC on the server.\n"
-                 "Specify option multiple times to create multiple NICs. "
-                 "Either net-id or port-id must be provided, but not both.\n"
-                 "net-id: attach NIC to network with this UUID\n"
-                 "port-id: attach NIC to port with this UUID\n"
-                 "v4-fixed-ip: IPv4 fixed address for NIC (optional)\n"
-                 "v6-fixed-ip: IPv6 fixed address for NIC (optional)\n"
-                 "none: (v2.37+) no network is attached\n"
-                 "auto: (v2.37+) the compute service will automatically "
-                 "allocate a network.\n"
-                 "Specifying a --nic of auto or none "
-                 "cannot be used with any other --nic value.",
+            "Specify option multiple times to create multiple NICs. "
+            "Either net-id or port-id must be provided, but not both.\n"
+            "net-id: attach NIC to network with this UUID\n"
+            "port-id: attach NIC to port with this UUID\n"
+            "v4-fixed-ip: IPv4 fixed address for NIC (optional)\n"
+            "v6-fixed-ip: IPv6 fixed address for NIC (optional)\n"
+            "none: (v2.37+) no network is attached\n"
+            "auto: (v2.37+) the compute service will automatically "
+            "allocate a network.\n"
+            "Specifying a --nic of auto or none "
+            "cannot be used with any other --nic value.",
         )
         parser.add_argument(
             'regular_help_argument',
-            help="The quick brown fox jumps "
-                 "over the lazy dog.",
+            help="The quick brown fox jumps " "over the lazy dog.",
         )
         parser.add_argument(
             '-z',
@@ -56,17 +54,15 @@ class TestCommand(command.Command):
 
 
 class TestCommandNoDocstring(command.Command):
-
     def take_action(self, parsed_args):
         return 42
 
 
 class TestDescription(base.TestBase):
-
     def test_get_description_docstring(self):
         cmd = TestCommand(None, None)
         desc = cmd.get_description()
-        assert desc == "Description of command.\n    "
+        assert desc == "Description of command."
 
     def test_get_description_attribute(self):
         cmd = TestCommand(None, None)
@@ -83,7 +79,6 @@ class TestDescription(base.TestBase):
 
 
 class TestBasicValues(base.TestBase):
-
     def test_get_parser(self):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
@@ -118,7 +113,6 @@ expected_help_message = """
 
 
 class TestHelp(base.TestBase):
-
     def test_smart_help_formatter(self):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
@@ -138,7 +132,6 @@ class TestHelp(base.TestBase):
 
 
 class TestArgumentParser(base.TestBase):
-
     def test_option_name_collision(self):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
@@ -165,7 +158,8 @@ class TestArgumentParser(base.TestBase):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
         parser.add_argument(
-            '-z', '--zero',
+            '-z',
+            '--zero',
             dest='zero',
             default='zero-default',
         )
@@ -183,7 +177,8 @@ class TestArgumentParser(base.TestBase):
         cmd = TestCommand(None, None)
         parser = cmd.get_parser('NAME')
         parser.add_argument(
-            '-f', '--foo',
+            '-f',
+            '--foo',
             dest='foo',
             default='foo',
         )
@@ -198,12 +193,14 @@ class TestArgumentParser(base.TestBase):
         cmd.conflict_handler = 'resolve'
         parser = cmd.get_parser('NAME')
         parser.add_argument(
-            '-f', '--foo',
+            '-f',
+            '--foo',
             dest='foo',
             default='foo',
         )
         parser.add_argument(
-            '-f', '--foo',
+            '-f',
+            '--foo',
             dest='foo',
             default='bar',
         )

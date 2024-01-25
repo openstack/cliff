@@ -20,7 +20,6 @@ from cliff.tests import base
 
 
 class TestSphinxExtension(base.TestBase):
-
     def test_empty_help(self):
         """Handle positional and optional actions without help messages."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
@@ -28,7 +27,9 @@ class TestSphinxExtension(base.TestBase):
         parser.add_argument('--language', dest='lang')
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -37,17 +38,23 @@ class TestSphinxExtension(base.TestBase):
         .. option:: --language <LANG>
 
         .. option:: name
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_nonempty_help(self):
         """Handle positional and optional actions with help messages."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
         parser.add_argument('name', help='user name')
-        parser.add_argument('--language', dest='lang',
-                            help='greeting language')
+        parser.add_argument(
+            '--language', dest='lang', help='greeting language'
+        )
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -60,18 +67,26 @@ class TestSphinxExtension(base.TestBase):
         .. option:: name
 
             user name
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_description_epilog(self):
         """Handle a parser description, epilog."""
-        parser = argparse.ArgumentParser(prog='hello-world', add_help=False,
-                                         description='A "Hello, World" app.',
-                                         epilog='What am I doing down here?')
+        parser = argparse.ArgumentParser(
+            prog='hello-world',
+            add_help=False,
+            description='A "Hello, World" app.',
+            epilog='What am I doing down here?',
+        )
         parser.add_argument('name', action='store')
         parser.add_argument('--language', dest='lang')
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         A "Hello, World" app.
 
         .. program:: hello-world
@@ -84,17 +99,25 @@ class TestSphinxExtension(base.TestBase):
         .. option:: name
 
         What am I doing down here?
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_flag(self):
         """Handle a boolean argparse action."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
         parser.add_argument('name', help='user name')
-        parser.add_argument('--translate', action='store_true',
-                            help='translate to local language')
+        parser.add_argument(
+            '--translate',
+            action='store_true',
+            help='translate to local language',
+        )
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -107,7 +130,10 @@ class TestSphinxExtension(base.TestBase):
         .. option:: name
 
             user name
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_supressed(self):
         """Handle a supressed action."""
@@ -116,7 +142,9 @@ class TestSphinxExtension(base.TestBase):
         parser.add_argument('--variable', help=argparse.SUPPRESS)
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -126,16 +154,22 @@ class TestSphinxExtension(base.TestBase):
         .. option:: name
 
             user name
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_metavar(self):
         """Handle an option with a metavar."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
-        parser.add_argument('names', metavar='<NAME>', nargs='+',
-                            help='a user name')
+        parser.add_argument(
+            'names', metavar='<NAME>', nargs='+', help='a user name'
+        )
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -144,29 +178,46 @@ class TestSphinxExtension(base.TestBase):
         .. option:: NAME
 
             a user name
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_multiple_opts(self):
         """Correctly output multiple opts on separate lines."""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
         parser.add_argument('name', help='user name')
-        parser.add_argument('--language', dest='lang',
-                            help='greeting language')
-        parser.add_argument('--translate', action='store_true',
-                            help='translate to local language')
-        parser.add_argument('--write-to-var-log-something-or-other',
-                            action='store_true',
-                            help='a long opt to force wrapping')
-        parser.add_argument('--required-arg', dest='stuff', required=True,
-                            help='a required argument')
+        parser.add_argument(
+            '--language', dest='lang', help='greeting language'
+        )
+        parser.add_argument(
+            '--translate',
+            action='store_true',
+            help='translate to local language',
+        )
+        parser.add_argument(
+            '--write-to-var-log-something-or-other',
+            action='store_true',
+            help='a long opt to force wrapping',
+        )
+        parser.add_argument(
+            '--required-arg',
+            dest='stuff',
+            required=True,
+            help='a required argument',
+        )
         style_group = parser.add_mutually_exclusive_group(required=True)
-        style_group.add_argument('--polite', action='store_true',
-                                 help='use a polite greeting')
-        style_group.add_argument('--profane', action='store_true',
-                                 help='use a less polite greeting')
+        style_group.add_argument(
+            '--polite', action='store_true', help='use a polite greeting'
+        )
+        style_group.add_argument(
+            '--profane', action='store_true', help='use a less polite greeting'
+        )
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -205,26 +256,36 @@ class TestSphinxExtension(base.TestBase):
         .. option:: name
 
             user name
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )
 
     def test_various_option_names_with_hyphen(self):
         """Handle options whose name and/or metavar contain hyphen(s)"""
         parser = argparse.ArgumentParser(prog='hello-world', add_help=False)
-        parser.add_argument('--foo-bar', metavar='<foo-bar>',
-                            help='foo bar', required=True)
-        parser.add_argument('--foo-bar-baz', metavar='<foo-bar-baz>',
-                            help='foo bar baz', required=True)
-        parser.add_argument('--foo', metavar='<foo>',
-                            help='foo', required=True)
-        parser.add_argument('--alpha', metavar='<A>',
-                            help='alpha')
-        parser.add_argument('--alpha-beta', metavar='<A-B>',
-                            help='alpha beta')
-        parser.add_argument('--alpha-beta-gamma', metavar='<A-B-C>',
-                            help='alpha beta gamma')
+        parser.add_argument(
+            '--foo-bar', metavar='<foo-bar>', help='foo bar', required=True
+        )
+        parser.add_argument(
+            '--foo-bar-baz',
+            metavar='<foo-bar-baz>',
+            help='foo bar baz',
+            required=True,
+        )
+        parser.add_argument(
+            '--foo', metavar='<foo>', help='foo', required=True
+        )
+        parser.add_argument('--alpha', metavar='<A>', help='alpha')
+        parser.add_argument('--alpha-beta', metavar='<A-B>', help='alpha beta')
+        parser.add_argument(
+            '--alpha-beta-gamma', metavar='<A-B-C>', help='alpha beta gamma'
+        )
 
         output = '\n'.join(sphinxext._format_parser(parser))
-        self.assertEqual(textwrap.dedent("""
+        self.assertEqual(
+            textwrap.dedent(
+                """
         .. program:: hello-world
         .. code-block:: shell
 
@@ -259,4 +320,7 @@ class TestSphinxExtension(base.TestBase):
         .. option:: --alpha-beta-gamma <A-B-C>
 
             alpha beta gamma
-        """).lstrip(), output)
+        """
+            ).lstrip(),
+            output,
+        )

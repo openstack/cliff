@@ -39,9 +39,7 @@ def _get_distributions_by_modules():
     if _dists_by_mods is None:
         # There can be multiple distribution in the case of namespace packages
         # so we'll just grab the first one
-        _dists_by_mods = {
-            k: v[0] for k, v in packages_distributions().items()
-        }
+        _dists_by_mods = {k: v[0] for k, v in packages_distributions().items()}
     return _dists_by_mods
 
 
@@ -85,7 +83,7 @@ class Command(object, metaclass=abc.ABCMeta):
         if self.app and self.cmd_name:
             namespace = '{}.{}'.format(
                 self.app.command_manager.namespace,
-                self.cmd_name.replace(' ', '_')
+                self.cmd_name.replace(' ', '_'),
             )
             self._hooks = extension.ExtensionManager(
                 namespace=namespace,
@@ -132,21 +130,19 @@ class Command(object, metaclass=abc.ABCMeta):
         )
         parts.extend(hook_epilogs)
         app_dist_name = getattr(
-            self, 'app_dist_name', _get_distribution_for_module(
-                inspect.getmodule(self.app)
-            )
+            self,
+            'app_dist_name',
+            _get_distribution_for_module(inspect.getmodule(self.app)),
         )
         dist_name = _get_distribution_for_module(inspect.getmodule(self))
         if dist_name and dist_name != app_dist_name:
             parts.append(
-                'This command is provided by the %s plugin.' %
-                (dist_name,)
+                'This command is provided by the %s plugin.' % (dist_name,)
             )
         return '\n\n'.join(parts)
 
     def get_parser(self, prog_name):
-        """Return an :class:`argparse.ArgumentParser`.
-        """
+        """Return an :class:`argparse.ArgumentParser`."""
         parser = _argparse.ArgumentParser(
             description=self.get_description(),
             epilog=self.get_epilog(),

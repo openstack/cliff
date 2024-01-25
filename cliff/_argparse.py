@@ -19,7 +19,6 @@ from autopage import argparse
 
 
 class _ArgumentContainerMixIn(object):
-
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
     # special conflict handler.
@@ -44,13 +43,15 @@ class _ArgumentContainerMixIn(object):
 
 
 class ArgumentParser(_ArgumentContainerMixIn, argparse.ArgumentParser):
-
     pass
 
 
-def _handle_conflict_ignore(container, option_string_actions,
-                            new_action, conflicting_actions):
-
+def _handle_conflict_ignore(
+    container,
+    option_string_actions,
+    new_action,
+    conflicting_actions,
+):
     # Remember the option strings the new action starts with so we can
     # restore them as part of error reporting if we need to.
     original_option_strings = new_action.option_strings
@@ -58,13 +59,14 @@ def _handle_conflict_ignore(container, option_string_actions,
     # Remove all of the conflicting option strings from the new action
     # and report an error if none are left at the end.
     for option_string, action in conflicting_actions:
-
         # remove the conflicting option from the new action
         new_action.option_strings.remove(option_string)
         warnings.warn(
-            ('Ignoring option string {} for new action '
-             'because it conflicts with an existing option.').format(
-                 option_string))
+            (
+                'Ignoring option string {} for new action '
+                'because it conflicts with an existing option.'
+            ).format(option_string)
+        )
 
         # if the option now has no option string, remove it from the
         # container holding it
@@ -72,8 +74,10 @@ def _handle_conflict_ignore(container, option_string_actions,
             new_action.option_strings = original_option_strings
             raise argparse.ArgumentError(
                 new_action,
-                ('Cannot resolve conflicting option string, '
-                 'all names conflict.'),
+                (
+                    'Cannot resolve conflicting option string, '
+                    'all names conflict.'
+                ),
             )
 
 
@@ -81,8 +85,9 @@ class _ArgumentGroup(_ArgumentContainerMixIn, orig_argparse._ArgumentGroup):
     pass
 
 
-class _MutuallyExclusiveGroup(_ArgumentContainerMixIn,
-                              orig_argparse._MutuallyExclusiveGroup):
+class _MutuallyExclusiveGroup(
+    _ArgumentContainerMixIn, orig_argparse._MutuallyExclusiveGroup
+):
     pass
 
 

@@ -20,7 +20,6 @@ from cliff.tests import test_columns
 
 
 class TestValueFormatter(base.TestBase):
-
     def test(self):
         sf = value.ValueFormatter()
         c = ('a', 'b', 'c', 'd')

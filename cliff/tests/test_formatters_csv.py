@@ -23,7 +23,6 @@ from cliff.tests import test_columns
 
 
 class TestCSVFormatter(unittest.TestCase):
-
     def test_commaseparated_list_formatter(self):
         sf = commaseparated.CSVLister()
         c = ('a', 'b', 'c')

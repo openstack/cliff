@@ -20,7 +20,6 @@ import argparse
 
 
 class ShellFormatter(base.SingleFormatter):
-
     def add_argument_group(self, parser):
         group = parser.add_argument_group(
             title='shell formatter',
@@ -43,15 +42,15 @@ class ShellFormatter(base.SingleFormatter):
         )
 
     def emit_one(self, column_names, data, stdout, parsed_args):
-        variable_names = [c.lower().replace(' ', '_')
-                          for c in column_names
-                          ]
+        variable_names = [c.lower().replace(' ', '_') for c in column_names]
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):
             if name in desired_columns or not desired_columns:
-                value = (str(value.machine_readable())
-                         if isinstance(value, columns.FormattableColumn)
-                         else value)
+                value = (
+                    str(value.machine_readable())
+                    if isinstance(value, columns.FormattableColumn)
+                    else value
+                )
                 if isinstance(value, str):
                     value = value.replace('"', '\\"')
                 if isinstance(name, str):

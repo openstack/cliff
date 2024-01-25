@@ -42,8 +42,9 @@ class InteractiveApp(cmd2.Cmd):
     doc_header = "Shell commands (type help <topic>):"
     app_cmd_header = "Application commands (type help <topic>):"
 
-    def __init__(self, parent_app, command_manager, stdin, stdout,
-                 errexit=False):
+    def __init__(
+        self, parent_app, command_manager, stdin, stdout, errexit=False
+    ):
         self.parent_app = parent_app
         if not hasattr(sys.stdin, 'isatty') or sys.stdin.isatty():
             self.prompt = '(%s) ' % parent_app.NAME
@@ -117,8 +118,9 @@ class InteractiveApp(cmd2.Cmd):
             method_name = '_'.join(
                 itertools.chain(
                     ['do'],
-                    itertools.takewhile(lambda x: not x.startswith('-'),
-                                        arg_parts)
+                    itertools.takewhile(
+                        lambda x: not x.startswith('-'), arg_parts
+                    ),
                 )
             )
             # Have the command manager version of the help
@@ -160,10 +162,9 @@ class InteractiveApp(cmd2.Cmd):
         # Override the base class version to filter out
         # things that look like they should be hidden
         # from the user.
-        return [n
-                for n in cmd2.Cmd.get_names(self)
-                if not n.startswith('do__')
-                ]
+        return [
+            n for n in cmd2.Cmd.get_names(self) if not n.startswith('do__')
+        ]
 
     def precmd(self, statement):
         """Hook method executed just before the command is executed by

@@ -22,19 +22,23 @@ from cliff.tests import base
 
 
 class TestCompletion(base.TestBase):
-
     def test_dictionary(self):
         sot = complete.CompleteDictionary()
-        sot.add_command("image delete".split(),
-                        [mock.Mock(option_strings=["1"])])
-        sot.add_command("image list".split(),
-                        [mock.Mock(option_strings=["2"])])
-        sot.add_command("image create".split(),
-                        [mock.Mock(option_strings=["3"])])
-        sot.add_command("volume type create".split(),
-                        [mock.Mock(option_strings=["4"])])
-        sot.add_command("volume type delete".split(),
-                        [mock.Mock(option_strings=["5"])])
+        sot.add_command(
+            "image delete".split(), [mock.Mock(option_strings=["1"])]
+        )
+        sot.add_command(
+            "image list".split(), [mock.Mock(option_strings=["2"])]
+        )
+        sot.add_command(
+            "image create".split(), [mock.Mock(option_strings=["3"])]
+        )
+        sot.add_command(
+            "volume type create".split(), [mock.Mock(option_strings=["4"])]
+        )
+        sot.add_command(
+            "volume type delete".split(), [mock.Mock(option_strings=["5"])]
+        )
         self.assertEqual("image volume", sot.get_commands())
         result = sot.get_data()
         self.assertEqual("image", result[0][0])
@@ -48,12 +52,15 @@ class TestCompletion(base.TestBase):
 
     def test_complete_dictionary_subcmd(self):
         sot = complete.CompleteDictionary()
-        sot.add_command("image delete".split(),
-                        [mock.Mock(option_strings=["1"])])
-        sot.add_command("image list".split(),
-                        [mock.Mock(option_strings=["2"])])
-        sot.add_command("image list better".split(),
-                        [mock.Mock(option_strings=["3"])])
+        sot.add_command(
+            "image delete".split(), [mock.Mock(option_strings=["1"])]
+        )
+        sot.add_command(
+            "image list".split(), [mock.Mock(option_strings=["2"])]
+        )
+        sot.add_command(
+            "image list better".split(), [mock.Mock(option_strings=["3"])]
+        )
         self.assertEqual("image", sot.get_commands())
         result = sot.get_data()
         self.assertEqual("image", result[0][0])
@@ -81,14 +88,15 @@ class FakeStdout:
 
 
 class TestCompletionAlternatives(base.TestBase):
-
     def given_cmdo_data(self):
         cmdo = "image server"
-        data = [("image", "create"),
-                ("image_create", "--eolus"),
-                ("server", "meta ssh"),
-                ("server_meta_delete", "--wilson"),
-                ("server_ssh", "--sunlight")]
+        data = [
+            ("image", "create"),
+            ("image_create", "--eolus"),
+            ("server", "meta ssh"),
+            ("server_meta_delete", "--wilson"),
+            ("server_ssh", "--sunlight"),
+        ]
         return cmdo, data
 
     def then_data(self, content):
@@ -117,12 +125,10 @@ class TestCompletionAlternatives(base.TestBase):
         sot = complete.CompleteCommand(mock.Mock(), mock.Mock())
         parser = sot.get_parser('nothing')
         self.assertEqual("nothing", parser.prog)
-        self.assertEqual("print bash completion command\n    ",
-                         parser.description)
+        self.assertEqual("print bash completion command", parser.description)
 
 
 class TestCompletionAction(base.TestBase):
-
     def given_complete_command(self):
         cmd_mgr = commandmanager.CommandManager('cliff.tests')
         app = application.App('testing', '1', cmd_mgr, stdout=FakeStdout())
@@ -131,8 +137,9 @@ class TestCompletionAction(base.TestBase):
         return sot, app, cmd_mgr
 
     def then_actions_equal(self, actions):
-        optstr = ' '.join(opt for action in actions
-                          for opt in action.option_strings)
+        optstr = ' '.join(
+            opt for action in actions for opt in action.option_strings
+        )
         self.assertEqual('-h --help --name --shell', optstr)
 
     def test_complete_command_get_actions(self):

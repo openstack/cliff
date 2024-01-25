@@ -23,7 +23,6 @@ load_tests = testscenarios.load_tests_apply_scenarios
 
 
 class TestLookupAndFind(base.TestBase):
-
     scenarios = [
         ('one-word', {'argv': ['one']}),
         ('two-words', {'argv': ['two', 'words']}),
@@ -39,7 +38,6 @@ class TestLookupAndFind(base.TestBase):
 
 
 class TestLookupWithRemainder(base.TestBase):
-
     scenarios = [
         ('one', {'argv': ['one', '--opt']}),
         ('two', {'argv': ['two', 'words', '--opt']}),
@@ -54,7 +52,6 @@ class TestLookupWithRemainder(base.TestBase):
 
 
 class TestFindInvalidCommand(base.TestBase):
-
     scenarios = [
         ('no-such-command', {'argv': ['a', '-b']}),
         ('no-command-given', {'argv': ['-b']}),
@@ -73,7 +70,6 @@ class TestFindInvalidCommand(base.TestBase):
 
 
 class TestFindUnknownCommand(base.TestBase):
-
     def test(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         try:
@@ -85,7 +81,6 @@ class TestFindUnknownCommand(base.TestBase):
 
 
 class TestDynamicCommands(base.TestBase):
-
     def test_add(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mock_cmd = mock.Mock()
@@ -112,13 +107,13 @@ class TestDynamicCommands(base.TestBase):
 
 
 class TestLoad(base.TestBase):
-
     def test_load_commands(self):
         testcmd = mock.Mock(name='testcmd')
         testcmd.name.replace.return_value = 'test'
         mock_get_group_all = mock.Mock(return_value=[testcmd])
-        with mock.patch('stevedore.ExtensionManager',
-                        mock_get_group_all) as mock_manager:
+        with mock.patch(
+            'stevedore.ExtensionManager', mock_get_group_all
+        ) as mock_manager:
             mgr = commandmanager.CommandManager('test')
             mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
@@ -128,8 +123,9 @@ class TestLoad(base.TestBase):
         testcmd = mock.Mock()
         testcmd.name = 'test_cmd'
         mock_get_group_all = mock.Mock(return_value=[testcmd])
-        with mock.patch('stevedore.ExtensionManager',
-                        mock_get_group_all) as mock_manager:
+        with mock.patch(
+            'stevedore.ExtensionManager', mock_get_group_all
+        ) as mock_manager:
             mgr = commandmanager.CommandManager(
                 'test',
                 convert_underscores=False,
@@ -142,8 +138,9 @@ class TestLoad(base.TestBase):
         testcmd = mock.Mock()
         testcmd.name = 'test_cmd'
         mock_get_group_all = mock.Mock(return_value=[testcmd])
-        with mock.patch('stevedore.ExtensionManager',
-                        mock_get_group_all) as mock_manager:
+        with mock.patch(
+            'stevedore.ExtensionManager', mock_get_group_all
+        ) as mock_manager:
             mgr = commandmanager.CommandManager(
                 'test',
                 convert_underscores=True,
@@ -154,7 +151,6 @@ class TestLoad(base.TestBase):
 
 
 class FauxCommand(command.Command):
-
     def take_action(self, parsed_args):
         return 0
 
@@ -164,7 +160,6 @@ class FauxCommand2(FauxCommand):
 
 
 class TestLegacyCommand(base.TestBase):
-
     def test_find_legacy(self):
         mgr = utils.TestCommandManager(None)
         mgr.add_command('new name', FauxCommand)
@@ -202,7 +197,6 @@ class TestLegacyCommand(base.TestBase):
 
 
 class TestLookupAndFindPartialName(base.TestBase):
-
     scenarios = [
         ('one-word', {'argv': ['o']}),
         ('two-words', {'argv': ['t', 'w']}),
@@ -218,45 +212,61 @@ class TestLookupAndFindPartialName(base.TestBase):
 
 
 class TestGetByPartialName(base.TestBase):
-
     def setUp(self):
         super(TestGetByPartialName, self).setUp()
         self.commands = {
             'resource provider list': 1,
             'resource class list': 2,
             'server list': 3,
-            'service list': 4}
+            'service list': 4,
+        }
 
     def test_no_candidates(self):
         self.assertEqual(
-            [], commandmanager._get_commands_by_partial_name(
-                ['r', 'p'], self.commands))
+            [],
+            commandmanager._get_commands_by_partial_name(
+                ['r', 'p'], self.commands
+            ),
+        )
         self.assertEqual(
-            [], commandmanager._get_commands_by_partial_name(
-                ['r', 'p', 'c'], self.commands))
+            [],
+            commandmanager._get_commands_by_partial_name(
+                ['r', 'p', 'c'], self.commands
+            ),
+        )
 
     def test_multiple_candidates(self):
         self.assertEqual(
-            2, len(commandmanager._get_commands_by_partial_name(
-                ['se', 'li'], self.commands)))
+            2,
+            len(
+                commandmanager._get_commands_by_partial_name(
+                    ['se', 'li'], self.commands
+                )
+            ),
+        )
 
     def test_one_candidate(self):
         self.assertEqual(
             ['resource provider list'],
             commandmanager._get_commands_by_partial_name(
-                ['r', 'p', 'l'], self.commands))
+                ['r', 'p', 'l'], self.commands
+            ),
+        )
         self.assertEqual(
             ['resource provider list'],
             commandmanager._get_commands_by_partial_name(
-                ['resource', 'provider', 'list'], self.commands))
+                ['resource', 'provider', 'list'], self.commands
+            ),
+        )
         self.assertEqual(
             ['server list'],
             commandmanager._get_commands_by_partial_name(
-                ['serve', 'l'], self.commands))
+                ['serve', 'l'], self.commands
+            ),
+        )
 
 
 class FakeCommand(object):
-
     @classmethod
     def load(cls):
         return cls
@@ -286,7 +296,6 @@ class FakeCommandManager(commandmanager.CommandManager):
 
 
 class TestCommandManagerGroups(base.TestBase):
-
     def test_add_command_group(self):
         mgr = FakeCommandManager('test')
 

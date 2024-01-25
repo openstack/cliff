@@ -19,7 +19,6 @@ from cliff import _argparse
 
 
 class TestArgparse(unittest.TestCase):
-
     def test_argument_parser(self):
         _argparse.ArgumentParser(conflict_handler='ignore')
 

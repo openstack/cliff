@@ -18,8 +18,7 @@ from . import display
 
 
 class ShowOne(display.DisplayCommandBase, metaclass=abc.ABCMeta):
-    """Command base class for displaying data about a single object.
-    """
+    """Command base class for displaying data about a single object."""
 
     @property
     def formatter_namespace(self):
@@ -37,13 +36,13 @@ class ShowOne(display.DisplayCommandBase, metaclass=abc.ABCMeta):
 
     def produce_output(self, parsed_args, column_names, data):
         (columns_to_include, selector) = self._generate_columns_and_selector(
-            parsed_args, column_names)
+            parsed_args, column_names
+        )
         if selector:
             data = list(self._compress_iterable(data, selector))
-        self.formatter.emit_one(columns_to_include,
-                                data,
-                                self.app.stdout,
-                                parsed_args)
+        self.formatter.emit_one(
+            columns_to_include, data, self.app.stdout, parsed_args
+        )
         return 0
 
     def dict2columns(self, data):

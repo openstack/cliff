@@ -42,7 +42,6 @@ def _do_fit(fit_width):
 
 
 class TableFormatter(base.ListFormatter, base.SingleFormatter):
-
     ALIGNMENTS = {
         int: 'r',
         str: 'l',
@@ -56,18 +55,22 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
             metavar='<integer>',
             default=int(os.environ.get('CLIFF_MAX_TERM_WIDTH', 0)),
             type=int,
-            help=('Maximum display width, <1 to disable. You can also '
-                  'use the CLIFF_MAX_TERM_WIDTH environment variable, '
-                  'but the parameter takes precedence.'),
+            help=(
+                'Maximum display width, <1 to disable. You can also '
+                'use the CLIFF_MAX_TERM_WIDTH environment variable, '
+                'but the parameter takes precedence.'
+            ),
         )
         group.add_argument(
             '--fit-width',
             action='store_true',
             default=bool(int(os.environ.get('CLIFF_FIT_WIDTH', 0))),
-            help=('Fit the table to the display width. '
-                  'Implied if --max-width greater than 0. '
-                  'Set the environment variable CLIFF_FIT_WIDTH=1 '
-                  'to always enable'),
+            help=(
+                'Fit the table to the display width. '
+                'Implied if --max-width greater than 0. '
+                'Set the environment variable CLIFF_FIT_WIDTH=1 '
+                'to always enable'
+            ),
         )
         group.add_argument(
             '--print-empty',
@@ -109,8 +112,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         # preference to wrapping columns smaller than 8 characters.
         min_width = 8
         self._assign_max_widths(
-            x, int(parsed_args.max_width), min_width,
-            parsed_args.fit_width)
+            x, int(parsed_args.max_width), min_width, parsed_args.fit_width
+        )
 
         formatted = x.get_string()
         stdout.write(formatted)
@@ -118,8 +121,9 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         return
 
     def emit_one(self, column_names, data, stdout, parsed_args):
-        x = prettytable.PrettyTable(field_names=('Field', 'Value'),
-                                    print_empty=False)
+        x = prettytable.PrettyTable(
+            field_names=('Field', 'Value'), print_empty=False
+        )
         x.padding_width = 1
         # Align all columns left because the values are
         # not all the same type.
@@ -134,8 +138,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         # the Field column readable.
         min_width = 16
         self._assign_max_widths(
-            x, int(parsed_args.max_width), min_width,
-            parsed_args.fit_width)
+            x, int(parsed_args.max_width), min_width, parsed_args.fit_width
+        )
 
         formatted = x.get_string()
         stdout.write(formatted)
@@ -144,7 +148,6 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
 
     @staticmethod
     def _field_widths(field_names, first_line):
-
         # use the first line +----+-------+ to infer column widths
         # accounting for padding and dividers
         widths = [max(0, len(i) - 2) for i in first_line.split('+')[1:-1]]
@@ -164,8 +167,9 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         return usable_total_width, optimal_width
 
     @staticmethod
-    def _build_shrink_fields(usable_total_width, optimal_width,
-                             field_widths, field_names):
+    def _build_shrink_fields(
+        usable_total_width, optimal_width, field_widths, field_names
+    ):
         shrink_fields = []
         shrink_remaining = usable_total_width
         for field in field_names:
@@ -204,12 +208,14 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
             return
 
         usable_total_width, optimal_width = TableFormatter._width_info(
-            term_width, field_count)
+            term_width, field_count
+        )
 
         field_widths = TableFormatter._field_widths(x.field_names, first_line)
 
         shrink_fields, shrink_remaining = TableFormatter._build_shrink_fields(
-            usable_total_width, optimal_width, field_widths, x.field_names)
+            usable_total_width, optimal_width, field_widths, x.field_names
+        )
 
         shrink_to = shrink_remaining // len(shrink_fields)
         # make all shrinkable fields size shrink_to apart from the last one

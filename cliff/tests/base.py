@@ -18,7 +18,6 @@ import fixtures
 
 
 class TestBase(testtools.TestCase):
-
     def setUp(self):
         super(TestBase, self).setUp()
         self._stdout_fixture = fixtures.StringStream('stdout')

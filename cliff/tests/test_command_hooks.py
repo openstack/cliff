@@ -41,18 +41,18 @@ def make_app(**kwargs):
     err_command.return_value = err_command_inst
     cmd_mgr.add_command('error', err_command)
 
-    app = application.App('testing command hooks',
-                          '1',
-                          cmd_mgr,
-                          stderr=mock.Mock(),  # suppress warning messages
-                          **kwargs
-                          )
+    app = application.App(
+        'testing command hooks',
+        '1',
+        cmd_mgr,
+        stderr=mock.Mock(),  # suppress warning messages
+        **kwargs
+    )
     return app
 
 
 class TestCommand(command.Command):
-    """Description of command.
-    """
+    """Description of command."""
 
     def get_parser(self, prog_name):
         parser = super(TestCommand, self).get_parser(prog_name)
@@ -63,23 +63,20 @@ class TestCommand(command.Command):
 
 
 class TestShowCommand(show.ShowOne):
-    """Description of command.
-    """
+    """Description of command."""
 
     def take_action(self, parsed_args):
         return (('Name',), ('value',))
 
 
 class TestListerCommand(lister.Lister):
-    """Description of command.
-    """
+    """Description of command."""
 
     def take_action(self, parsed_args):
         return (('Name',), [('value',)])
 
 
 class TestHook(hooks.CommandHook):
-
     _before_called = False
     _after_called = False
 
@@ -98,7 +95,6 @@ class TestHook(hooks.CommandHook):
 
 
 class TestChangeHook(hooks.CommandHook):
-
     _before_called = False
     _after_called = False
 
@@ -121,7 +117,6 @@ class TestChangeHook(hooks.CommandHook):
 
 
 class TestDisplayChangeHook(hooks.CommandHook):
-
     _before_called = False
     _after_called = False
 
@@ -144,7 +139,6 @@ class TestDisplayChangeHook(hooks.CommandHook):
 
 
 class TestListerChangeHook(hooks.CommandHook):
-
     _before_called = False
     _after_called = False
 
@@ -167,7 +161,6 @@ class TestListerChangeHook(hooks.CommandHook):
 
 
 class TestCommandLoadHooks(base.TestBase):
-
     def test_no_app_or_name(self):
         cmd = TestCommand(None, None)
         self.assertEqual([], cmd._hooks)
@@ -183,18 +176,13 @@ class TestCommandLoadHooks(base.TestBase):
 
 
 class TestHooks(base.TestBase):
-
     def setUp(self):
         super(TestHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension(
-                'parser-hook',
-                None,
-                None,
-                self.hook)],
+            [extension.Extension('parser-hook', None, None, self.hook)],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -222,18 +210,13 @@ class TestHooks(base.TestBase):
 
 
 class TestChangeHooks(base.TestBase):
-
     def setUp(self):
         super(TestChangeHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook = TestChangeHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension(
-                'parser-hook',
-                None,
-                None,
-                self.hook)],
+            [extension.Extension('parser-hook', None, None, self.hook)],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -267,18 +250,13 @@ class TestChangeHooks(base.TestBase):
 
 
 class TestShowOneHooks(base.TestBase):
-
     def setUp(self):
         super(TestShowOneHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestShowCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension(
-                'parser-hook',
-                None,
-                None,
-                self.hook)],
+            [extension.Extension('parser-hook', None, None, self.hook)],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -309,18 +287,13 @@ class TestShowOneHooks(base.TestBase):
 
 
 class TestShowOneChangeHooks(base.TestBase):
-
     def setUp(self):
         super(TestShowOneChangeHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestShowCommand(self.app, None, cmd_name='test')
         self.hook = TestDisplayChangeHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension(
-                'parser-hook',
-                None,
-                None,
-                self.hook)],
+            [extension.Extension('parser-hook', None, None, self.hook)],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -354,18 +327,13 @@ class TestShowOneChangeHooks(base.TestBase):
 
 
 class TestListerHooks(base.TestBase):
-
     def setUp(self):
         super(TestListerHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestListerCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension(
-                'parser-hook',
-                None,
-                None,
-                self.hook)],
+            [extension.Extension('parser-hook', None, None, self.hook)],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -396,18 +364,13 @@ class TestListerHooks(base.TestBase):
 
 
 class TestListerChangeHooks(base.TestBase):
-
     def setUp(self):
         super(TestListerChangeHooks, self).setUp()
         self.app = make_app()
         self.cmd = TestListerCommand(self.app, None, cmd_name='test')
         self.hook = TestListerChangeHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension(
-                'parser-hook',
-                None,
-                None,
-                self.hook)],
+            [extension.Extension('parser-hook', None, None, self.hook)],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.

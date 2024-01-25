@@ -23,16 +23,21 @@ class FakeApp(object):
 
 
 class TestInteractive(base.TestBase):
-
     def make_interactive_app(self, errexit, *command_names):
         fake_command_manager = [(x, None) for x in command_names]
-        return InteractiveApp(FakeApp, fake_command_manager,
-                              stdin=None, stdout=None, errexit=errexit)
+        return InteractiveApp(
+            FakeApp,
+            fake_command_manager,
+            stdin=None,
+            stdout=None,
+            errexit=errexit,
+        )
 
     def _test_completenames(self, expecteds, prefix):
         app = self.make_interactive_app(False, 'hips', 'hippo', 'nonmatching')
         self.assertEqual(
-            set(app.completenames(prefix, '', 0, 1)), set(expecteds))
+            set(app.completenames(prefix, '', 0, 1)), set(expecteds)
+        )
 
     def test_cmd2_completenames(self):
         # cmd2.Cmd define do_help method
@@ -56,8 +61,9 @@ class TestInteractive(base.TestBase):
             self._test_completenames(['history', 'hips', 'hippo'], 'hi')
 
     def _test_completedefault(self, expecteds, line, begidx):
-        command_names = set(['show file', 'show folder', 'show  long',
-                             'list all'])
+        command_names = set(
+            ['show file', 'show folder', 'show  long', 'list all']
+        )
         app = self.make_interactive_app(False, *command_names)
         observeds = app.completedefault(None, line, begidx, None)
         self.assertEqual(set(expecteds), set(observeds))

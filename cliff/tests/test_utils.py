@@ -20,7 +20,6 @@ from cliff import utils
 
 
 class TestTerminalWidth(base.TestBase):
-
     def test(self):
         width = utils.terminal_width()
         # Results are specific to the execution environment, so only assert

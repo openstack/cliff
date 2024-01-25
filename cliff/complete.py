@@ -21,15 +21,15 @@ from cliff import command
 
 
 class CompleteDictionary:
-    """dictionary for bash completion
-    """
+    """dictionary for bash completion"""
 
     def __init__(self):
         self._dictionary = {}
 
     def add_command(self, command, actions):
-        optstr = ' '.join(opt for action in actions
-                          for opt in action.option_strings)
+        optstr = ' '.join(
+            opt for action in actions for opt in action.option_strings
+        )
         dicto = self._dictionary
         last_cmd = command[-1]
         for subcmd in command[:-1]:
@@ -69,8 +69,8 @@ class CompleteDictionary:
 
 
 class CompleteShellBase(object):
-    """base class for bash completion generation
-    """
+    """base class for bash completion generation"""
+
     def __init__(self, name, output):
         self.name = str(name)
         self.output = output
@@ -89,8 +89,8 @@ class CompleteShellBase(object):
 
 
 class CompleteNoCode(CompleteShellBase):
-    """completion with no code
-    """
+    """completion with no code"""
+
     def __init__(self, name, output):
         super(CompleteNoCode, self).__init__(name, output)
 
@@ -102,23 +102,28 @@ class CompleteNoCode(CompleteShellBase):
 
 
 class CompleteBash(CompleteShellBase):
-    """completion for bash
-    """
+    """completion for bash"""
+
     def __init__(self, name, output):
         super(CompleteBash, self).__init__(name, output)
 
     def get_header(self):
-        return ('_' + self.escaped_name + """()
+        return (
+            '_'
+            + self.escaped_name
+            + """()
 {
   local cur prev words
   COMPREPLY=()
   _get_comp_words_by_ref -n : cur prev words
 
   # Command data:
-""")
+"""
+        )
 
     def get_trailer(self):
-        return ("""
+        return (
+            """
   dash=-
   underscore=_
   cmd=""
@@ -157,12 +162,16 @@ class CompleteBash(CompleteShellBase):
   fi
   return 0
 }
-complete -F _""" + self.escaped_name + ' ' + self.name + '\n')
+complete -F _"""
+            + self.escaped_name
+            + ' '
+            + self.name
+            + '\n'
+        )
 
 
 class CompleteCommand(command.Command):
-    """print bash completion command
-    """
+    """print bash completion command"""
 
     log = logging.getLogger(__name__ + '.CompleteCommand')
 
@@ -178,14 +187,14 @@ class CompleteCommand(command.Command):
             "--name",
             default=None,
             metavar='<command_name>',
-            help="Command name to support with command completion"
+            help="Command name to support with command completion",
         )
         parser.add_argument(
             "--shell",
             default='bash',
             metavar='<shell>',
             choices=sorted(self._formatters.names()),
-            help="Shell being used. Use none for data only (default: bash)"
+            help="Shell being used. Use none for data only (default: bash)",
         )
         return parser
 
@@ -194,9 +203,9 @@ class CompleteCommand(command.Command):
         cmd_factory, cmd_name, search_args = the_cmd
         cmd = cmd_factory(self.app, search_args)
         if self.app.interactive_mode:
-            full_name = (cmd_name)
+            full_name = cmd_name
         else:
-            full_name = (' '.join([self.app.NAME, cmd_name]))
+            full_name = ' '.join([self.app.NAME, cmd_name])
         cmd_parser = cmd.get_parser(full_name)
         return cmd_parser._get_optional_actions()
 

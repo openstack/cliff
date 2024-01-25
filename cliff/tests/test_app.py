@@ -48,32 +48,28 @@ def make_app(**kwargs):
     # Register a command that is interrrupted
     interrupt_command = mock.Mock(name='interrupt_command', spec=c_cmd.Command)
     interrupt_command_inst = mock.Mock(spec=c_cmd.Command)
-    interrupt_command_inst.run = mock.Mock(
-        side_effect=KeyboardInterrupt
-    )
+    interrupt_command_inst.run = mock.Mock(side_effect=KeyboardInterrupt)
     interrupt_command.return_value = interrupt_command_inst
     cmd_mgr.add_command('interrupt', interrupt_command)
 
     # Register a command that is interrrupted by a broken pipe
     pipeclose_command = mock.Mock(name='pipeclose_command', spec=c_cmd.Command)
     pipeclose_command_inst = mock.Mock(spec=c_cmd.Command)
-    pipeclose_command_inst.run = mock.Mock(
-        side_effect=BrokenPipeError
-    )
+    pipeclose_command_inst.run = mock.Mock(side_effect=BrokenPipeError)
     pipeclose_command.return_value = pipeclose_command_inst
     cmd_mgr.add_command('pipe-close', pipeclose_command)
 
-    app = application.App('testing interactive mode',
-                          '1',
-                          cmd_mgr,
-                          stderr=mock.Mock(),  # suppress warning messages
-                          **kwargs
-                          )
+    app = application.App(
+        'testing interactive mode',
+        '1',
+        cmd_mgr,
+        stderr=mock.Mock(),  # suppress warning messages
+        **kwargs
+    )
     return app, command
 
 
 class TestInteractiveMode(base.TestBase):
-
     def test_no_args_triggers_interactive_mode(self):
         app, command = make_app()
         app.interact = mock.MagicMock(name='inspect')
@@ -110,7 +106,6 @@ class TestInteractiveMode(base.TestBase):
 
 
 class TestInitAndCleanup(base.TestBase):
-
     def test_initialize_app(self):
         app, command = make_app()
         app.initialize_app = mock.MagicMock(name='initialize_app')
@@ -266,7 +261,6 @@ class TestInitAndCleanup(base.TestBase):
 
 
 class TestOptionParser(base.TestBase):
-
     def test_conflicting_option_should_throw(self):
         class MyApp(application.App):
             def __init__(self):
@@ -277,10 +271,12 @@ class TestOptionParser(base.TestBase):
                 )
 
             def build_option_parser(self, description, version):
-                parser = super(MyApp, self).build_option_parser(description,
-                                                                version)
+                parser = super(MyApp, self).build_option_parser(
+                    description, version
+                )
                 parser.add_argument(
-                    '-h', '--help',
+                    '-h',
+                    '--help',
                     default=self,  # tricky
                     help="Show help message and exit.",
                 )
@@ -302,11 +298,11 @@ class TestOptionParser(base.TestBase):
             def build_option_parser(self, description, version):
                 argparse_kwargs = {'conflict_handler': 'resolve'}
                 parser = super(MyApp, self).build_option_parser(
-                    description,
-                    version,
-                    argparse_kwargs=argparse_kwargs)
+                    description, version, argparse_kwargs=argparse_kwargs
+                )
                 parser.add_argument(
-                    '-h', '--help',
+                    '-h',
+                    '--help',
                     default=self,  # tricky
                     help="Show help message and exit.",
                 )
@@ -339,7 +335,8 @@ class TestOptionParser(base.TestBase):
                 parser = super(MyApp, self).build_option_parser(
                     description,
                     version,
-                    argparse_kwargs={'allow_abbrev': False})
+                    argparse_kwargs={'allow_abbrev': False},
+                )
                 parser.add_argument('--endpoint')
                 return parser
 
@@ -350,12 +347,12 @@ class TestOptionParser(base.TestBase):
 
 
 class TestHelpHandling(base.TestBase):
-
     def _test_help(self, deferred_help):
         app, _ = make_app(deferred_help=deferred_help)
         with mock.patch.object(app, 'initialize_app') as init:
-            with mock.patch('cliff.help.HelpAction.__call__',
-                            side_effect=SystemExit(0)) as helper:
+            with mock.patch(
+                'cliff.help.HelpAction.__call__', side_effect=SystemExit(0)
+            ) as helper:
                 self.assertRaises(
                     SystemExit,
                     app.run,
@@ -372,8 +369,9 @@ class TestHelpHandling(base.TestBase):
 
     def _test_interrupted_help(self, deferred_help):
         app, _ = make_app(deferred_help=deferred_help)
-        with mock.patch('cliff.help.HelpAction.__call__',
-                        side_effect=KeyboardInterrupt):
+        with mock.patch(
+            'cliff.help.HelpAction.__call__', side_effect=KeyboardInterrupt
+        ):
             result = app.run(['--help'])
             self.assertEqual(result, 130)
 
@@ -385,8 +383,9 @@ class TestHelpHandling(base.TestBase):
 
     def _test_pipeclose_help(self, deferred_help):
         app, _ = make_app(deferred_help=deferred_help)
-        with mock.patch('cliff.help.HelpAction.__call__',
-                        side_effect=BrokenPipeError):
+        with mock.patch(
+            'cliff.help.HelpAction.__call__', side_effect=BrokenPipeError
+        ):
             app.run(['--help'])
 
     def test_pipeclose_help(self):
@@ -415,7 +414,6 @@ class TestHelpHandling(base.TestBase):
 
 
 class TestCommandLookup(base.TestBase):
-
     def test_unknown_cmd(self):
         app, command = make_app()
         self.assertEqual(2, app.run(['hell']))
@@ -429,18 +427,21 @@ class TestCommandLookup(base.TestBase):
 
     def test_list_matching_commands(self):
         stdout = io.StringIO()
-        app = application.App('testing', '1',
-                              test_utils.TestCommandManager(
-                                  test_utils.TEST_NAMESPACE),
-                              stdout=stdout)
+        app = application.App(
+            'testing',
+            '1',
+            test_utils.TestCommandManager(test_utils.TEST_NAMESPACE),
+            stdout=stdout,
+        )
         app.NAME = 'test'
         try:
             self.assertEqual(2, app.run(['t']))
         except SystemExit:
             pass
         output = stdout.getvalue()
-        self.assertIn("test: 't' is not a test command. See 'test --help'.",
-                      output)
+        self.assertIn(
+            "test: 't' is not a test command. See 'test --help'.", output
+        )
         self.assertIn('Did you mean one of these?', output)
         self.assertIn('three word command\n  two words\n', output)
 
@@ -484,7 +485,6 @@ class TestCommandLookup(base.TestBase):
 
 
 class TestVerboseMode(base.TestBase):
-
     def test_verbose(self):
         app, command = make_app()
         app.clean_up = mock.MagicMock(name='clean_up')
@@ -501,7 +501,6 @@ class TestVerboseMode(base.TestBase):
 
 
 class TestIO(base.TestBase):
-
     def test_io_streams(self):
         cmd_mgr = commandmanager.CommandManager('cliff.tests')
         io = mock.Mock()
@@ -516,14 +515,12 @@ class TestIO(base.TestBase):
         self.assertIs(sys.stdout, app.stdout)
         self.assertIs(sys.stderr, app.stderr)
 
-        app = application.App('with stdout io stream', 1, cmd_mgr,
-                              stdout=io)
+        app = application.App('with stdout io stream', 1, cmd_mgr, stdout=io)
         self.assertIs(sys.stdin, app.stdin)
         self.assertIs(io, app.stdout)
         self.assertIs(sys.stderr, app.stderr)
 
-        app = application.App('with stderr io stream', 1, cmd_mgr,
-                              stderr=io)
+        app = application.App('with stderr io stream', 1, cmd_mgr, stderr=io)
         self.assertIs(sys.stdin, app.stdin)
         self.assertIs(sys.stdout, app.stdout)
         self.assertIs(io, app.stderr)

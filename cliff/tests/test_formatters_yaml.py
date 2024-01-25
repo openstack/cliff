@@ -23,7 +23,6 @@ from cliff.tests import test_columns
 
 
 class _toDict:
-
     def __init__(self, **kwargs):
         self._data = kwargs
 
@@ -40,17 +39,11 @@ class _to_Dict:
 
 
 class TestYAMLFormatter(base.TestBase):
-
     def test_format_one(self):
         sf = yaml_format.YAMLFormatter()
         c = ('a', 'b', 'c', 'd')
         d = ('A', 'B', 'C', '"escape me"')
-        expected = {
-            'a': 'A',
-            'b': 'B',
-            'c': 'C',
-            'd': '"escape me"'
-        }
+        expected = {'a': 'A', 'b': 'B', 'c': 'C', 'd': '"escape me"'}
         output = StringIO()
         args = mock.Mock()
         sf.emit_one(c, d, output, args)
@@ -81,15 +74,11 @@ class TestYAMLFormatter(base.TestBase):
     def test_list(self):
         sf = yaml_format.YAMLFormatter()
         c = ('a', 'b', 'c')
-        d = (
-            ('A1', 'B1', 'C1'),
-            ('A2', 'B2', 'C2'),
-            ('A3', 'B3', 'C3')
-        )
+        d = (('A1', 'B1', 'C1'), ('A2', 'B2', 'C2'), ('A3', 'B3', 'C3'))
         expected = [
             {'a': 'A1', 'b': 'B1', 'c': 'C1'},
             {'a': 'A2', 'b': 'B2', 'c': 'C2'},
-            {'a': 'A3', 'b': 'B3', 'c': 'C3'}
+            {'a': 'A3', 'b': 'B3', 'c': 'C3'},
         ]
         output = StringIO()
         args = mock.Mock()
@@ -101,9 +90,7 @@ class TestYAMLFormatter(base.TestBase):
     def test_formattablecolumn_list(self):
         sf = yaml_format.YAMLFormatter()
         c = ('a', 'b', 'c')
-        d = (
-            ('A1', 'B1', test_columns.FauxColumn(['the', 'value'])),
-        )
+        d = (('A1', 'B1', test_columns.FauxColumn(['the', 'value'])),)
         expected = [
             {'a': 'A1', 'b': 'B1', 'c': ['the', 'value']},
         ]
@@ -124,7 +111,7 @@ class TestYAMLFormatter(base.TestBase):
             'a': 'A',
             'b': 'B',
             'toDict': {"spam": "ham"},
-            'to_dict': {"ham": "eggs"}
+            'to_dict': {"ham": "eggs"},
         }
         output = StringIO()
         args = mock.Mock()
@@ -138,12 +125,12 @@ class TestYAMLFormatter(base.TestBase):
         d = (
             ('A1', _toDict(B=1), _to_Dict(C=1)),
             ('A2', _toDict(B=2), _to_Dict(C=2)),
-            ('A3', _toDict(B=3), _to_Dict(C=3))
+            ('A3', _toDict(B=3), _to_Dict(C=3)),
         )
         expected = [
             {'a': 'A1', 'toDict': {'B': 1}, 'to_dict': {'C': 1}},
             {'a': 'A2', 'toDict': {'B': 2}, 'to_dict': {'C': 2}},
-            {'a': 'A3', 'toDict': {'B': 3}, 'to_dict': {'C': 3}}
+            {'a': 'A3', 'toDict': {'B': 3}, 'to_dict': {'C': 3}},
         ]
         output = StringIO()
         args = mock.Mock()

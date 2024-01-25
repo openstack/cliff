@@ -21,12 +21,12 @@ from . import command
 
 
 class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
-    """Command base class for displaying data about a single object.
-    """
+    """Command base class for displaying data about a single object."""
 
     def __init__(self, app, app_args, cmd_name=None):
-        super(DisplayCommandBase, self).__init__(app, app_args,
-                                                 cmd_name=cmd_name)
+        super(DisplayCommandBase, self).__init__(
+            app, app_args, cmd_name=cmd_name
+        )
         self._formatter_plugins = self._load_formatter_plugins()
 
     @property
@@ -58,7 +58,8 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         if formatter_default not in formatter_choices:
             formatter_default = formatter_choices[0]
         formatter_group.add_argument(
-            '-f', '--format',
+            '-f',
+            '--format',
             dest='formatter',
             action='store',
             choices=formatter_choices,
@@ -66,13 +67,14 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
             help='the output format, defaults to %s' % formatter_default,
         )
         formatter_group.add_argument(
-            '-c', '--column',
+            '-c',
+            '--column',
             action='append',
             default=[],
             dest='columns',
             metavar='COLUMN',
             help='specify the column(s) to include, can be '
-                 'repeated to show multiple columns',
+            'repeated to show multiple columns',
         )
         for formatter in self._formatter_plugins:
             formatter.obj.add_argument_group(parser)
@@ -99,24 +101,27 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
             columns_to_include = column_names
             selector = None
         else:
-            columns_to_include = [c for c in column_names
-                                  if c in parsed_args.columns]
+            columns_to_include = [
+                c for c in column_names if c in parsed_args.columns
+            ]
             if not columns_to_include:
-                raise ValueError('No recognized column names in %s. '
-                                 'Recognized columns are %s.' %
-                                 (str(parsed_args.columns), str(column_names)))
+                raise ValueError(
+                    'No recognized column names in %s. '
+                    'Recognized columns are %s.'
+                    % (str(parsed_args.columns), str(column_names))
+                )
 
             # Set up argument to compress()
-            selector = [(c in columns_to_include)
-                        for c in column_names]
+            selector = [(c in columns_to_include) for c in column_names]
         return columns_to_include, selector
 
     def run(self, parsed_args):
         parsed_args = self._run_before_hooks(parsed_args)
         self.formatter = self._formatter_plugins[parsed_args.formatter].obj
         column_names, data = self.take_action(parsed_args)
-        column_names, data = self._run_after_hooks(parsed_args,
-                                                   (column_names, data))
+        column_names, data = self._run_after_hooks(
+            parsed_args, (column_names, data)
+        )
         self.produce_output(parsed_args, column_names, data)
         return 0
 
