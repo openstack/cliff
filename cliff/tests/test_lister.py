@@ -72,7 +72,7 @@ class TestLister(base.TestBase):
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
 
-    def test_no_exist_column(self):
+    def test_filter_by_columns_invalid(self):
         test_lister = ExerciseLister(mock.Mock(), [])
         parsed_args = mock.Mock()
         parsed_args.columns = ('no_exist_column',)
@@ -85,6 +85,20 @@ class TestLister(base.TestBase):
                 test_lister.run,
                 parsed_args,
             )
+
+    def test_filter_by_columns_normalized(self):
+        test_lister = ExerciseLister(mock.Mock(), [])
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('col1', 'COL2')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = []
+
+        test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        args = f.args[0]
+        data = list(args[1])
+        self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
 
     def test_sort_by_column_cliff_side_procedure(self):
         test_lister = ExerciseLister(mock.Mock(), [])

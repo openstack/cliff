@@ -73,8 +73,10 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
             default=[],
             dest='columns',
             metavar='COLUMN',
-            help='specify the column(s) to include, can be '
-            'repeated to show multiple columns',
+            help=(
+                'specify the column(s) to include, can be '
+                'repeated to show multiple columns'
+            ),
         )
         for formatter in self._formatter_plugins:
             formatter.obj.add_argument_group(parser)
@@ -93,26 +95,32 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     def _generate_columns_and_selector(self, parsed_args, column_names):
         """Generate included columns and selector according to parsed args.
 
+        We normalize the column names so that someone can do e.g. '-c
+        server_name' when the output field is actually called 'Server Name'.
+
         :param parsed_args: argparse.Namespace instance with argument values
         :param column_names: sequence of strings containing names
                              of output columns
         """
         if not parsed_args.columns:
-            columns_to_include = column_names
-            selector = None
-        else:
-            columns_to_include = [
-                c for c in column_names if c in parsed_args.columns
-            ]
-            if not columns_to_include:
-                raise ValueError(
-                    'No recognized column names in %s. '
-                    'Recognized columns are %s.'
-                    % (str(parsed_args.columns), str(column_names))
-                )
+            return column_names, None
 
-            # Set up argument to compress()
-            selector = [(c in columns_to_include) for c in column_names]
+        def normalize_column(column_name):
+            return column_name.lower().strip().replace(' ', '_')
+
+        requested_columns = [normalize_column(c) for c in parsed_args.columns]
+        columns_to_include = [
+            c for c in column_names if normalize_column(c) in requested_columns
+        ]
+        if not columns_to_include:
+            raise ValueError(
+                'No recognized column names in %s. '
+                'Recognized columns are %s.'
+                % (str(parsed_args.columns), str(column_names))
+            )
+
+        # Set up argument to compress()
+        selector = [(c in columns_to_include) for c in column_names]
         return columns_to_include, selector
 
     def run(self, parsed_args):
