@@ -46,7 +46,7 @@ class InteractiveApp(cmd2.Cmd):
     ):
         self.parent_app = parent_app
         if not hasattr(sys.stdin, 'isatty') or sys.stdin.isatty():
-            self.prompt = '(%s) ' % parent_app.NAME
+            self.prompt = f'({parent_app.NAME}) '
         else:
             # batch/pipe mode
             self.prompt = ''

@@ -55,7 +55,7 @@ class TestCommand(command.Command):
     """Description of command."""
 
     def get_parser(self, prog_name):
-        parser = super(TestCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         return parser
 
     def take_action(self, parsed_args):
@@ -177,7 +177,7 @@ class TestCommandLoadHooks(base.TestBase):
 
 class TestHooks(base.TestBase):
     def setUp(self):
-        super(TestHooks, self).setUp()
+        super().setUp()
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
@@ -211,7 +211,7 @@ class TestHooks(base.TestBase):
 
 class TestChangeHooks(base.TestBase):
     def setUp(self):
-        super(TestChangeHooks, self).setUp()
+        super().setUp()
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook = TestChangeHook(self.cmd)
@@ -251,7 +251,7 @@ class TestChangeHooks(base.TestBase):
 
 class TestShowOneHooks(base.TestBase):
     def setUp(self):
-        super(TestShowOneHooks, self).setUp()
+        super().setUp()
         self.app = make_app()
         self.cmd = TestShowCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
@@ -288,7 +288,7 @@ class TestShowOneHooks(base.TestBase):
 
 class TestShowOneChangeHooks(base.TestBase):
     def setUp(self):
-        super(TestShowOneChangeHooks, self).setUp()
+        super().setUp()
         self.app = make_app()
         self.cmd = TestShowCommand(self.app, None, cmd_name='test')
         self.hook = TestDisplayChangeHook(self.cmd)
@@ -328,7 +328,7 @@ class TestShowOneChangeHooks(base.TestBase):
 
 class TestListerHooks(base.TestBase):
     def setUp(self):
-        super(TestListerHooks, self).setUp()
+        super().setUp()
         self.app = make_app()
         self.cmd = TestListerCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
@@ -365,7 +365,7 @@ class TestListerHooks(base.TestBase):
 
 class TestListerChangeHooks(base.TestBase):
     def setUp(self):
-        super(TestListerChangeHooks, self).setUp()
+        super().setUp()
         self.app = make_app()
         self.cmd = TestListerCommand(self.app, None, cmd_name='test')
         self.hook = TestListerChangeHook(self.cmd)

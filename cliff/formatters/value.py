@@ -38,11 +38,12 @@ class ValueFormatter(base.ListFormatter, base.SingleFormatter):
     def emit_one(self, column_names, data, stdout, parsed_args):
         for value in data:
             stdout.write(
-                '%s\n'
-                % str(
-                    value.machine_readable()
-                    if isinstance(value, columns.FormattableColumn)
-                    else value
+                '{}\n'.format(
+                    str(
+                        value.machine_readable()
+                        if isinstance(value, columns.FormattableColumn)
+                        else value
+                    )
                 )
             )
         return

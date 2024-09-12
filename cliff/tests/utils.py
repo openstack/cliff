@@ -16,7 +16,7 @@ from cliff.commandmanager import CommandManager
 TEST_NAMESPACE = 'cliff.test'
 
 
-class TestParser(object):
+class TestParser:
     def print_help(self, stdout):
         stdout.write('TestParser')
 

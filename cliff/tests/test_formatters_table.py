@@ -24,7 +24,7 @@ from cliff.tests import base
 from cliff.tests import test_columns
 
 
-class args(object):
+class args:
     def __init__(self, max_width=0, print_empty=False, fit_width=False):
         self.fit_width = fit_width
         if max_width > 0:

@@ -15,7 +15,7 @@
 import abc
 
 
-class FormattableColumn(object, metaclass=abc.ABCMeta):
+class FormattableColumn(metaclass=abc.ABCMeta):
     def __init__(self, value):
         self._value = value
 
@@ -31,7 +31,7 @@ class FormattableColumn(object, metaclass=abc.ABCMeta):
         return self.human_readable()
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.machine_readable())
+        return f'{self.__class__.__name__}({self.machine_readable()!r})'
 
     @abc.abstractmethod
     def human_readable(self):

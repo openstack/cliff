@@ -52,7 +52,7 @@ def _get_distribution_for_module(module):
     return dist_name
 
 
-class Command(object, metaclass=abc.ABCMeta):
+class Command(metaclass=abc.ABCMeta):
     """Base class for command plugins.
 
     When the command is instantiated, it loads extensions from a
@@ -137,7 +137,7 @@ class Command(object, metaclass=abc.ABCMeta):
         dist_name = _get_distribution_for_module(inspect.getmodule(self))
         if dist_name and dist_name != app_dist_name:
             parts.append(
-                'This command is provided by the %s plugin.' % (dist_name,)
+                f'This command is provided by the {dist_name} plugin.'
             )
         return '\n\n'.join(parts)
 

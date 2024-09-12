@@ -49,7 +49,7 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
         """
 
     def get_parser(self, prog_name):
-        parser = super(Lister, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         group = self._formatter_group
         group.add_argument(
             '--sort-column',

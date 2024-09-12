@@ -111,7 +111,7 @@ class TestHelp(base.TestBase):
             pass
         help_text = stdout.getvalue()
         basecommand = os.path.split(sys.argv[0])[1]
-        self.assertIn('usage: %s [--version]' % basecommand, help_text)
+        self.assertIn(f'usage: {basecommand} [--version]', help_text)
         self.assertRegex(help_text, 'option(s|al arguments):\n  --version')
         expected = (
             '  one            Test command\n'

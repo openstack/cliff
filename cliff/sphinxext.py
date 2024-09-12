@@ -45,10 +45,9 @@ def _format_description(parser):
     We parse this as reStructuredText, allowing users to embed rich
     information in their help messages if they so choose.
     """
-    for line in statemachine.string2lines(
+    yield from statemachine.string2lines(
         parser.description, tab_width=4, convert_whitespace=True
-    ):
-        yield line
+    )
 
 
 def _format_usage(parser):
@@ -94,10 +93,9 @@ def _format_epilog(parser):
     We parse this as reStructuredText, allowing users to embed rich
     information in their help messages if they so choose.
     """
-    for line in statemachine.string2lines(
+    yield from statemachine.string2lines(
         parser.epilog, tab_width=4, convert_whitespace=True
-    ):
-        yield line
+    )
 
 
 def _format_positional_action(action):
@@ -131,7 +129,7 @@ def _format_optional_action(action):
         # information about the options themselves, for example, if nargs is
         # specified
         option_strings = [
-            ' '.join([x, action.metavar or '<{}>'.format(action.dest.upper())])
+            ' '.join([x, action.metavar or f'<{action.dest.upper()}>'])
             for x in action.option_strings
         ]
         yield '.. option:: {}'.format(', '.join(option_strings))
@@ -185,7 +183,7 @@ def _format_parser(parser):
             yield line
         yield ''
 
-    yield '.. program:: {}'.format(parser.prog)
+    yield f'.. program:: {parser.prog}'
 
     yield '.. code-block:: shell'
     yield ''
@@ -267,9 +265,8 @@ class AutoprogramCliffDirective(rst.Directive):
             return manager.find_command(command_name.split())[0]
         except ValueError:
             raise self.error(
-                '"{}" is not a valid command in the "{}" ' 'namespace'.format(
-                    command_name, manager.namespace
-                )
+                f'"{command_name}" is not a valid command in the "{manager.namespace}" '
+                'namespace'
             )
 
     def _load_commands(self):
@@ -310,7 +307,7 @@ class AutoprogramCliffDirective(rst.Directive):
 
         parser.prog = application_name
 
-        source_name = '<{}>'.format(app.__class__.__name__)
+        source_name = f'<{app.__class__.__name__}>'
         result = statemachine.ViewList()
         for line in _format_parser(parser):
             result.append(line, source_name)
@@ -357,7 +354,7 @@ class AutoprogramCliffDirective(rst.Directive):
             names=[nodes.fully_normalize_name(title)],
         )
 
-        source_name = '<{}>'.format(command.__class__.__name__)
+        source_name = f'<{command.__class__.__name__}>'
         result = statemachine.ViewList()
 
         for line in _format_parser(parser):

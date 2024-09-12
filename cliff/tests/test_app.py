@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may
 #  not use this file except in compliance with the License. You may obtain
@@ -264,16 +263,14 @@ class TestOptionParser(base.TestBase):
     def test_conflicting_option_should_throw(self):
         class MyApp(application.App):
             def __init__(self):
-                super(MyApp, self).__init__(
+                super().__init__(
                     description='testing',
                     version='0.1',
                     command_manager=commandmanager.CommandManager('tests'),
                 )
 
             def build_option_parser(self, description, version):
-                parser = super(MyApp, self).build_option_parser(
-                    description, version
-                )
+                parser = super().build_option_parser(description, version)
                 parser.add_argument(
                     '-h',
                     '--help',
@@ -289,7 +286,7 @@ class TestOptionParser(base.TestBase):
     def test_conflicting_option_custom_arguments_should_not_throw(self):
         class MyApp(application.App):
             def __init__(self):
-                super(MyApp, self).__init__(
+                super().__init__(
                     description='testing',
                     version='0.1',
                     command_manager=commandmanager.CommandManager('tests'),
@@ -297,7 +294,7 @@ class TestOptionParser(base.TestBase):
 
             def build_option_parser(self, description, version):
                 argparse_kwargs = {'conflict_handler': 'resolve'}
-                parser = super(MyApp, self).build_option_parser(
+                parser = super().build_option_parser(
                     description, version, argparse_kwargs=argparse_kwargs
                 )
                 parser.add_argument(
@@ -312,7 +309,7 @@ class TestOptionParser(base.TestBase):
     def test_option_parser_abbrev_issue(self):
         class MyCommand(c_cmd.Command):
             def get_parser(self, prog_name):
-                parser = super(MyCommand, self).get_parser(prog_name)
+                parser = super().get_parser(prog_name)
                 parser.add_argument("--end")
                 return parser
 
@@ -325,14 +322,14 @@ class TestOptionParser(base.TestBase):
 
         class MyApp(application.App):
             def __init__(self):
-                super(MyApp, self).__init__(
+                super().__init__(
                     description='testing',
                     version='0.1',
                     command_manager=MyCommandManager(None),
                 )
 
             def build_option_parser(self, description, version):
-                parser = super(MyApp, self).build_option_parser(
+                parser = super().build_option_parser(
                     description,
                     version,
                     argparse_kwargs={'allow_abbrev': False},

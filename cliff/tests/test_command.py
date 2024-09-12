@@ -21,7 +21,7 @@ class TestCommand(command.Command):
     """Description of command."""
 
     def get_parser(self, prog_name):
-        parser = super(TestCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             'long_help_argument',
             help="Create a NIC on the server.\n"

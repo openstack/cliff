@@ -13,7 +13,7 @@
 import abc
 
 
-class CommandHook(object, metaclass=abc.ABCMeta):
+class CommandHook(metaclass=abc.ABCMeta):
     """Base class for command hooks.
 
     :param app: Command instance being invoked

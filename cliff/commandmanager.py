@@ -33,7 +33,7 @@ def _get_commands_by_partial_name(args, commands):
     return candidates
 
 
-class EntryPointWrapper(object):
+class EntryPointWrapper:
     """Wrap up a command class already imported to make it look like a plugin."""
 
     def __init__(self, name, command_class):
@@ -44,7 +44,7 @@ class EntryPointWrapper(object):
         return self.command_class
 
 
-class CommandManager(object):
+class CommandManager:
     """Discovers commands and handles lookup based on argv data.
 
     :param namespace: String containing the entrypoint namespace for the
@@ -133,7 +133,7 @@ class CommandManager(object):
                         cmd_factory = cmd_ep.load()
                 return (cmd_factory, return_name, search_args)
         else:
-            raise ValueError('Unknown command %r' % (argv,))
+            raise ValueError(f'Unknown command {argv!r}')
 
     def _get_last_possible_command_index(self, argv):
         """Returns the index after the last argument

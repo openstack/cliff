@@ -33,7 +33,7 @@ _SIGINT_EXIT = 130
 _SIGPIPE_EXIT = 141
 
 
-class App(object):
+class App:
     """Application base class.
 
     :param description: one-liner explaining the program purpose
@@ -147,7 +147,7 @@ class App(object):
         parser.add_argument(
             '--version',
             action='version',
-            version='{0} {1}'.format(App.NAME, version),
+            version=f'{App.NAME} {version}',
         )
         verbose_group = parser.add_mutually_exclusive_group()
         verbose_group.add_argument(
@@ -383,9 +383,8 @@ class App(object):
                 if self.NAME[0] in 'aeiou':
                     article = 'an'
                 self.stdout.write(
-                    '%s: \'%s\' is not %s %s command. '
-                    'See \'%s --help\'.\n'
-                    % (
+                    '{}: \'{}\' is not {} {} command. '
+                    'See \'{} --help\'.\n'.format(
                         self.NAME,
                         ' '.join(argv),
                         article,
@@ -395,7 +394,7 @@ class App(object):
                 )
                 self.stdout.write('Did you mean one of these?\n')
                 for match in fuzzy_matches:
-                    self.stdout.write('  %s\n' % match)
+                    self.stdout.write(f'  {match}\n')
             else:
                 if self.options.debug:
                     raise

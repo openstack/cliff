@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may
 #  not use this file except in compliance with the License. You may obtain
@@ -18,7 +17,7 @@ from cliff.interactive import InteractiveApp
 from cliff.tests import base
 
 
-class FakeApp(object):
+class FakeApp:
     NAME = 'Fake'
 
 

@@ -213,7 +213,7 @@ class TestLookupAndFindPartialName(base.TestBase):
 
 class TestGetByPartialName(base.TestBase):
     def setUp(self):
-        super(TestGetByPartialName, self).setUp()
+        super().setUp()
         self.commands = {
             'resource provider list': 1,
             'resource class list': 2,
@@ -266,7 +266,7 @@ class TestGetByPartialName(base.TestBase):
         )
 
 
-class FakeCommand(object):
+class FakeCommand:
     @classmethod
     def load(cls):
         return cls

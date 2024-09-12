@@ -20,7 +20,7 @@ from cliff import lister
 from cliff.tests import base
 
 
-class FauxFormatter(object):
+class FauxFormatter:
     def __init__(self):
         self.args = []
         self.obj = weakref.proxy(self)

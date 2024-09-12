@@ -71,7 +71,7 @@ class TestShellFormatter(base.TestBase):
     def test_non_string_values(self):
         sf = shell.ShellFormatter()
         c = ('a', 'b', 'c', 'd', 'e')
-        d = (True, False, 100, '"esc"', str('"esc"'))
+        d = (True, False, 100, '"esc"', '"esc"')
         expected = (
             'a="True"\nb="False"\nc="100"\n' 'd="\\"esc\\""\ne="\\"esc\\""\n'
         )

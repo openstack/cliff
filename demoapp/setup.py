@@ -9,8 +9,8 @@ PROJECT = 'cliffdemo'
 VERSION = '0.1'
 
 try:
-    long_description = open('README.rst', 'rt').read()
-except IOError:
+    long_description = open('README.rst').read()
+except OSError:
     long_description = ''
 
 setup(

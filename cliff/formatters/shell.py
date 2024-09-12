@@ -58,5 +58,5 @@ class ShellFormatter(base.SingleFormatter):
                     # underscore.
                     name = name.replace(':', '_')
                     name = name.replace('-', '_')
-                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
+                stdout.write(f'{parsed_args.prefix}{name}="{value}"\n')
         return

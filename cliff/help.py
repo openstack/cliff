@@ -45,7 +45,7 @@ class HelpAction(argparse.Action):
         with pager as out:
             parser.print_help(out)
             title_hl = ('\033[4m', '\033[0m') if color else ('', '')
-            out.write('\n%sCommands%s:\n' % title_hl)
+            out.write('\n{}Commands{}:\n'.format(*title_hl))
             dists_by_module = command._get_distributions_by_modules()
 
             def dist_for_obj(obj):
@@ -58,7 +58,7 @@ class HelpAction(argparse.Action):
                 try:
                     factory = ep.load()
                 except Exception:
-                    out.write('Could not load %r\n' % ep)
+                    out.write(f'Could not load {ep!r}\n')
                     if namespace.debug:
                         traceback.print_exc(file=out)
                     continue
@@ -71,7 +71,7 @@ class HelpAction(argparse.Action):
                     if cmd.deprecated:
                         continue
                 except Exception as err:
-                    out.write('Could not instantiate %r: %s\n' % (ep, err))
+                    out.write(f'Could not instantiate {ep!r}: {err}\n')
                     if namespace.debug:
                         traceback.print_exc(file=out)
                     continue
@@ -80,11 +80,11 @@ class HelpAction(argparse.Action):
                 if dist_name and dist_name != app_dist:
                     dist_info = ' (' + dist_name + ')'
                     if color:
-                        dist_info = '\033[90m%s\033[39m' % dist_info
+                        dist_info = f'\033[90m{dist_info}\033[39m'
                 else:
                     dist_info = ''
                 if color:
-                    name = '\033[36m%s\033[39m' % name
+                    name = f'\033[36m{name}\033[39m'
                 out.write('  %-13s  %s%s\n' % (name, one_liner, dist_info))
         raise HelpExit()
 
@@ -93,7 +93,7 @@ class HelpCommand(command.Command):
     """print detailed help for another command"""
 
     def get_parser(self, prog_name):
-        parser = super(HelpCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             'cmd',
             nargs='*',
@@ -118,9 +118,9 @@ class HelpCommand(command.Command):
                 ]
                 if not fuzzy_matches:
                     raise
-                self.app.stdout.write('Command "%s" matches:\n' % cmd)
+                self.app.stdout.write(f'Command "{cmd}" matches:\n')
                 for fm in sorted(fuzzy_matches):
-                    self.app.stdout.write('  %s\n' % fm)
+                    self.app.stdout.write(f'  {fm}\n')
                 return
             self.app_args.cmd = search_args
             kwargs = {}

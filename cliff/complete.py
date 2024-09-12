@@ -67,7 +67,7 @@ class CompleteDictionary:
         return sorted(self._get_data_recurse(self._dictionary, ""))
 
 
-class CompleteShellBase(object):
+class CompleteShellBase:
     """base class for bash completion generation"""
 
     def __init__(self, name, output):
@@ -76,10 +76,10 @@ class CompleteShellBase(object):
 
     def write(self, cmdo, data):
         self.output.write(self.get_header())
-        self.output.write("  cmds='{0}'\n".format(cmdo))
+        self.output.write(f"  cmds='{cmdo}'\n")
         for datum in data:
             datum = (datum[0].replace('-', '_'), datum[1])
-            self.output.write('  cmds_{0}=\'{1}\'\n'.format(*datum))
+            self.output.write('  cmds_{}=\'{}\'\n'.format(*datum))
         self.output.write(self.get_trailer())
 
     @property
@@ -91,7 +91,7 @@ class CompleteNoCode(CompleteShellBase):
     """completion with no code"""
 
     def __init__(self, name, output):
-        super(CompleteNoCode, self).__init__(name, output)
+        super().__init__(name, output)
 
     def get_header(self):
         return ''
@@ -104,7 +104,7 @@ class CompleteBash(CompleteShellBase):
     """completion for bash"""
 
     def __init__(self, name, output):
-        super(CompleteBash, self).__init__(name, output)
+        super().__init__(name, output)
 
     def get_header(self):
         return (
@@ -175,13 +175,13 @@ class CompleteCommand(command.Command):
     log = logging.getLogger(__name__ + '.CompleteCommand')
 
     def __init__(self, app, app_args, cmd_name=None):
-        super(CompleteCommand, self).__init__(app, app_args, cmd_name)
+        super().__init__(app, app_args, cmd_name)
         self._formatters = stevedore.ExtensionManager(
             namespace='cliff.formatter.completion',
         )
 
     def get_parser(self, prog_name):
-        parser = super(CompleteCommand, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument(
             "--name",
             default=None,
@@ -209,13 +209,13 @@ class CompleteCommand(command.Command):
         return cmd_parser._get_optional_actions()
 
     def take_action(self, parsed_args):
-        self.log.debug('take_action(%s)' % parsed_args)
+        self.log.debug(f'take_action({parsed_args})')
 
         name = parsed_args.name or self.app.NAME
         try:
             shell_factory = self._formatters[parsed_args.shell].plugin
         except KeyError:
-            raise RuntimeError('Unknown shell syntax %r' % parsed_args.shell)
+            raise RuntimeError(f'Unknown shell syntax {parsed_args.shell!r}')
         shell = shell_factory(name, self.app.stdout)
 
         dicto = CompleteDictionary()

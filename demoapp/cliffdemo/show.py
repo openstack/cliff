@@ -10,7 +10,7 @@ class File(ShowOne):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(File, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser.add_argument('filename', nargs='?', default='.')
         return parser
 

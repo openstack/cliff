@@ -18,7 +18,7 @@ import warnings
 from autopage import argparse
 
 
-class _ArgumentContainerMixIn(object):
+class _ArgumentContainerMixIn:
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
     # special conflict handler.
@@ -62,10 +62,8 @@ def _handle_conflict_ignore(
         # remove the conflicting option from the new action
         new_action.option_strings.remove(option_string)
         warnings.warn(
-            (
-                'Ignoring option string {} for new action '
-                'because it conflicts with an existing option.'
-            ).format(option_string)
+            f'Ignoring option string {option_string} for new action '
+            'because it conflicts with an existing option.'
         )
 
         # if the option now has no option string, remove it from the
@@ -106,7 +104,5 @@ class SmartHelpFormatter(argparse.HelpFormatter):
         lines = text.splitlines() if '\n' in text else [text]
         wrap_lines = []
         for each_line in lines:
-            wrap_lines.extend(
-                super(SmartHelpFormatter, self)._split_lines(each_line, width)
-            )
+            wrap_lines.extend(super()._split_lines(each_line, width))
         return wrap_lines

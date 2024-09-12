@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may
 #  not use this file except in compliance with the License. You may obtain
@@ -19,7 +18,7 @@ import fixtures
 
 class TestBase(testtools.TestCase):
     def setUp(self):
-        super(TestBase, self).setUp()
+        super().setUp()
         self._stdout_fixture = fixtures.StringStream('stdout')
         self.stdout = self.useFixture(self._stdout_fixture).stream
         self.useFixture(fixtures.MonkeyPatch('sys.stdout', self.stdout))

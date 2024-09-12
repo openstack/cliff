@@ -24,9 +24,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     """Command base class for displaying data about a single object."""
 
     def __init__(self, app, app_args, cmd_name=None):
-        super(DisplayCommandBase, self).__init__(
-            app, app_args, cmd_name=cmd_name
-        )
+        super().__init__(app, app_args, cmd_name=cmd_name)
         self._formatter_plugins = self._load_formatter_plugins()
 
     @property
@@ -47,7 +45,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         )
 
     def get_parser(self, prog_name):
-        parser = super(DisplayCommandBase, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         formatter_group = parser.add_argument_group(
             title='output formatters',
             description='output formatter options',
@@ -64,7 +62,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
             action='store',
             choices=formatter_choices,
             default=formatter_default,
-            help='the output format, defaults to %s' % formatter_default,
+            help=f'the output format, defaults to {formatter_default}',
         )
         formatter_group.add_argument(
             '-c',
@@ -114,9 +112,8 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         ]
         if not columns_to_include:
             raise ValueError(
-                'No recognized column names in %s. '
-                'Recognized columns are %s.'
-                % (str(parsed_args.columns), str(column_names))
+                f'No recognized column names in {str(parsed_args.columns)}. '
+                f'Recognized columns are {str(column_names)}.'
             )
 
         # Set up argument to compress()

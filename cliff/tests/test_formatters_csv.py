@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may
 #  not use this file except in compliance with the License. You may obtain
@@ -73,7 +72,7 @@ class TestCSVFormatter(unittest.TestCase):
         happy = '高兴'
         d2 = ('D', 'E', happy)
         data = [d1, d2]
-        expected = 'a,b,c\nA,B,C\nD,E,%s\n' % happy
+        expected = f'a,b,c\nA,B,C\nD,E,{happy}\n'
         output = io.StringIO()
         parsed_args = mock.Mock()
         parsed_args.quote_mode = 'none'

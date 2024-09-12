@@ -15,7 +15,7 @@
 import abc
 
 
-class Formatter(object, metaclass=abc.ABCMeta):
+class Formatter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def add_argument_group(self, parser):
         """Add any options to the argument parser.
