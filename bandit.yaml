@@ -1,4 +1,0 @@
-skips:
-  - B110
-exclude_dirs:
-  - tests

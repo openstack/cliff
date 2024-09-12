@@ -267,8 +267,9 @@ class AutoprogramCliffDirective(rst.Directive):
             return manager.find_command(command_name.split())[0]
         except ValueError:
             raise self.error(
-                '"{}" is not a valid command in the "{}" '
-                'namespace'.format(command_name, manager.namespace)
+                '"{}" is not a valid command in the "{}" ' 'namespace'.format(
+                    command_name, manager.namespace
+                )
             )
 
     def _load_commands(self):

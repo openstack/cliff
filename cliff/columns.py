@@ -10,8 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Formattable column tools.
-"""
+"""Formattable column tools."""
 
 import abc
 

@@ -10,8 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Base classes for formatters.
-"""
+"""Base classes for formatters."""
 
 import abc
 

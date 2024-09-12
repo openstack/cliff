@@ -10,8 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Output formatters for JSON.
-"""
+"""Output formatters for JSON."""
 
 import json
 

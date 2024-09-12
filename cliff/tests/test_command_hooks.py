@@ -46,7 +46,7 @@ def make_app(**kwargs):
         '1',
         cmd_mgr,
         stderr=mock.Mock(),  # suppress warning messages
-        **kwargs
+        **kwargs,
     )
     return app
 

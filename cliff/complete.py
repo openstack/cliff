@@ -10,8 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Bash completion for the CLI.
-"""
+"""Bash completion for the CLI."""
 
 import logging
 

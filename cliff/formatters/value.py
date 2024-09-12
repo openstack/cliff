@@ -10,8 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Output formatters values only
-"""
+"""Output formatters values only"""
 
 from . import base
 from cliff import columns

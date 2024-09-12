@@ -10,8 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Application base class for displaying data.
-"""
+"""Application base class for displaying data."""
+
 import abc
 from itertools import compress
 

@@ -10,8 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Application base class for displaying data about a single object.
-"""
+"""Application base class for displaying data about a single object."""
+
 import abc
 
 from . import display

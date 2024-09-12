@@ -10,8 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-"""Discover and lookup command plugins.
-"""
+"""Discover and lookup command plugins."""
 
 import inspect
 import logging
