@@ -11,8 +11,10 @@
 #  under the License.
 
 import argparse
+import collections.abc
 import inspect
 import traceback
+import typing as ty
 
 import autopage.argparse
 
@@ -38,7 +40,13 @@ class HelpAction(argparse.Action):
     instance, passed in as the "default" value for the action.
     """
 
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: ty.Union[str, collections.abc.Sequence[ty.Any], None],
+        option_string: ty.Optional[str] = None,
+    ) -> None:
         app = self.default
         pager = autopage.argparse.help_pager(app.stdout)
         color = pager.to_terminal()
@@ -49,7 +57,7 @@ class HelpAction(argparse.Action):
             out.write('\n{}Commands{}:\n'.format(*title_hl))
             dists_by_module = command._get_distributions_by_modules()
 
-            def dist_for_obj(obj):
+            def dist_for_obj(obj: object) -> ty.Optional[str]:
                 mod = inspect.getmodule(obj)
                 if mod is None:
                     raise RuntimeError(f"failed to find app: {obj}")
