@@ -13,28 +13,38 @@
 """Application base class for displaying data about a single object."""
 
 import abc
+import argparse
+import collections.abc
+import typing as ty
 
-from . import display
+from cliff import display
 
 
 class ShowOne(display.DisplayCommandBase, metaclass=abc.ABCMeta):
     """Command base class for displaying data about a single object."""
 
     @property
-    def formatter_namespace(self):
+    def formatter_namespace(self) -> str:
         return 'cliff.formatter.show'
 
     @property
-    def formatter_default(self):
+    def formatter_default(self) -> str:
         return 'table'
 
     @abc.abstractmethod
-    def take_action(self, parsed_args):
+    def take_action(
+        self, parsed_args: argparse.Namespace
+    ) -> tuple[tuple[str, ...], tuple[ty.Any, ...]]:
         """Return a two-part tuple with a tuple of column names
         and a tuple of values.
         """
 
-    def produce_output(self, parsed_args, column_names, data):
+    def produce_output(
+        self,
+        parsed_args: argparse.Namespace,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+    ) -> int:
         (columns_to_include, selector) = self._generate_columns_and_selector(
             parsed_args, column_names
         )
@@ -45,11 +55,13 @@ class ShowOne(display.DisplayCommandBase, metaclass=abc.ABCMeta):
         )
         return 0
 
-    def dict2columns(self, data):
+    def dict2columns(
+        self, data: dict[str, ty.Any]
+    ) -> tuple[tuple[str, ...], tuple[ty.Any, ...]]:
         """Implement the common task of converting a dict-based object
         to the two-column output that ShowOne expects.
         """
         if not data:
-            return ({}, {})
+            return ((), ())
         else:
-            return zip(*sorted(data.items()))
+            return (tuple(data.keys()), tuple(data.values()))

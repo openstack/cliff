@@ -16,7 +16,8 @@ import traceback
 
 import autopage.argparse
 
-from . import command
+from cliff import _argparse
+from cliff import command
 
 
 class HelpExit(SystemExit):
@@ -95,7 +96,7 @@ class HelpAction(argparse.Action):
 class HelpCommand(command.Command):
     """print detailed help for another command"""
 
-    def get_parser(self, prog_name):
+    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         parser.add_argument(
             'cmd',
@@ -104,7 +105,7 @@ class HelpCommand(command.Command):
         )
         return parser
 
-    def take_action(self, parsed_args):
+    def take_action(self, parsed_args: argparse.Namespace) -> int:
         if parsed_args.cmd:
             try:
                 the_cmd = self.app.command_manager.find_command(
@@ -124,8 +125,7 @@ class HelpCommand(command.Command):
                 self.app.stdout.write(f'Command "{cmd}" matches:\n')
                 for fm in sorted(fuzzy_matches):
                     self.app.stdout.write(f'  {fm}\n')
-                return
-            self.app_args.cmd = search_args
+                return 0
             kwargs = {}
             if 'cmd_name' in inspect.getfullargspec(cmd_factory.__init__).args:
                 kwargs['cmd_name'] = cmd_name

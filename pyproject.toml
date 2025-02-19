@@ -37,7 +37,11 @@ module = [
     "cliff._argparse",
     "cliff.columns",
     "cliff.commandmanager",
+    "cliff.command",
+    "cliff.display",
     "cliff.interactive",
+    "cliff.lister",
+    "cliff.show",
 ]
 disallow_untyped_calls = true
 disallow_untyped_defs = true

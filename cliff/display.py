@@ -13,38 +13,50 @@
 """Application base class for displaying data."""
 
 import abc
+import argparse
+import collections.abc
 from itertools import compress
+import typing as ty
 
 import stevedore
 
-from . import command
+from cliff import app
+from cliff import _argparse
+from cliff import command
+
+_T = ty.TypeVar("_T")
 
 
 class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     """Command base class for displaying data about a single object."""
 
-    def __init__(self, app, app_args, cmd_name=None):
+    def __init__(
+        self,
+        app: app.App,
+        app_args: ty.Optional[argparse.Namespace],
+        cmd_name: ty.Optional[str] = None,
+    ) -> None:
         super().__init__(app, app_args, cmd_name=cmd_name)
         self._formatter_plugins = self._load_formatter_plugins()
 
     @property
     @abc.abstractmethod
-    def formatter_namespace(self):
-        "String specifying the namespace to use for loading formatter plugins."
+    def formatter_namespace(self) -> str:
+        """String specifying the namespace to use for loading formatter plugins."""
 
     @property
     @abc.abstractmethod
-    def formatter_default(self):
-        "String specifying the name of the default formatter."
+    def formatter_default(self) -> str:
+        """String specifying the name of the default formatter."""
 
-    def _load_formatter_plugins(self):
+    def _load_formatter_plugins(self) -> stevedore.ExtensionManager:
         # Here so tests can override
         return stevedore.ExtensionManager(
             self.formatter_namespace,
             invoke_on_load=True,
         )
 
-    def get_parser(self, prog_name):
+    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         formatter_group = parser.add_argument_group(
             title='output formatters',
@@ -81,16 +93,26 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         return parser
 
     @abc.abstractmethod
-    def produce_output(self, parsed_args, column_names, data):
+    def produce_output(
+        self,
+        parsed_args: argparse.Namespace,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+    ) -> int:
         """Use the formatter to generate the output.
 
         :param parsed_args: argparse.Namespace instance with argument values
         :param column_names: sequence of strings containing names
                              of output columns
         :param data: iterable with values matching the column names
+        :returns: a status code
         """
 
-    def _generate_columns_and_selector(self, parsed_args, column_names):
+    def _generate_columns_and_selector(
+        self,
+        parsed_args: argparse.Namespace,
+        column_names: collections.abc.Sequence[str],
+    ) -> tuple[list[str], ty.Optional[list[bool]]]:
         """Generate included columns and selector according to parsed args.
 
         We normalize the column names so that someone can do e.g. '-c
@@ -101,9 +123,9 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
                              of output columns
         """
         if not parsed_args.columns:
-            return column_names, None
+            return list(column_names), None
 
-        def normalize_column(column_name):
+        def normalize_column(column_name: str) -> str:
             return column_name.lower().strip().replace(' ', '_')
 
         requested_columns = [normalize_column(c) for c in parsed_args.columns]
@@ -120,7 +142,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         selector = [(c in columns_to_include) for c in column_names]
         return columns_to_include, selector
 
-    def run(self, parsed_args):
+    def run(self, parsed_args: argparse.Namespace) -> int:
         parsed_args = self._run_before_hooks(parsed_args)
         self.formatter = self._formatter_plugins[parsed_args.formatter].obj
         column_names, data = self.take_action(parsed_args)
@@ -131,5 +153,8 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         return 0
 
     @staticmethod
-    def _compress_iterable(iterable, selectors):
+    def _compress_iterable(
+        iterable: collections.abc.Iterable[_T],
+        selectors: collections.abc.Iterable[ty.Any],
+    ) -> collections.abc.Iterator[_T]:
         return compress(iterable, selectors)

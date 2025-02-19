@@ -11,23 +11,31 @@
 #  under the License.
 
 import abc
+import argparse
 import inspect
-
-try:
-    # Python 3.10 and later
-    from importlib.metadata import packages_distributions  # type: ignore
-except ImportError:
-    # Python 3.9 and older
-    from importlib_metadata import packages_distributions
+import types
+import sys
+import typing as ty
 
 from stevedore import extension
 
 from cliff import _argparse
 
+if sys.version_info < (3, 10):
+    # Python 3.9 and older
+    from importlib_metadata import packages_distributions
+else:
+    # Python 3.10 and later
+    from importlib.metadata import packages_distributions  # type: ignore
+
+if ty.TYPE_CHECKING:
+    from . import app as _app
+
+_T = ty.TypeVar('_T')
 _dists_by_mods = None
 
 
-def _get_distributions_by_modules():
+def _get_distributions_by_modules() -> dict[str, str]:
     """Return dict mapping module name to distribution names.
 
     The python package name (the name used for importing) and the
@@ -43,7 +51,9 @@ def _get_distributions_by_modules():
     return _dists_by_mods
 
 
-def _get_distribution_for_module(module):
+def _get_distribution_for_module(
+    module: ty.Optional[types.ModuleType],
+) -> ty.Optional[str]:
     "Return the distribution containing the module."
     dist_name = None
     if module:
@@ -62,8 +72,9 @@ class Command(metaclass=abc.ABCMeta):
         app.namespace + '.' + cmd_name.replace(' ', '_')
 
     :param app: Application instance invoking the command.
-    :paramtype app: cliff.app.App
-
+    :param app_args: Parsed arguments from options associated with the
+        application instance..
+    :param cmd_name: The name of the command.
     """
 
     deprecated = False
@@ -72,13 +83,18 @@ class Command(metaclass=abc.ABCMeta):
     _description = ''
     _epilog = None
 
-    def __init__(self, app, app_args, cmd_name=None):
+    def __init__(
+        self,
+        app: '_app.App',
+        app_args: ty.Optional[argparse.Namespace],
+        cmd_name: ty.Optional[str] = None,
+    ) -> None:
         self.app = app
         self.app_args = app_args
         self.cmd_name = cmd_name
         self._load_hooks()
 
-    def _load_hooks(self):
+    def _load_hooks(self) -> None:
         # Look for command extensions
         if self.app and self.cmd_name:
             namespace = '{}.{}'.format(
@@ -98,7 +114,7 @@ class Command(metaclass=abc.ABCMeta):
             self._hooks = []
         return
 
-    def get_description(self):
+    def get_description(self) -> str:
         """Return the command description.
 
         The default is to use the first line of the class' docstring
@@ -120,7 +136,7 @@ class Command(metaclass=abc.ABCMeta):
             desc = ''
         return desc
 
-    def get_epilog(self):
+    def get_epilog(self) -> str:
         """Return the command epilog."""
         # replace a None in self._epilog with an empty string
         parts = [self._epilog or '']
@@ -140,7 +156,7 @@ class Command(metaclass=abc.ABCMeta):
             )
         return '\n\n'.join(parts)
 
-    def get_parser(self, prog_name):
+    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
         """Return an :class:`argparse.ArgumentParser`."""
         parser = _argparse.ArgumentParser(
             description=self.get_description(),
@@ -154,13 +170,13 @@ class Command(metaclass=abc.ABCMeta):
         return parser
 
     @abc.abstractmethod
-    def take_action(self, parsed_args):
+    def take_action(self, parsed_args: argparse.Namespace) -> ty.Any:
         """Override to do something useful.
 
         The returned value will be returned by the program.
         """
 
-    def run(self, parsed_args):
+    def run(self, parsed_args: argparse.Namespace) -> int:
         """Invoked by the application when the command is run.
 
         Developers implementing commands should override
@@ -177,7 +193,9 @@ class Command(metaclass=abc.ABCMeta):
         return_code = self._run_after_hooks(parsed_args, return_code)
         return return_code
 
-    def _run_before_hooks(self, parsed_args):
+    def _run_before_hooks(
+        self, parsed_args: argparse.Namespace
+    ) -> argparse.Namespace:
         """Calls before() method of the hooks.
 
         This method is intended to be called from the run() method before
@@ -195,7 +213,9 @@ class Command(metaclass=abc.ABCMeta):
                 parsed_args = ret
         return parsed_args
 
-    def _run_after_hooks(self, parsed_args, return_code):
+    def _run_after_hooks(
+        self, parsed_args: argparse.Namespace, return_code: _T
+    ) -> _T:
         """Calls after() method of the hooks.
 
         This method is intended to be called from the run() method after

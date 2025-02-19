@@ -13,20 +13,28 @@
 """Bash completion for the CLI."""
 
 import abc
+import argparse
 import logging
+import typing as ty
 
 import stevedore
 
+from cliff import _argparse
 from cliff import command
+
+if ty.TYPE_CHECKING:
+    from cliff import app
 
 
 class CompleteDictionary:
     """dictionary for bash completion"""
 
-    def __init__(self):
-        self._dictionary = {}
+    def __init__(self) -> None:
+        self._dictionary: dict[str, str] = {}
 
-    def add_command(self, command, actions):
+    def add_command(
+        self, command: list[str], actions: list[argparse.Action]
+    ) -> None:
         optstr = ' '.join(
             opt for action in actions for opt in action.option_strings
         )
@@ -44,13 +52,16 @@ class CompleteDictionary:
                 dicto[subcmd] = subdata
                 last_cmd = subcmd + '_' + last_cmd
             else:
-                dicto = dicto.setdefault(subcmd, {})
+                # TODO(stephenfin): What is going on here? 😅
+                dicto = dicto.setdefault(subcmd, {})  # type: ignore
         dicto[last_cmd] = optstr
 
-    def get_commands(self):
+    def get_commands(self) -> str:
         return ' '.join(k for k in sorted(self._dictionary.keys()))
 
-    def _get_data_recurse(self, dictionary, path):
+    def _get_data_recurse(
+        self, dictionary: dict[str, ty.Any], path: str
+    ) -> list[tuple[str, str]]:
         ray = []
         keys = sorted(dictionary.keys())
         for cmd in keys:
@@ -64,7 +75,7 @@ class CompleteDictionary:
                 ray += self._get_data_recurse(value, name)
         return ray
 
-    def get_data(self):
+    def get_data(self) -> list[tuple[str, str]]:
         return sorted(self._get_data_recurse(self._dictionary, ""))
 
 
@@ -181,13 +192,18 @@ class CompleteCommand(command.Command):
 
     log = logging.getLogger(__name__ + '.CompleteCommand')
 
-    def __init__(self, app, app_args, cmd_name=None):
+    def __init__(
+        self,
+        app: 'app.App',
+        app_args: argparse.Namespace,
+        cmd_name: ty.Optional[str] = None,
+    ) -> None:
         super().__init__(app, app_args, cmd_name)
         self._formatters = stevedore.ExtensionManager(
             namespace='cliff.formatter.completion',
         )
 
-    def get_parser(self, prog_name):
+    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         parser.add_argument(
             "--name",
@@ -204,7 +220,7 @@ class CompleteCommand(command.Command):
         )
         return parser
 
-    def get_actions(self, command):
+    def get_actions(self, command: list[str]) -> list[argparse.Action]:
         the_cmd = self.app.command_manager.find_command(command)
         cmd_factory, cmd_name, search_args = the_cmd
         cmd = cmd_factory(self.app, search_args)
@@ -215,7 +231,7 @@ class CompleteCommand(command.Command):
         cmd_parser = cmd.get_parser(full_name)
         return cmd_parser._get_optional_actions()
 
-    def take_action(self, parsed_args):
+    def take_action(self, parsed_args: argparse.Namespace) -> int:
         self.log.debug(f'take_action({parsed_args})')
 
         name = parsed_args.name or self.app.NAME

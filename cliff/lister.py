@@ -13,9 +13,13 @@
 """Application base class for providing a list of data as output."""
 
 import abc
+import argparse
+import collections.abc
 import logging
+import typing as ty
 
-from . import display
+from cliff import _argparse
+from cliff import display
 
 
 class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
@@ -24,15 +28,15 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
     log = logging.getLogger(__name__)
 
     @property
-    def formatter_namespace(self):
+    def formatter_namespace(self) -> str:
         return 'cliff.formatter.list'
 
     @property
-    def formatter_default(self):
+    def formatter_default(self) -> str:
         return 'table'
 
     @property
-    def need_sort_by_cliff(self):
+    def need_sort_by_cliff(self) -> bool:
         """Whether sort procedure is performed by cliff itself.
 
         Should be overridden (return False) when there is a need to implement
@@ -41,14 +45,18 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
         return True
 
     @abc.abstractmethod
-    def take_action(self, parsed_args):
+    def take_action(
+        self, parsed_args: argparse.Namespace
+    ) -> tuple[
+        collections.abc.Sequence[str], collections.abc.Iterable[ty.Any]
+    ]:
         """Run command.
 
         Return a tuple containing the column names and an iterable containing
         the data to be listed.
         """
 
-    def get_parser(self, prog_name):
+    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         group = self._formatter_group
         group.add_argument(
@@ -80,7 +88,12 @@ class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
         )
         return parser
 
-    def produce_output(self, parsed_args, column_names, data):
+    def produce_output(
+        self,
+        parsed_args: argparse.Namespace,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+    ) -> int:
         if parsed_args.sort_columns and self.need_sort_by_cliff:
             indexes = [
                 column_names.index(c)
