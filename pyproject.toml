@@ -34,6 +34,7 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = [
     "cliff.app",
+    "cliff.interactive",
 ]
 disallow_untyped_calls = true
 disallow_untyped_defs = true

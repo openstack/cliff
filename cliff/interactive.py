@@ -20,6 +20,10 @@ import typing as ty
 import autopage.argparse
 import cmd2
 
+if ty.TYPE_CHECKING:
+    from . import app as _app
+    from . import commandmanager as _commandmanager
+
 
 class InteractiveApp(cmd2.Cmd):
     """Provides "interactive mode" features.
@@ -31,7 +35,7 @@ class InteractiveApp(cmd2.Cmd):
     .. _cmd: http://docs.python.org/library/cmd.html
 
     :param parent_app: The calling application (expected to be derived
-                       from :class:`cliff.main.App`).
+                       from :class:`cliff.app.App`).
     :param command_manager: A :class:`cliff.commandmanager.CommandManager`
                             instance.
     :param stdin: Standard input stream
@@ -43,7 +47,12 @@ class InteractiveApp(cmd2.Cmd):
     app_cmd_header = "Application commands (type help <topic>):"
 
     def __init__(
-        self, parent_app, command_manager, stdin, stdout, errexit=False
+        self,
+        parent_app: '_app.App',
+        command_manager: '_commandmanager.CommandManager',
+        stdin: ty.Optional[ty.TextIO],
+        stdout: ty.Optional[ty.TextIO],
+        errexit: bool = False,
     ):
         self.parent_app = parent_app
         if not hasattr(sys.stdin, 'isatty') or sys.stdin.isatty():
@@ -55,18 +64,16 @@ class InteractiveApp(cmd2.Cmd):
         self.errexit = errexit
         cmd2.Cmd.__init__(self, 'tab', stdin=stdin, stdout=stdout)
 
-    def _split_line(self, line):
-        try:
-            return shlex.split(line.parsed.raw)
-        except AttributeError:
-            # cmd2 >= 0.9.1 gives us a Statement not a PyParsing parse
-            # result.
-            parts = shlex.split(line)
-            if getattr(line, 'command', None):
-                parts.insert(0, line.command)
-            return parts
+    # def _split_line(self, line: cmd2.Statement) -> list[str]:
+    def _split_line(self, line: ty.Union[str, cmd2.Statement]) -> list[str]:
+        # cmd2 >= 0.9.1 gives us a Statement not a PyParsing parse
+        # result.
+        parts = shlex.split(line)
+        if isinstance(line, cmd2.Statement):
+            parts.insert(0, line.command)
+        return parts
 
-    def default(self, line):
+    def default(self, line: str) -> ty.Optional[bool]:  # type: ignore[override]
         # Tie in the default command processor to
         # dispatch commands known to the command manager.
         # We send the message through our parent app,
@@ -77,7 +84,8 @@ class InteractiveApp(cmd2.Cmd):
         if self.errexit:
             # Only provide this if errexit is enabled,
             # otherise keep old behaviour
-            return ret
+            return bool(ret)
+        return None
 
     def completenames(self, text: str, *ignored: ty.Any) -> list[str]:
         """Tab-completion for command prefix without completer delimiter.
@@ -89,7 +97,9 @@ class InteractiveApp(cmd2.Cmd):
         completions += self._complete_prefix(text)
         return completions
 
-    def completedefault(self, text, line, begidx, endidx):
+    def completedefault(
+        self, text: str, line: str, begidx: int, endidx: int
+    ) -> list[str]:
         """Default tab-completion for command prefix with completer delimiter.
 
         This method filters only cliff style commands matching provided
@@ -100,17 +110,17 @@ class InteractiveApp(cmd2.Cmd):
         """
         return [x[begidx:] for x in self._complete_prefix(line)]
 
-    def _complete_prefix(self, prefix):
+    def _complete_prefix(self, prefix: str) -> list[str]:
         """Returns cliff style commands with a specific prefix."""
         if not prefix:
             return [n for n, v in self.command_manager]
         return [n for n, v in self.command_manager if n.startswith(prefix)]
 
-    def help_help(self):
+    def help_help(self) -> None:
         # Use the command manager to get instructions for "help"
         self.default('help help')
 
-    def do_help(self, arg):
+    def do_help(self, arg: ty.Optional[str]) -> None:
         if arg:
             # Check if the arg is a builtin command or something
             # coming from the command manager
@@ -127,18 +137,19 @@ class InteractiveApp(cmd2.Cmd):
             # command produce the help text since cmd and
             # cmd2 do not provide help for "help"
             if hasattr(self, method_name):
-                return cmd2.Cmd.do_help(self, arg)
+                cmd2.Cmd.do_help(self, arg)
+                return
             # Dispatch to the underlying help command,
             # which knows how to provide help for extension
             # commands.
-            self.default('help ' + arg)
+            self.default(f'help {arg}')
         else:
             stdout = self.stdout
             try:
                 with autopage.argparse.help_pager(stdout) as paged_out:  # type: ignore
                     self.stdout = paged_out
 
-                    cmd2.Cmd.do_help(self, arg)
+                    cmd2.Cmd.do_help(self, arg)  # type: ignore
                     cmd_names = sorted([n for n, v in self.command_manager])
                     self.print_topics(self.app_cmd_header, cmd_names, 15, 80)
             finally:
@@ -148,7 +159,7 @@ class InteractiveApp(cmd2.Cmd):
     # Create exit alias to quit the interactive shell.
     do_exit = cmd2.Cmd.do_quit
 
-    def get_names(self):
+    def get_names(self) -> list[str]:
         # Override the base class version to filter out
         # things that look like they should be hidden
         # from the user.
@@ -156,13 +167,17 @@ class InteractiveApp(cmd2.Cmd):
             n for n in cmd2.Cmd.get_names(self) if not n.startswith('do__')
         ]
 
-    def precmd(self, statement):
+    def precmd(
+        self, statement: ty.Union[cmd2.Statement, str]
+    ) -> cmd2.Statement:
         """Hook method executed just before the command is executed by
         :meth:`~cmd2.Cmd.onecmd` and after adding it to history.
 
         :param statement: subclass of str which also contains the parsed input
         :return: a potentially modified version of the input Statement object
         """
+        statement = super().precmd(statement)
+
         # NOTE(mordred): The above docstring is copied in from cmd2 because
         # current cmd2 has a docstring that sphinx finds if we don't override
         # it, and it breaks sphinx.
@@ -178,24 +193,18 @@ class InteractiveApp(cmd2.Cmd):
             # Not a plugin command
             pass
         else:
-            if hasattr(statement, 'parsed'):
-                # Older cmd2 uses PyParsing
-                statement.parsed.command = cmd_name
-                statement.parsed.args = ' '.join(sub_argv)
-            else:
-                # cmd2 >= 0.9.1 uses shlex and gives us a Statement.
-                statement = cmd2.Statement(
-                    ' '.join(sub_argv),
-                    raw=statement.raw,
-                    command=cmd_name,
-                    arg_list=sub_argv,
-                    multiline_command=statement.multiline_command,
-                    terminator=statement.terminator,
-                    suffix=statement.suffix,
-                    pipe_to=statement.pipe_to,
-                    output=statement.output,
-                    output_to=statement.output_to,
-                )
+            statement = cmd2.Statement(
+                ' '.join(sub_argv),
+                raw=statement.raw,
+                command=cmd_name,
+                arg_list=sub_argv,
+                multiline_command=statement.multiline_command,
+                terminator=statement.terminator,
+                suffix=statement.suffix,
+                pipe_to=statement.pipe_to,
+                output=statement.output,
+                output_to=statement.output_to,
+            )
         return statement
 
     def cmdloop(self, intro: ty.Optional[str] = None) -> None:  # type: ignore[override]

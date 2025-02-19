@@ -353,7 +353,7 @@ class App:
             self.interactive_app_factory = interactive_app_factory
         else:
             interactive_app_factory = self.interactive_app_factory
-        self.interpreter = interactive_app_factory(  # type: ignore
+        self.interpreter = interactive_app_factory(
             self,
             self.command_manager,
             self.stdin,
