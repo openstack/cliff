@@ -45,6 +45,7 @@ module = [
     "cliff.interactive",
     "cliff.lister",
     "cliff.show",
+    "cliff.sphinxext",
 ]
 disallow_untyped_calls = true
 disallow_untyped_defs = true

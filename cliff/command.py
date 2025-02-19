@@ -77,6 +77,8 @@ class Command(metaclass=abc.ABCMeta):
     :param cmd_name: The name of the command.
     """
 
+    app_dist_name: ty.Optional[str]
+
     deprecated = False
     conflict_handler = 'ignore'
 

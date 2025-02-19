@@ -13,44 +13,54 @@
 # under the License.
 
 import argparse
+import collections.abc
 import fnmatch
 import importlib
 import inspect
 import re
 import sys
+import typing as ty
 
 from docutils import nodes
 from docutils.parsers import rst
 from docutils.parsers.rst import directives
 from docutils import statemachine
+import sphinx.application
 
 from cliff import app
+from cliff import command
 from cliff import commandmanager
 
 
-def _indent(text):
+def _indent(text: str) -> str:
     """Indent by four spaces."""
     prefix = ' ' * 4
 
-    def prefixed_lines():
+    def prefixed_lines() -> collections.abc.Iterable[str]:
         for line in text.splitlines(True):
             yield (prefix + line if line.strip() else line)
 
     return ''.join(prefixed_lines())
 
 
-def _format_description(parser):
+def _format_description(
+    parser: argparse.ArgumentParser,
+) -> collections.abc.Iterable[str]:
     """Get parser description.
 
     We parse this as reStructuredText, allowing users to embed rich
     information in their help messages if they so choose.
     """
+    if parser.description is None:
+        return
+        yield
+
     yield from statemachine.string2lines(
         parser.description, tab_width=4, convert_whitespace=True
     )
 
 
-def _format_usage(parser):
+def _format_usage(parser: argparse.ArgumentParser) -> list[str]:
     """Get usage without a prefix."""
     fmt = argparse.HelpFormatter(parser.prog)
 
@@ -87,28 +97,44 @@ def _format_usage(parser):
     return [parser.prog] + [_indent(x) for x in parts]
 
 
-def _format_epilog(parser):
+def _format_epilog(
+    parser: argparse.ArgumentParser,
+) -> collections.abc.Iterable[str]:
     """Get parser epilog.
 
     We parse this as reStructuredText, allowing users to embed rich
     information in their help messages if they so choose.
     """
+    if parser.epilog is None:
+        return
+        yield
+
     yield from statemachine.string2lines(
         parser.epilog, tab_width=4, convert_whitespace=True
     )
 
 
-def _format_positional_action(action):
+def _format_positional_action(
+    action: argparse.Action,
+) -> collections.abc.Iterable[str]:
     """Format a positional action."""
     if action.help == argparse.SUPPRESS:
         return
 
+    if action.metavar:
+        # metavar can be a tuple if nargs > 1
+        # https://docs.python.org/3/library/argparse.html#metavar
+        if isinstance(action.metavar, tuple):
+            metavar = action.metavar[0]
+        else:
+            metavar = action.metavar
+    else:
+        metavar = action.dest
+
     # NOTE(stephenfin): We strip all types of brackets from 'metavar' because
     # the 'option' directive dictates that only option argument names should be
     # surrounded by angle brackets
-    yield '.. option:: {}'.format(
-        (action.metavar or action.dest).strip('<>[]() ')
-    )
+    yield '.. option:: {}'.format(metavar.strip('<>[]() '))
     if action.help:
         yield ''
         for line in statemachine.string2lines(
@@ -117,20 +143,30 @@ def _format_positional_action(action):
             yield _indent(line)
 
 
-def _format_optional_action(action):
+def _format_optional_action(
+    action: argparse.Action,
+) -> collections.abc.Iterable[str]:
     """Format an optional action."""
-    if action.help == argparse.SUPPRESS:
+    if action.help == argparse.SUPPRESS or action.option_strings is None:
         return
 
     if action.nargs == 0:
         yield '.. option:: {}'.format(', '.join(action.option_strings))
     else:
+        if action.metavar:
+            # metavar can be a tuple if nargs > 1
+            # https://docs.python.org/3/library/argparse.html#metavar
+            if isinstance(action.metavar, tuple):
+                metavar = action.metavar[0]
+            else:
+                metavar = action.metavar
+        else:
+            metavar = f'<{action.dest.upper()}>'
         # TODO(stephenfin): At some point, we may wish to provide more
         # information about the options themselves, for example, if nargs is
         # specified
         option_strings = [
-            ' '.join([x, action.metavar or f'<{action.dest.upper()}>'])
-            for x in action.option_strings
+            ' '.join([x, metavar]) for x in action.option_strings
         ]
         yield '.. option:: {}'.format(', '.join(option_strings))
 
@@ -142,7 +178,9 @@ def _format_optional_action(action):
             yield _indent(line)
 
 
-def _format_parser(parser):
+def _format_parser(
+    parser: argparse.ArgumentParser,
+) -> collections.abc.Iterable[str]:
     """Format the output of an argparse 'ArgumentParser' object.
 
     Given the following parser::
@@ -224,7 +262,7 @@ class AutoprogramCliffDirective(rst.Directive):
         'application': directives.unchanged,
     }
 
-    def _get_ignored_opts(self):
+    def _get_ignored_opts(self) -> list[str]:
         global_ignored = self.env.config.autoprogram_cliff_ignored
         local_ignored = self.options.get('ignored', '')
         local_ignored = [
@@ -232,33 +270,44 @@ class AutoprogramCliffDirective(rst.Directive):
         ]
         return list(set(global_ignored + local_ignored))
 
-    def _drop_ignored_options(self, parser, ignored_opts):
+    def _drop_ignored_options(
+        self, parser: argparse.ArgumentParser, ignored_opts: list[str]
+    ) -> None:
         for action in list(parser._actions):
             for option_string in action.option_strings:
                 if option_string in ignored_opts:
                     del parser._actions[parser._actions.index(action)]
                     break
 
-    def _load_app(self):
+    def _load_app(self) -> ty.Optional[app.App]:
         mod_str, _sep, class_str = self.arguments[0].rpartition('.')
         if not mod_str:
-            return
+            return None
+
         try:
             importlib.import_module(mod_str)
         except ImportError:
-            return
+            return None
+
         try:
             cliff_app_class = getattr(sys.modules[mod_str], class_str)
         except AttributeError:
-            return
+            return None
+
         if not inspect.isclass(cliff_app_class):
-            return
+            return None
+
         if not issubclass(cliff_app_class, app.App):
-            return
+            return None
+
         app_arguments = self.options.get('arguments', '').split()
         return cliff_app_class(*app_arguments)
 
-    def _load_command(self, manager, command_name):
+    def _load_command(
+        self,
+        manager: commandmanager.CommandManager,
+        command_name: str,
+    ) -> type[command.Command]:
         """Load a command using an instance of a `CommandManager`."""
         try:
             # find_command expects the value of argv so split to emulate that
@@ -269,7 +318,7 @@ class AutoprogramCliffDirective(rst.Directive):
                 'namespace'
             )
 
-    def _load_commands(self):
+    def _load_commands(self) -> dict[str, type[command.Command]]:
         # TODO(sfinucan): We should probably add this wildcarding functionality
         # to the CommandManager itself to allow things like "show me the
         # commands like 'foo *'"
@@ -298,7 +347,9 @@ class AutoprogramCliffDirective(rst.Directive):
             (name, self._load_command(manager, name)) for name in commands
         )
 
-    def _generate_app_node(self, app, application_name):
+    def _generate_app_node(
+        self, app: app.App, application_name: str
+    ) -> list[nodes.Node]:
         ignored_opts = self._get_ignored_opts()
 
         parser = app.parser
@@ -315,12 +366,15 @@ class AutoprogramCliffDirective(rst.Directive):
         section = nodes.section()
         self.state.nested_parse(result, 0, section)
 
-        # return [section.children]
         return section.children
 
     def _generate_nodes_per_command(
-        self, title, command_name, command_class, ignored_opts
-    ):
+        self,
+        title: str,
+        command_name: str,
+        command_class: type[command.Command],
+        ignored_opts: list[str],
+    ) -> list[nodes.Node]:
         """Generate the relevant Sphinx nodes.
 
         This doesn't bother using raw docutils nodes as they simply don't offer
@@ -337,7 +391,8 @@ class AutoprogramCliffDirective(rst.Directive):
         :param ignored_opts: A list of options to exclude from output, if any
         :returns: A list of nested docutil nodes
         """
-        command = command_class(None, None)
+        # TODO(stephenfin): Pass proper arguments here
+        command = command_class(None, None)  # type: ignore
         if not getattr(command, 'app_dist_name', None):
             command.app_dist_name = (
                 self.env.config.autoprogram_cliff_app_dist_name
@@ -364,7 +419,9 @@ class AutoprogramCliffDirective(rst.Directive):
 
         return [section]
 
-    def _generate_command_nodes(self, commands, application_name):
+    def _generate_command_nodes(
+        self, commands: dict[str, type[command.Command]], application_name: str
+    ) -> list[nodes.Node]:
         ignored_opts = self._get_ignored_opts()
         output = []
         for command_name in sorted(commands):
@@ -381,7 +438,7 @@ class AutoprogramCliffDirective(rst.Directive):
 
         return output
 
-    def run(self):
+    def run(self) -> list[nodes.Node]:
         self.env = self.state.document.settings.env
 
         application_name = (
@@ -397,8 +454,13 @@ class AutoprogramCliffDirective(rst.Directive):
         return self._generate_command_nodes(commands, application_name)
 
 
-def setup(app):
+def setup(app: sphinx.application.Sphinx) -> dict[str, ty.Any]:
     app.add_directive('autoprogram-cliff', AutoprogramCliffDirective)
     app.add_config_value('autoprogram_cliff_application', '', True)
     app.add_config_value('autoprogram_cliff_ignored', ['--help'], True)
     app.add_config_value('autoprogram_cliff_app_dist_name', None, True)
+
+    return {
+        'parallel_read_safe': True,
+        'parallel_write_safe': True,
+    }

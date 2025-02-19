@@ -107,7 +107,9 @@ class CommandManager:
         """
         self._legacy[old_name] = new_name
 
-    def find_command(self, argv: list[str]) -> tuple[ty.Any, str, list[str]]:
+    def find_command(
+        self, argv: list[str]
+    ) -> tuple[type[command.Command], str, list[str]]:
         """Given an argument list, find a command and
         return the processor and any remaining arguments.
         """
