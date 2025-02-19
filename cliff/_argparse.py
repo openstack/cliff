@@ -12,19 +12,22 @@
 
 """Overrides of standard argparse behavior."""
 
-import argparse as orig_argparse
+import argparse
+import collections.abc
 import typing as ty
 import warnings
 
-from autopage import argparse
+import autopage.argparse
 
 
-class ArgumentParser(argparse.ArgumentParser):
+class ArgumentParser(autopage.argparse.ArgumentParser):
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
     # special conflict handler.
 
-    def add_argument_group(self, *args, **kwargs):
+    def add_argument_group(
+        self, *args: ty.Any, **kwargs: ty.Any
+    ) -> '_ArgumentGroup':
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
@@ -36,7 +39,13 @@ class ArgumentParser(argparse.ArgumentParser):
         self._mutually_exclusive_groups.append(group)
         return group
 
-    def _handle_conflict_ignore(self, action, conflicting_actions):
+    def _handle_conflict_ignore(
+        self,
+        action: argparse.Action,
+        conflicting_actions: collections.abc.Iterable[
+            tuple[str, argparse.Action]
+        ],
+    ) -> None:
         _handle_conflict_ignore(
             self,
             self._option_string_actions,
@@ -46,11 +55,11 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 def _handle_conflict_ignore(
-    container,
-    option_string_actions,
-    new_action,
-    conflicting_actions,
-):
+    container: argparse._ActionsContainer,
+    option_string_actions: dict[str, argparse.Action],
+    new_action: argparse.Action,
+    conflicting_actions: collections.abc.Iterable[tuple[str, argparse.Action]],
+) -> None:
     # Remember the option strings the new action starts with so we can
     # restore them as part of error reporting if we need to.
     original_option_strings = new_action.option_strings
@@ -59,10 +68,10 @@ def _handle_conflict_ignore(
     # and report an error if none are left at the end.
     for option_string, action in conflicting_actions:
         # remove the conflicting option from the new action
-        new_action.option_strings.remove(option_string)
+        new_action.option_strings.remove(option_string)  # type: ignore
         warnings.warn(
             f'Ignoring option string {option_string} for new action '
-            'because it conflicts with an existing option.'
+            f'because it conflicts with an existing option.'
         )
 
         # if the option now has no option string, remove it from the
@@ -71,29 +80,37 @@ def _handle_conflict_ignore(
             new_action.option_strings = original_option_strings
             raise argparse.ArgumentError(
                 new_action,
-                (
-                    'Cannot resolve conflicting option string, '
-                    'all names conflict.'
-                ),
+                'Cannot resolve conflicting option string, '
+                'all names conflict.',
             )
 
 
-class _ArgumentGroup(orig_argparse._ArgumentGroup):
+class _ArgumentGroup(argparse._ArgumentGroup):
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
     # special conflict handler.
 
-    def add_argument_group(self, *args, **kwargs):
+    def add_argument_group(
+        self, *args: ty.Any, **kwargs: ty.Any
+    ) -> '_ArgumentGroup':
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
 
-    def add_mutually_exclusive_group(self, **kwargs):
+    def add_mutually_exclusive_group(
+        self, **kwargs: ty.Any
+    ) -> '_MutuallyExclusiveGroup':
         group = _MutuallyExclusiveGroup(self, **kwargs)
         self._mutually_exclusive_groups.append(group)
         return group
 
-    def _handle_conflict_ignore(self, action, conflicting_actions):
+    def _handle_conflict_ignore(
+        self,
+        action: argparse.Action,
+        conflicting_actions: collections.abc.Iterable[
+            tuple[str, argparse.Action]
+        ],
+    ) -> None:
         _handle_conflict_ignore(
             self,
             self._option_string_actions,
@@ -102,22 +119,32 @@ class _ArgumentGroup(orig_argparse._ArgumentGroup):
         )
 
 
-class _MutuallyExclusiveGroup(orig_argparse._MutuallyExclusiveGroup):
+class _MutuallyExclusiveGroup(argparse._MutuallyExclusiveGroup):
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
     # special conflict handler.
 
-    def add_argument_group(self, *args, **kwargs):
+    def add_argument_group(
+        self, *args: ty.Any, **kwargs: ty.Any
+    ) -> '_ArgumentGroup':
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
 
-    def add_mutually_exclusive_group(self, **kwargs):
+    def add_mutually_exclusive_group(
+        self, **kwargs: ty.Any
+    ) -> '_MutuallyExclusiveGroup':
         group = _MutuallyExclusiveGroup(self, **kwargs)
         self._mutually_exclusive_groups.append(group)
         return group
 
-    def _handle_conflict_ignore(self, action, conflicting_actions):
+    def _handle_conflict_ignore(
+        self,
+        action: argparse.Action,
+        conflicting_actions: collections.abc.Iterable[
+            tuple[str, argparse.Action]
+        ],
+    ) -> None:
         _handle_conflict_ignore(
             self,
             self._option_string_actions,
@@ -126,18 +153,18 @@ class _MutuallyExclusiveGroup(orig_argparse._MutuallyExclusiveGroup):
         )
 
 
-class SmartHelpFormatter(argparse.HelpFormatter):
-    """Smart help formatter to output raw help message if help contain \n.
+class SmartHelpFormatter(autopage.argparse.HelpFormatter):
+    """Smart help formatter to output raw help message if help contain \\n.
 
     Some command help messages maybe have multiple line content, the built-in
     argparse.HelpFormatter wrap and split the content according to width, and
-    ignore \n in the raw help message, it merge multiple line content in one
+    ignore \\n in the raw help message, it merge multiple line content in one
     line to output, that looks messy. SmartHelpFormatter keep the raw help
-    message format if it contain \n, and wrap long line like HelpFormatter
+    message format if it contain \\n, and wrap long line like HelpFormatter
     behavior.
     """
 
-    def _split_lines(self, text, width):
+    def _split_lines(self, text: str, width: int) -> list[str]:
         lines = text.splitlines() if '\n' in text else [text]
         wrap_lines = []
         for each_line in lines:

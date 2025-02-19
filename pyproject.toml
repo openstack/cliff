@@ -34,6 +34,7 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = [
     "cliff.app",
+    "cliff._argparse",
     "cliff.columns",
     "cliff.interactive",
 ]
