@@ -13,31 +13,38 @@
 """Formattable column tools."""
 
 import abc
+import typing as ty
+
+_T = ty.TypeVar('_T')
 
 
-class FormattableColumn(metaclass=abc.ABCMeta):
-    def __init__(self, value):
+class FormattableColumn(ty.Generic[_T], metaclass=abc.ABCMeta):
+    def __init__(self, value: _T) -> None:
         self._value = value
 
-    def __eq__(self, other):
-        return (
-            self.__class__ == other.__class__ and self._value == other._value
-        )
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FormattableColumn):
+            return False
 
-    def __lt__(self, other):
-        return self.__class__ == other.__class__ and self._value < other._value
+        return bool(self._value == other._value)
 
-    def __str__(self):
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, FormattableColumn):
+            return False
+
+        return bool(self._value < other._value)
+
+    def __str__(self) -> str:
         return self.human_readable()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self.machine_readable()!r})'
 
     @abc.abstractmethod
-    def human_readable(self):
+    def human_readable(self) -> str:
         """Return a basic human readable version of the data."""
 
-    def machine_readable(self):
+    def machine_readable(self) -> _T:
         """Return a raw data structure using only Python built-in types.
 
         It must be possible to serialize the return value directly
