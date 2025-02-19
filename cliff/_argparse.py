@@ -13,6 +13,7 @@
 """Overrides of standard argparse behavior."""
 
 import argparse as orig_argparse
+import typing as ty
 import warnings
 
 from autopage import argparse
@@ -28,7 +29,9 @@ class ArgumentParser(argparse.ArgumentParser):
         self._action_groups.append(group)
         return group
 
-    def add_mutually_exclusive_group(self, **kwargs):
+    def add_mutually_exclusive_group(
+        self, **kwargs: ty.Any
+    ) -> '_MutuallyExclusiveGroup':
         group = _MutuallyExclusiveGroup(self, **kwargs)
         self._mutually_exclusive_groups.append(group)
         return group

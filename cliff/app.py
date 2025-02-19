@@ -26,6 +26,10 @@ from . import complete
 from . import help
 from . import utils
 
+if ty.TYPE_CHECKING:
+    from . import command as _command
+    from . import commandmanager as _commandmanager
+    from . import interactive as _interactive
 
 logging.getLogger('cliff').addHandler(logging.NullHandler())
 
@@ -72,15 +76,17 @@ class App:
 
     def __init__(
         self,
-        description,
-        version,
-        command_manager,
-        stdin=None,
-        stdout=None,
-        stderr=None,
-        interactive_app_factory=None,
-        deferred_help=False,
-    ):
+        description: ty.Optional[str],
+        version: ty.Optional[str],
+        command_manager: '_commandmanager.CommandManager',
+        stdin: ty.Optional[ty.TextIO] = None,
+        stdout: ty.Optional[ty.TextIO] = None,
+        stderr: ty.Optional[ty.TextIO] = None,
+        interactive_app_factory: ty.Optional[
+            type['_interactive.InteractiveApp']
+        ] = None,
+        deferred_help: bool = False,
+    ) -> None:
         """Initialize the application."""
         self.command_manager = command_manager
         self.command_manager.add_command('help', help.HelpCommand)
@@ -90,9 +96,14 @@ class App:
         self.deferred_help = deferred_help
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
-        self.interpreter = None
+        self.interpreter: ty.Optional[_interactive.InteractiveApp] = None
 
-    def _set_streams(self, stdin, stdout, stderr):
+    def _set_streams(
+        self,
+        stdin: ty.Optional[ty.TextIO],
+        stdout: ty.Optional[ty.TextIO],
+        stderr: ty.Optional[ty.TextIO],
+    ) -> None:
         try:
             locale.setlocale(locale.LC_ALL, '')
         except locale.Error:
@@ -128,7 +139,12 @@ class App:
         self.stdout = stdout or sys.stdout
         self.stderr = stderr or sys.stderr
 
-    def build_option_parser(self, description, version, argparse_kwargs=None):
+    def build_option_parser(
+        self,
+        description: ty.Optional[str],
+        version: ty.Optional[str],
+        argparse_kwargs: ty.Optional[dict[str, ty.Any]] = None,
+    ) -> _argparse.ArgumentParser:
         """Return an argparse option parser for this application.
 
         Subclasses may override this method to extend
@@ -199,7 +215,7 @@ class App:
         )
         return parser
 
-    def configure_logging(self):
+    def configure_logging(self) -> None:
         """Create logging handlers for any log output."""
         root_logger = logging.getLogger('')
         root_logger.setLevel(logging.DEBUG)
@@ -226,7 +242,7 @@ class App:
         root_logger.addHandler(console)
         return
 
-    def print_help_if_requested(self):
+    def print_help_if_requested(self) -> None:
         """Print help and exits if deferred help is enabled and requested.
 
         '--help' shows the help message and exits:
@@ -239,7 +255,7 @@ class App:
             action = help.HelpAction([], argparse.SUPPRESS, default=self)
             action(self.parser, self.options, None, None)
 
-    def run(self, argv):
+    def run(self, argv: list[str]) -> int:
         """Equivalent to the main program for the application.
 
         :param argv: input arguments and options
@@ -281,7 +297,7 @@ class App:
             return _SIGINT_EXIT
         result = 1
         if self.interactive_mode:
-            result = self.interact()
+            self.interact()
         else:
             try:
                 result = self.run_subcommand(remainder)
@@ -293,7 +309,7 @@ class App:
 
     # FIXME(dhellmann): Consider moving these command handling methods
     # to a separate class.
-    def initialize_app(self, argv):
+    def initialize_app(self, argv: list[str]) -> None:
         """Hook for subclasses to take global initialization action
         after the arguments are parsed but before a command is run.
         Invoked only once, even in interactive mode.
@@ -303,7 +319,7 @@ class App:
         """
         return
 
-    def prepare_to_run_command(self, cmd):
+    def prepare_to_run_command(self, cmd: '_command.Command') -> None:
         """Perform any preliminary work needed to run a command.
 
         :param cmd: command processor being invoked
@@ -311,7 +327,12 @@ class App:
         """
         return
 
-    def clean_up(self, cmd, result, err):
+    def clean_up(
+        self,
+        cmd: '_command.Command',
+        result: int,
+        err: ty.Optional[BaseException],
+    ) -> None:
         """Hook run after a command is done to shutdown the app.
 
         :param cmd: command processor being invoked
@@ -323,21 +344,24 @@ class App:
         """
         return
 
-    def interact(self):
+    def interact(self) -> None:
         # Defer importing .interactive as cmd2 is a slow import
         from .interactive import InteractiveApp
 
         if self.interactive_app_factory is None:
-            self.interactive_app_factory = InteractiveApp
-        self.interpreter = self.interactive_app_factory(
+            interactive_app_factory = InteractiveApp
+            self.interactive_app_factory = interactive_app_factory
+        else:
+            interactive_app_factory = self.interactive_app_factory
+        self.interpreter = interactive_app_factory(  # type: ignore
             self,
             self.command_manager,
             self.stdin,
             self.stdout,
         )
-        return self.interpreter.cmdloop()
+        self.interpreter.cmdloop()
 
-    def get_fuzzy_matches(self, cmd):
+    def get_fuzzy_matches(self, cmd: str) -> list[str]:
         """return fuzzy matches of unknown command"""
 
         sep = '_'
@@ -373,7 +397,7 @@ class App:
 
         return matches
 
-    def run_subcommand(self, argv):
+    def run_subcommand(self, argv: list[str]) -> int:
         try:
             subcommand = self.command_manager.find_command(argv)
         except ValueError as exc:

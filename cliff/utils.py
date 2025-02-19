@@ -22,7 +22,7 @@ import os
 COST = {'w': 0, 's': 2, 'a': 1, 'd': 3}
 
 
-def damerau_levenshtein(s1, s2, cost):
+def damerau_levenshtein(s1: str, s2: str, cost: dict[str, int]) -> int:
     """Calculates the Damerau-Levenshtein distance between two strings.
 
     The Damerau-Levenshtein distance says the minimum number of single

@@ -14,9 +14,9 @@
 
 import inspect
 import logging
+import typing as ty
 
 import stevedore
-
 
 LOG = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class CommandManager:
     def __iter__(self):
         return iter(self.commands.items())
 
-    def add_command(self, name, command_class):
+    def add_command(self, name: str, command_class: ty.Any) -> None:
         self.commands[name] = EntryPointWrapper(name, command_class)
 
     def add_legacy_command(self, old_name, new_name):
@@ -95,7 +95,7 @@ class CommandManager:
         """
         self._legacy[old_name] = new_name
 
-    def find_command(self, argv):
+    def find_command(self, argv: list[str]) -> tuple[ty.Any, str, list[str]]:
         """Given an argument list, find a command and
         return the processor and any remaining arguments.
         """
