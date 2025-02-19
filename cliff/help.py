@@ -85,7 +85,7 @@ class HelpAction(argparse.Action):
                     dist_info = ''
                 if color:
                     name = f'\033[36m{name}\033[39m'
-                out.write('  %-13s  %s%s\n' % (name, one_liner, dist_info))
+                out.write(f'  {name:<13}  {one_liner}{dist_info}\n')
         raise HelpExit()
 
 

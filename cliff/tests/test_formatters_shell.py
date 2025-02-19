@@ -71,7 +71,7 @@ class TestShellFormatter(base.TestBase):
         c = ('a', 'b', 'c', 'd', 'e')
         d = (True, False, 100, '"esc"', '"esc"')
         expected = (
-            'a="True"\nb="False"\nc="100"\n' 'd="\\"esc\\""\ne="\\"esc\\""\n'
+            'a="True"\nb="False"\nc="100"\nd="\\"esc\\""\ne="\\"esc\\""\n'
         )
         output = io.StringIO()
         args = mock.Mock()

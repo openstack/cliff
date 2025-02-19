@@ -39,7 +39,7 @@ class TestCommand(command.Command):
         )
         parser.add_argument(
             'regular_help_argument',
-            help="The quick brown fox jumps " "over the lazy dog.",
+            help="The quick brown fox jumps over the lazy dog.",
         )
         parser.add_argument(
             '-z',
