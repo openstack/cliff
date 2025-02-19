@@ -15,7 +15,7 @@ import inspect
 
 try:
     # Python 3.10 and later
-    from importlib.metadata import packages_distributions
+    from importlib.metadata import packages_distributions  # type: ignore
 except ImportError:
     # Python 3.9 and older
     from importlib_metadata import packages_distributions
@@ -124,10 +124,9 @@ class Command(metaclass=abc.ABCMeta):
         """Return the command epilog."""
         # replace a None in self._epilog with an empty string
         parts = [self._epilog or '']
-        hook_epilogs = filter(
-            None,
-            (h.obj.get_epilog() for h in self._hooks),
-        )
+        hook_epilogs = [
+            h.obj.get_epilog() for h in self._hooks if h is not None
+        ]
         parts.extend(hook_epilogs)
         app_dist_name = getattr(
             self,

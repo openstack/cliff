@@ -12,12 +12,14 @@
 
 """Application base class."""
 
+import argparse
 import inspect
 import locale
 import logging
 import logging.handlers
 import os
 import sys
+import typing as ty
 
 from cliff import _argparse
 from . import complete
@@ -234,7 +236,7 @@ class App:
            explicitly this method in initialize_app.
         """
         if self.deferred_help and self.options.deferred_help:
-            action = help.HelpAction(None, None, default=self)
+            action = help.HelpAction([], argparse.SUPPRESS, default=self)
             action(self.parser, self.options, None, None)
 
     def run(self, argv):
@@ -374,7 +376,7 @@ class App:
     def run_subcommand(self, argv):
         try:
             subcommand = self.command_manager.find_command(argv)
-        except ValueError as err:
+        except ValueError as exc:
             # If there was no exact match, try to find a fuzzy match
             the_cmd = argv[0]
             fuzzy_matches = self.get_fuzzy_matches(the_cmd)
@@ -399,15 +401,16 @@ class App:
                 if self.options.debug:
                     raise
                 else:
-                    self.LOG.error(err)
+                    self.LOG.error(exc)
             return 2
+
         cmd_factory, cmd_name, sub_argv = subcommand
         kwargs = {}
         if 'cmd_name' in inspect.getfullargspec(cmd_factory.__init__).args:
             kwargs['cmd_name'] = cmd_name
         cmd = cmd_factory(self, self.options, **kwargs)
         result = 1
-        err = None
+        err: ty.Optional[BaseException] = None
         try:
             self.prepare_to_run_command(cmd)
             full_name = (

@@ -282,7 +282,7 @@ class AutoprogramCliffDirective(rst.Directive):
                 if fnmatch.fnmatch(x, command_pattern)
             ]
         else:
-            commands = manager.commands.keys()
+            commands = list(manager.commands.keys())
 
         if not commands:
             msg = 'No commands found in the "{}" namespace'
@@ -308,7 +308,7 @@ class AutoprogramCliffDirective(rst.Directive):
         parser.prog = application_name
 
         source_name = f'<{app.__class__.__name__}>'
-        result = statemachine.ViewList()
+        result: statemachine.ViewList[str] = statemachine.ViewList()
         for line in _format_parser(parser):
             result.append(line, source_name)
 
@@ -355,7 +355,7 @@ class AutoprogramCliffDirective(rst.Directive):
         )
 
         source_name = f'<{command.__class__.__name__}>'
-        result = statemachine.ViewList()
+        result: statemachine.ViewList[str] = statemachine.ViewList()
 
         for line in _format_parser(parser):
             result.append(line, source_name)

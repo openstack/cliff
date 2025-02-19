@@ -38,13 +38,12 @@ class CSVLister(ListFormatter):
         )
 
     def emit_list(self, column_names, data, stdout, parsed_args):
-        writer_kwargs = dict(
+        writer = csv.writer(
+            stdout,
             quoting=self.QUOTE_MODES[parsed_args.quote_mode],
             lineterminator=os.linesep,
             escapechar='\\',
         )
-
-        writer = csv.writer(stdout, **writer_kwargs)
         writer.writerow(column_names)
         for row in data:
             writer.writerow(

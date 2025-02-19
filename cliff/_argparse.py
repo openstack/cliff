@@ -18,7 +18,7 @@ import warnings
 from autopage import argparse
 
 
-class _ArgumentContainerMixIn:
+class ArgumentParser(argparse.ArgumentParser):
     # NOTE(dhellmann): We have to override the methods for creating
     # groups to return our objects that know how to deal with the
     # special conflict handler.
@@ -40,10 +40,6 @@ class _ArgumentContainerMixIn:
             action,
             conflicting_actions,
         )
-
-
-class ArgumentParser(_ArgumentContainerMixIn, argparse.ArgumentParser):
-    pass
 
 
 def _handle_conflict_ignore(
@@ -79,14 +75,52 @@ def _handle_conflict_ignore(
             )
 
 
-class _ArgumentGroup(_ArgumentContainerMixIn, orig_argparse._ArgumentGroup):
-    pass
+class _ArgumentGroup(orig_argparse._ArgumentGroup):
+    # NOTE(dhellmann): We have to override the methods for creating
+    # groups to return our objects that know how to deal with the
+    # special conflict handler.
+
+    def add_argument_group(self, *args, **kwargs):
+        group = _ArgumentGroup(self, *args, **kwargs)
+        self._action_groups.append(group)
+        return group
+
+    def add_mutually_exclusive_group(self, **kwargs):
+        group = _MutuallyExclusiveGroup(self, **kwargs)
+        self._mutually_exclusive_groups.append(group)
+        return group
+
+    def _handle_conflict_ignore(self, action, conflicting_actions):
+        _handle_conflict_ignore(
+            self,
+            self._option_string_actions,
+            action,
+            conflicting_actions,
+        )
 
 
-class _MutuallyExclusiveGroup(
-    _ArgumentContainerMixIn, orig_argparse._MutuallyExclusiveGroup
-):
-    pass
+class _MutuallyExclusiveGroup(orig_argparse._MutuallyExclusiveGroup):
+    # NOTE(dhellmann): We have to override the methods for creating
+    # groups to return our objects that know how to deal with the
+    # special conflict handler.
+
+    def add_argument_group(self, *args, **kwargs):
+        group = _ArgumentGroup(self, *args, **kwargs)
+        self._action_groups.append(group)
+        return group
+
+    def add_mutually_exclusive_group(self, **kwargs):
+        group = _MutuallyExclusiveGroup(self, **kwargs)
+        self._mutually_exclusive_groups.append(group)
+        return group
+
+    def _handle_conflict_ignore(self, action, conflicting_actions):
+        _handle_conflict_ignore(
+            self,
+            self._option_string_actions,
+            action,
+            conflicting_actions,
+        )
 
 
 class SmartHelpFormatter(argparse.HelpFormatter):

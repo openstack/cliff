@@ -15,6 +15,7 @@
 import itertools
 import shlex
 import sys
+import typing as ty
 
 import autopage.argparse
 import cmd2
@@ -78,13 +79,13 @@ class InteractiveApp(cmd2.Cmd):
             # otherise keep old behaviour
             return ret
 
-    def completenames(self, text, line, begidx, endidx):
+    def completenames(self, text: str, *ignored: ty.Any) -> list[str]:
         """Tab-completion for command prefix without completer delimiter.
 
         This method returns cmd style and cliff style commands matching
         provided command prefix (text).
         """
-        completions = cmd2.Cmd.completenames(self, text, line, begidx, endidx)
+        completions = cmd2.Cmd.completenames(self, text)
         completions += self._complete_prefix(text)
         return completions
 
@@ -130,21 +131,11 @@ class InteractiveApp(cmd2.Cmd):
             # Dispatch to the underlying help command,
             # which knows how to provide help for extension
             # commands.
-            try:
-                # NOTE(coreycb): This try path can be removed once
-                # requirements.txt has cmd2 >= 0.7.3.
-                parsed = self.parsed
-            except AttributeError:
-                try:
-                    parsed = self.parser_manager.parsed
-                except AttributeError:
-                    # cmd2 >= 0.9.1 does not have a parser manager
-                    parsed = lambda x: x  # noqa
-            self.default(parsed('help ' + arg))
+            self.default('help ' + arg)
         else:
             stdout = self.stdout
             try:
-                with autopage.argparse.help_pager(stdout) as paged_out:
+                with autopage.argparse.help_pager(stdout) as paged_out:  # type: ignore
                     self.stdout = paged_out
 
                     cmd2.Cmd.do_help(self, arg)
@@ -207,8 +198,10 @@ class InteractiveApp(cmd2.Cmd):
                 )
         return statement
 
-    def cmdloop(self):
+    def cmdloop(self, intro: ty.Optional[str] = None) -> None:  # type: ignore[override]
         # We don't want the cmd2 cmdloop() behaviour, just call the old one
         # directly.  In part this is because cmd2.cmdloop() doe not return
         # anything useful and we want to have a useful exit code.
-        return self._cmdloop()
+        # FIXME(stephenfin): The above is no longer true: _cmdloop now returns
+        # nothing.
+        self._cmdloop()

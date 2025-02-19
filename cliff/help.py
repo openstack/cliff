@@ -49,7 +49,10 @@ class HelpAction(argparse.Action):
             dists_by_module = command._get_distributions_by_modules()
 
             def dist_for_obj(obj):
-                name = inspect.getmodule(obj).__name__.partition('.')[0]
+                mod = inspect.getmodule(obj)
+                if mod is None:
+                    raise RuntimeError(f"failed to find app: {obj}")
+                name = mod.__name__.partition('.')[0]
                 return dists_by_module.get(name)
 
             app_dist = dist_for_obj(app)
@@ -140,6 +143,6 @@ class HelpCommand(command.Command):
                 )
                 cmd_parser.print_help(out)
         else:
-            action = HelpAction(None, None, default=self.app)
+            action = HelpAction([], dest=argparse.SUPPRESS, default=self.app)
             action(self.app.parser, self.app.options, None, None)
         return 0

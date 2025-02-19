@@ -12,6 +12,7 @@
 
 """Bash completion for the CLI."""
 
+import abc
 import logging
 
 import stevedore
@@ -67,12 +68,18 @@ class CompleteDictionary:
         return sorted(self._get_data_recurse(self._dictionary, ""))
 
 
-class CompleteShellBase:
+class CompleteShellBase(metaclass=abc.ABCMeta):
     """base class for bash completion generation"""
 
     def __init__(self, name, output):
         self.name = str(name)
         self.output = output
+
+    @abc.abstractmethod
+    def get_header(self) -> str: ...
+
+    @abc.abstractmethod
+    def get_trailer(self) -> str: ...
 
     def write(self, cmdo, data):
         self.output.write(self.get_header())
