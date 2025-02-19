@@ -38,6 +38,7 @@ module = [
     "cliff.columns",
     "cliff.commandmanager",
     "cliff.command",
+    "cliff.complete",
     "cliff.display",
     "cliff.interactive",
     "cliff.lister",

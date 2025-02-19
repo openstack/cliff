@@ -20,7 +20,7 @@ import typing as ty
 import stevedore
 
 from cliff import _argparse
-from cliff import command
+from cliff import command as _command
 
 if ty.TYPE_CHECKING:
     from cliff import app
@@ -82,7 +82,7 @@ class CompleteDictionary:
 class CompleteShellBase(metaclass=abc.ABCMeta):
     """base class for bash completion generation"""
 
-    def __init__(self, name, output):
+    def __init__(self, name: str, output: ty.TextIO) -> None:
         self.name = str(name)
         self.output = output
 
@@ -92,7 +92,7 @@ class CompleteShellBase(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_trailer(self) -> str: ...
 
-    def write(self, cmdo, data):
+    def write(self, cmdo: str, data: list[tuple[str, str]]) -> None:
         self.output.write(self.get_header())
         self.output.write(f"  cmds='{cmdo}'\n")
         for datum in data:
@@ -101,30 +101,30 @@ class CompleteShellBase(metaclass=abc.ABCMeta):
         self.output.write(self.get_trailer())
 
     @property
-    def escaped_name(self):
+    def escaped_name(self) -> str:
         return self.name.replace('-', '_')
 
 
 class CompleteNoCode(CompleteShellBase):
     """completion with no code"""
 
-    def __init__(self, name, output):
+    def __init__(self, name: str, output: ty.TextIO) -> None:
         super().__init__(name, output)
 
-    def get_header(self):
+    def get_header(self) -> str:
         return ''
 
-    def get_trailer(self):
+    def get_trailer(self) -> str:
         return ''
 
 
 class CompleteBash(CompleteShellBase):
     """completion for bash"""
 
-    def __init__(self, name, output):
+    def __init__(self, name: str, output: ty.TextIO) -> None:
         super().__init__(name, output)
 
-    def get_header(self):
+    def get_header(self) -> str:
         return (
             '_'
             + self.escaped_name
@@ -138,7 +138,7 @@ class CompleteBash(CompleteShellBase):
 """
         )
 
-    def get_trailer(self):
+    def get_trailer(self) -> str:
         return (
             """
   dash=-
@@ -187,7 +187,7 @@ complete -F _"""
         )
 
 
-class CompleteCommand(command.Command):
+class CompleteCommand(_command.Command):
     """print bash completion command"""
 
     log = logging.getLogger(__name__ + '.CompleteCommand')
@@ -223,7 +223,7 @@ class CompleteCommand(command.Command):
     def get_actions(self, command: list[str]) -> list[argparse.Action]:
         the_cmd = self.app.command_manager.find_command(command)
         cmd_factory, cmd_name, search_args = the_cmd
-        cmd = cmd_factory(self.app, search_args)
+        cmd: _command.Command = cmd_factory(self.app, None)
         if self.app.interactive_mode:
             full_name = cmd_name
         else:
