@@ -41,6 +41,7 @@ module = [
     "cliff.complete",
     "cliff.display",
     "cliff.help",
+    "cliff.hooks",
     "cliff.interactive",
     "cliff.lister",
     "cliff.show",

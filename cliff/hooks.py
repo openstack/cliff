@@ -11,6 +11,10 @@
 #  under the License.
 
 import abc
+import argparse
+
+from cliff import _argparse
+from cliff import command
 
 
 class CommandHook(metaclass=abc.ABCMeta):
@@ -21,11 +25,13 @@ class CommandHook(metaclass=abc.ABCMeta):
 
     """
 
-    def __init__(self, command):
+    def __init__(self, command: command.Command):
         self.cmd = command
 
     @abc.abstractmethod
-    def get_parser(self, parser):
+    def get_parser(
+        self, parser: _argparse.ArgumentParser
+    ) -> _argparse.ArgumentParser:
         """Return an :class:`argparse.ArgumentParser`.
 
         :param parser: An existing ArgumentParser instance to be modified.
@@ -35,12 +41,12 @@ class CommandHook(metaclass=abc.ABCMeta):
         return parser
 
     @abc.abstractmethod
-    def get_epilog(self):
+    def get_epilog(self) -> str:
         "Return text to add to the command help epilog."
         return ''
 
     @abc.abstractmethod
-    def before(self, parsed_args):
+    def before(self, parsed_args: argparse.Namespace) -> argparse.Namespace:
         """Called before the command's take_action() method.
 
         :param parsed_args: The arguments to the command.
@@ -50,7 +56,7 @@ class CommandHook(metaclass=abc.ABCMeta):
         return parsed_args
 
     @abc.abstractmethod
-    def after(self, parsed_args, return_code):
+    def after(self, parsed_args: argparse.Namespace, return_code: int) -> int:
         """Called after the command's take_action() method.
 
         :param parsed_args: The arguments to the command.
