@@ -36,6 +36,7 @@ module = [
     "cliff.app",
     "cliff._argparse",
     "cliff.columns",
+    "cliff.commandmanager",
     "cliff.interactive",
 ]
 disallow_untyped_calls = true

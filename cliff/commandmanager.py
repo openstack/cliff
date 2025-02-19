@@ -12,16 +12,21 @@
 
 """Discover and lookup command plugins."""
 
+import collections.abc
 import inspect
 import logging
 import typing as ty
 
 import stevedore
 
+from cliff import command
+
 LOG = logging.getLogger(__name__)
 
 
-def _get_commands_by_partial_name(args, commands):
+def _get_commands_by_partial_name(
+    args: list[str], commands: list[str]
+) -> list[str]:
     n = len(args)
     candidates = []
     for command_name in commands:
@@ -36,11 +41,13 @@ def _get_commands_by_partial_name(args, commands):
 class EntryPointWrapper:
     """Wrap up a command class already imported to make it look like a plugin."""
 
-    def __init__(self, name, command_class):
+    def __init__(
+        self, name: str, command_class: type[command.Command]
+    ) -> None:
         self.name = name
         self.command_class = command_class
 
-    def load(self, require=False):
+    def load(self, require: bool = False) -> type[command.Command]:
         return self.command_class
 
 
@@ -53,20 +60,22 @@ class CommandManager:
         spaces in entry_point commands.
     """
 
-    def __init__(self, namespace, convert_underscores=True):
-        self.commands = {}
-        self._legacy = {}
+    def __init__(
+        self, namespace: str, convert_underscores: bool = True
+    ) -> None:
+        self.commands: dict[str, EntryPointWrapper] = {}
+        self._legacy: dict[str, str] = {}
         self.namespace = namespace
         self.convert_underscores = convert_underscores
-        self.group_list = []
+        self.group_list: list[str] = []
         self._load_commands()
 
-    def _load_commands(self):
+    def _load_commands(self) -> None:
         # NOTE(jamielennox): kept for compatibility.
         if self.namespace:
             self.load_commands(self.namespace)
 
-    def load_commands(self, namespace):
+    def load_commands(self, namespace: str) -> None:
         """Load all the commands from an entrypoint"""
         self.group_list.append(namespace)
         for ep in stevedore.ExtensionManager(namespace):
@@ -77,15 +86,18 @@ class CommandManager:
                 else ep.name
             )
             self.commands[cmd_name] = ep.entry_point
-        return
 
-    def __iter__(self):
+    def __iter__(
+        self,
+    ) -> collections.abc.Iterator[tuple[str, EntryPointWrapper]]:
         return iter(self.commands.items())
 
-    def add_command(self, name: str, command_class: ty.Any) -> None:
+    def add_command(
+        self, name: str, command_class: type[command.Command]
+    ) -> None:
         self.commands[name] = EntryPointWrapper(name, command_class)
 
-    def add_legacy_command(self, old_name, new_name):
+    def add_legacy_command(self, old_name: str, new_name: str) -> None:
         """Map an old command name to the new name.
 
         :param old_name: The old command name.
@@ -115,7 +127,7 @@ class CommandManager:
                 found = name
             else:
                 candidates = _get_commands_by_partial_name(
-                    argv[:i], self.commands
+                    argv[:i], list(self.commands.keys())
                 )
                 if len(candidates) == 1:
                     found = candidates[0]
@@ -135,7 +147,7 @@ class CommandManager:
         else:
             raise ValueError(f'Unknown command {argv!r}')
 
-    def _get_last_possible_command_index(self, argv):
+    def _get_last_possible_command_index(self, argv: list[str]) -> int:
         """Returns the index after the last argument
         in argv that can be a command word
         """
@@ -144,18 +156,18 @@ class CommandManager:
                 return i
         return len(argv)
 
-    def add_command_group(self, group=None):
+    def add_command_group(self, group: ty.Optional[str] = None) -> None:
         """Adds another group of command entrypoints"""
         if group:
             self.load_commands(group)
 
-    def get_command_groups(self):
+    def get_command_groups(self) -> list[str]:
         """Returns a list of the loaded command groups"""
         return self.group_list
 
-    def get_command_names(self, group=None):
+    def get_command_names(self, group: ty.Optional[str] = None) -> list[str]:
         """Returns a list of commands loaded for the specified group"""
-        group_list = []
+        group_list: list[str] = []
         if group is not None:
             for ep in stevedore.ExtensionManager(group):
                 cmd_name = (
