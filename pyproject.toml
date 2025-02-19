@@ -1,3 +1,36 @@
+[tool.mypy]
+python_version = "3.9"
+show_column_numbers = true
+show_error_context = true
+ignore_missing_imports = true
+follow_imports = "normal"
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = false
+warn_unused_configs = true
+warn_redundant_casts = true
+strict_equality = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = false
+disallow_incomplete_defs = true
+disallow_untyped_defs = false
+no_implicit_reexport = true
+extra_checks = true
+# keep this in-sync with 'mypy.exclude' in '.pre-commit-config.yaml'
+exclude = '''
+(?x)(
+    doc
+    | demoapp
+    | releasenotes
+  )
+'''
+
+[[tool.mypy.overrides]]
+module = ["cliff.tests.*"]
+ignore_errors = true
+
 [tool.ruff]
 line-length = 79
 
