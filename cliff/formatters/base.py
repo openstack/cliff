@@ -13,11 +13,14 @@
 """Base classes for formatters."""
 
 import abc
+import argparse
+import collections.abc
+import typing as ty
 
 
 class Formatter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         """Add any options to the argument parser.
 
         Should use our own argument group.
@@ -28,7 +31,13 @@ class ListFormatter(Formatter, metaclass=abc.ABCMeta):
     """Base class for formatters that know how to deal with multiple objects."""
 
     @abc.abstractmethod
-    def emit_list(self, column_names, data, stdout, parsed_args):
+    def emit_list(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         """Format and print the list from the iterable data source.
 
         Data values can be primitive types like ints and strings, or
@@ -42,7 +51,6 @@ class ListFormatter(Formatter, metaclass=abc.ABCMeta):
                      with values in order of column names
         :param stdout: output stream where data should be written
         :param parsed_args: argparse namespace from our local options
-
         """
 
 
@@ -50,7 +58,13 @@ class SingleFormatter(Formatter, metaclass=abc.ABCMeta):
     """Base class for formatters that work with single objects."""
 
     @abc.abstractmethod
-    def emit_one(self, column_names, data, stdout, parsed_args):
+    def emit_one(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Sequence[ty.Any],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         """Format and print the values associated with the single object.
 
         Data values can be primitive types like ints and strings, or

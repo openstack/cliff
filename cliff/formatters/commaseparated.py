@@ -12,14 +12,17 @@
 
 """Output formatters using csv format."""
 
+import argparse
+import collections.abc
 import csv
 import os
+import typing as ty
 
-from .base import ListFormatter
 from cliff import columns
+from cliff.formatters import base
 
 
-class CSVLister(ListFormatter):
+class CSVLister(base.ListFormatter):
     QUOTE_MODES = {
         'all': csv.QUOTE_ALL,
         'minimal': csv.QUOTE_MINIMAL,
@@ -27,7 +30,7 @@ class CSVLister(ListFormatter):
         'none': csv.QUOTE_NONE,
     }
 
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         group = parser.add_argument_group('CSV Formatter')
         group.add_argument(
             '--quote',
@@ -37,7 +40,13 @@ class CSVLister(ListFormatter):
             help='when to include quotes, defaults to nonnumeric',
         )
 
-    def emit_list(self, column_names, data, stdout, parsed_args):
+    def emit_list(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         writer = csv.writer(
             stdout,
             quoting=self.QUOTE_MODES[parsed_args.quote_mode],

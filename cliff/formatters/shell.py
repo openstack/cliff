@@ -12,14 +12,16 @@
 
 """Output formatters using shell syntax."""
 
-from . import base
-from cliff import columns
-
 import argparse
+import collections.abc
+import typing as ty
+
+from cliff import columns
+from cliff.formatters import base
 
 
 class ShellFormatter(base.SingleFormatter):
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         group = parser.add_argument_group(
             title='shell formatter',
             description='a format a UNIX shell can parse (variable="value")',
@@ -40,7 +42,13 @@ class ShellFormatter(base.SingleFormatter):
             help='add a prefix to all variable names',
         )
 
-    def emit_one(self, column_names, data, stdout, parsed_args):
+    def emit_one(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Sequence[ty.Any],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         variable_names = [c.lower().replace(' ', '_') for c in column_names]
         desired_columns = parsed_args.variables
         for name, value in zip(variable_names, data):

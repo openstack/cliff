@@ -12,11 +12,15 @@
 
 """Output formatters using PyYAML."""
 
-from . import base
+import argparse
+import collections.abc
+import typing as ty
+
 from cliff import columns
+from cliff.formatters import base
 
 
-def _yaml_friendly(value):
+def _yaml_friendly(value: ty.Any) -> ty.Any:
     if isinstance(value, columns.FormattableColumn):
         return value.machine_readable()
     elif hasattr(value, "toDict"):
@@ -28,10 +32,16 @@ def _yaml_friendly(value):
 
 
 class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         pass
 
-    def emit_list(self, column_names, data, stdout, parsed_args):
+    def emit_list(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         # the yaml import is slow, so defer loading until we know we want it
         import yaml
 
@@ -42,7 +52,13 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
             )
         yaml.safe_dump(items, stream=stdout, default_flow_style=False)
 
-    def emit_one(self, column_names, data, stdout, parsed_args):
+    def emit_one(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Sequence[ty.Any],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         # the yaml import is slow, so defer loading until we know we want it
         import yaml
 

@@ -12,17 +12,26 @@
 
 """Output formatters using prettytable."""
 
+import argparse
+import collections.abc
 import os
 import sys
+import typing as ty
 
 import prettytable
 
-from cliff import utils
-from . import base
 from cliff import columns
+from cliff.formatters import base
+from cliff import utils
+
+_T = ty.TypeVar('_T')
 
 
-def _format_row(row):
+def _format_row(
+    row: collections.abc.Iterable[
+        ty.Union[columns.FormattableColumn[ty.Any], str, _T]
+    ],
+) -> list[ty.Union[_T, str]]:
     new_row = []
     for r in row:
         if isinstance(r, columns.FormattableColumn):
@@ -33,7 +42,7 @@ def _format_row(row):
     return new_row
 
 
-def _do_fit(fit_width):
+def _do_fit(fit_width: bool) -> bool:
     if os.name == 'nt':
         # NOTE(pas-ha) the isatty is not reliable enough on Windows,
         # so do not try to auto-fit
@@ -48,7 +57,7 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         float: 'r',
     }
 
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         group = parser.add_argument_group('table formatter')
         group.add_argument(
             '--max-width',
@@ -78,7 +87,12 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
             help='Print empty table if there is no data to show.',
         )
 
-    def add_rows(self, table, column_names, data):
+    def add_rows(
+        self,
+        table: prettytable.PrettyTable,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+    ) -> None:
         # Figure out the types of the columns in the
         # first row and set the alignment of the
         # output accordingly.
@@ -96,7 +110,13 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
             for row in data_iter:
                 table.add_row(_format_row(row))
 
-    def emit_list(self, column_names, data, stdout, parsed_args):
+    def emit_list(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         x = prettytable.PrettyTable(
             column_names,
             print_empty=parsed_args.print_empty,
@@ -120,7 +140,13 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         stdout.write('\n')
         return
 
-    def emit_one(self, column_names, data, stdout, parsed_args):
+    def emit_one(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Sequence[ty.Any],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         x = prettytable.PrettyTable(
             field_names=('Field', 'Value'), print_empty=False
         )
@@ -147,14 +173,16 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         return
 
     @staticmethod
-    def _field_widths(field_names, first_line):
+    def _field_widths(
+        field_names: list[str], first_line: str
+    ) -> dict[str, int]:
         # use the first line +----+-------+ to infer column widths
         # accounting for padding and dividers
         widths = [max(0, len(i) - 2) for i in first_line.split('+')[1:-1]]
         return dict(zip(field_names, widths))
 
     @staticmethod
-    def _width_info(term_width, field_count):
+    def _width_info(term_width: int, field_count: int) -> tuple[int, int]:
         # remove padding and dividers for width available to actual content
         usable_total_width = max(0, term_width - 1 - 3 * field_count)
 
@@ -168,8 +196,11 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
 
     @staticmethod
     def _build_shrink_fields(
-        usable_total_width, optimal_width, field_widths, field_names
-    ):
+        usable_total_width: int,
+        optimal_width: int,
+        field_widths: dict[str, int],
+        field_names: list[str],
+    ) -> tuple[list[str], int]:
         shrink_fields = []
         shrink_remaining = usable_total_width
         for field in field_names:
@@ -183,7 +214,12 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         return shrink_fields, shrink_remaining
 
     @staticmethod
-    def _assign_max_widths(x, max_width, min_width=0, fit_width=False):
+    def _assign_max_widths(
+        table: prettytable.PrettyTable,
+        max_width: int,
+        min_width: int = 0,
+        fit_width: bool = False,
+    ) -> None:
         """Set maximum widths for columns of table `x`,
         with the last column recieving either leftover columns
         or `min_width`, depending on what offers more space.
@@ -192,37 +228,40 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
             term_width = max_width
         elif not _do_fit(fit_width):
             # Fitting is disabled
-            return
+            return None
         else:
-            term_width = utils.terminal_width()
-            if not term_width:
+            _term_width = utils.terminal_width()
+            if not _term_width:
                 # not a tty, so do not set any max widths
-                return
-        field_count = len(x.field_names)
+                return None
+            term_width = _term_width
+        field_count = len(table.field_names)
 
         try:
-            first_line = x.get_string().splitlines()[0]
+            first_line = table.get_string().splitlines()[0]
             if len(first_line) <= term_width:
-                return
+                return None
         except IndexError:
-            return
+            return None
 
         usable_total_width, optimal_width = TableFormatter._width_info(
             term_width, field_count
         )
 
-        field_widths = TableFormatter._field_widths(x.field_names, first_line)
+        field_widths = TableFormatter._field_widths(
+            table.field_names, first_line
+        )
 
         shrink_fields, shrink_remaining = TableFormatter._build_shrink_fields(
-            usable_total_width, optimal_width, field_widths, x.field_names
+            usable_total_width, optimal_width, field_widths, table.field_names
         )
 
         shrink_to = shrink_remaining // len(shrink_fields)
         # make all shrinkable fields size shrink_to apart from the last one
         for field in shrink_fields[:-1]:
-            x.max_width[field] = max(min_width, shrink_to)
+            table.max_width[field] = max(min_width, shrink_to)
             shrink_remaining -= shrink_to
 
         # give the last shrinkable column any remaining shrink or min_width
         field = shrink_fields[-1]
-        x.max_width[field] = max(min_width, shrink_remaining)
+        table.max_width[field] = max(min_width, shrink_remaining)

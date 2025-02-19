@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import os
+import typing as ty
 
 # Each edit operation is assigned different cost, such as:
 #  'w' means swap operation, the cost is 0;
@@ -90,7 +91,7 @@ def damerau_levenshtein(s1: str, s2: str, cost: dict[str, int]) -> int:
     return row1[-1]
 
 
-def terminal_width():
+def terminal_width() -> ty.Optional[int]:
     """Return terminal width in columns
 
     Uses `os.get_terminal_size` function

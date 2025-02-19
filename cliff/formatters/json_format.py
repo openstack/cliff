@@ -12,14 +12,17 @@
 
 """Output formatters for JSON."""
 
+import argparse
+import collections.abc
 import json
+import typing as ty
 
-from . import base
 from cliff import columns
+from cliff.formatters import base
 
 
 class JSONFormatter(base.ListFormatter, base.SingleFormatter):
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         group = parser.add_argument_group(title='json formatter')
         group.add_argument(
             '--noindent',
@@ -28,7 +31,13 @@ class JSONFormatter(base.ListFormatter, base.SingleFormatter):
             help='whether to disable indenting the JSON',
         )
 
-    def emit_list(self, column_names, data, stdout, parsed_args):
+    def emit_list(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         items = []
         for item in data:
             items.append(
@@ -45,7 +54,13 @@ class JSONFormatter(base.ListFormatter, base.SingleFormatter):
         json.dump(items, stdout, indent=indent)
         stdout.write('\n')
 
-    def emit_one(self, column_names, data, stdout, parsed_args):
+    def emit_one(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Sequence[ty.Any],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         one = {
             n: (
                 i.machine_readable()

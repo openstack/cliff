@@ -12,15 +12,25 @@
 
 """Output formatters values only"""
 
-from . import base
+import argparse
+import collections.abc
+import typing as ty
+
 from cliff import columns
+from cliff.formatters import base
 
 
 class ValueFormatter(base.ListFormatter, base.SingleFormatter):
-    def add_argument_group(self, parser):
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
         pass
 
-    def emit_list(self, column_names, data, stdout, parsed_args):
+    def emit_list(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         for row in data:
             stdout.write(
                 ' '.join(
@@ -35,7 +45,13 @@ class ValueFormatter(base.ListFormatter, base.SingleFormatter):
             )
         return
 
-    def emit_one(self, column_names, data, stdout, parsed_args):
+    def emit_one(
+        self,
+        column_names: collections.abc.Sequence[str],
+        data: collections.abc.Sequence[ty.Any],
+        stdout: ty.TextIO,
+        parsed_args: argparse.Namespace,
+    ) -> None:
         for value in data:
             stdout.write(
                 '{}\n'.format(
