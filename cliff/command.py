@@ -98,7 +98,7 @@ class Command(metaclass=abc.ABCMeta):
 
     def _load_hooks(self) -> None:
         # Look for command extensions
-        if self.app and self.cmd_name:
+        if self.cmd_name:
             namespace = '{}.{}'.format(
                 self.app.command_manager.namespace,
                 self.cmd_name.replace(' ', '_'),

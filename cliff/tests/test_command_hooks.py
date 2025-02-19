@@ -10,6 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import argparse
+
 from cliff import app as application
 from cliff import command
 from cliff import commandmanager
@@ -161,8 +163,9 @@ class TestListerChangeHook(hooks.CommandHook):
 
 
 class TestCommandLoadHooks(base.TestBase):
-    def test_no_app_or_name(self):
-        cmd = TestCommand(None, None)
+    def test_no_name(self):
+        app = make_app()
+        cmd = TestCommand(app, None)
         self.assertEqual([], cmd._hooks)
 
     @mock.patch('stevedore.extension.ExtensionManager')
@@ -199,12 +202,12 @@ class TestHooks(base.TestBase):
 
     def test_before(self):
         self.assertFalse(self.hook._before_called)
-        self.cmd.run(None)
+        self.cmd.run(argparse.Namespace())
         self.assertTrue(self.hook._before_called)
 
     def test_after(self):
         self.assertFalse(self.hook._after_called)
-        result = self.cmd.run(None)
+        result = self.cmd.run(argparse.Namespace())
         self.assertTrue(self.hook._after_called)
         self.assertEqual(result, 42)
 

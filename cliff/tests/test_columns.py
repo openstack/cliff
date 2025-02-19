@@ -10,12 +10,13 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import typing as ty
 import unittest
 
 from cliff import columns
 
 
-class FauxColumn(columns.FormattableColumn):
+class FauxColumn(columns.FormattableColumn[ty.Union[str, list[str]]]):
     def human_readable(self):
         return f'I made this string myself: {self._value}'
 

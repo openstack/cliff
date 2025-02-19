@@ -13,8 +13,10 @@
 import argparse
 import functools
 
+from cliff import app
 from cliff import command
 from cliff.tests import base
+from cliff.tests import utils
 
 
 class TestCommand(command.Command):
@@ -59,13 +61,19 @@ class TestCommandNoDocstring(command.Command):
 
 
 class TestDescription(base.TestBase):
+    def setUp(self):
+        super().setUp()
+        self.app = app.App(
+            'foo', '1.0', utils.TestCommandManager(utils.TEST_NAMESPACE)
+        )
+
     def test_get_description_docstring(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         desc = cmd.get_description()
         assert desc == "Description of command."
 
     def test_get_description_attribute(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         # Artificially inject a value for _description to verify that it
         # overrides the docstring.
         cmd._description = 'this is not the default'
@@ -73,24 +81,30 @@ class TestDescription(base.TestBase):
         assert desc == 'this is not the default'
 
     def test_get_description_default(self):
-        cmd = TestCommandNoDocstring(None, None)
+        cmd = TestCommandNoDocstring(self.app, None)
         desc = cmd.get_description()
         assert desc == ''
 
 
 class TestBasicValues(base.TestBase):
+    def setUp(self):
+        super().setUp()
+        self.app = app.App(
+            'foo', '1.0', utils.TestCommandManager(utils.TEST_NAMESPACE)
+        )
+
     def test_get_parser(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         parser = cmd.get_parser('NAME')
         assert parser.prog == 'NAME'
 
     def test_get_name(self):
-        cmd = TestCommand(None, None, cmd_name='object action')
+        cmd = TestCommand(self.app, None, cmd_name='object action')
         assert cmd.cmd_name == 'object action'
 
     def test_run_return(self):
-        cmd = TestCommand(None, None, cmd_name='object action')
-        assert cmd.run(None) == 42
+        cmd = TestCommand(self.app, None, cmd_name='object action')
+        assert cmd.run(argparse.Namespace()) == 42
 
 
 expected_help_message = """
@@ -113,8 +127,14 @@ expected_help_message = """
 
 
 class TestHelp(base.TestBase):
+    def setUp(self):
+        super().setUp()
+        self.app = app.App(
+            'foo', '1.0', utils.TestCommandManager(utils.TEST_NAMESPACE)
+        )
+
     def test_smart_help_formatter(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         parser = cmd.get_parser('NAME')
         # Set up the formatter to always use a width=80 so that the
         # terminal width of the developer's system does not cause the
@@ -132,8 +152,14 @@ class TestHelp(base.TestBase):
 
 
 class TestArgumentParser(base.TestBase):
+    def setUp(self):
+        super().setUp()
+        self.app = app.App(
+            'foo', '1.0', utils.TestCommandManager(utils.TEST_NAMESPACE)
+        )
+
     def test_option_name_collision(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         parser = cmd.get_parser('NAME')
         # We should have an exception registering an option with a
         # name that already exists because we configure the argument
@@ -146,7 +172,7 @@ class TestArgumentParser(base.TestBase):
         )
 
     def test_option_name_collision_with_alias(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         parser = cmd.get_parser('NAME')
         # We not should have an exception registering an option with a
         # name that already exists because we configure the argument
@@ -155,7 +181,7 @@ class TestArgumentParser(base.TestBase):
         parser.add_argument('-z', '--zero')
 
     def test_resolve_option_with_name_collision(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         parser = cmd.get_parser('NAME')
         parser.add_argument(
             '-z',
@@ -168,13 +194,13 @@ class TestArgumentParser(base.TestBase):
         self.assertEqual(args.zero, 'zero-default')
 
     def test_with_conflict_handler(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         cmd.conflict_handler = 'resolve'
         parser = cmd.get_parser('NAME')
         self.assertEqual(parser.conflict_handler, 'resolve')
 
     def test_raise_conflict_argument_error(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         parser = cmd.get_parser('NAME')
         parser.add_argument(
             '-f',
@@ -189,7 +215,7 @@ class TestArgumentParser(base.TestBase):
         )
 
     def test_resolve_conflict_argument(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         cmd.conflict_handler = 'resolve'
         parser = cmd.get_parser('NAME')
         parser.add_argument(
@@ -208,7 +234,7 @@ class TestArgumentParser(base.TestBase):
         self.assertEqual(args.foo, 'bar')
 
     def test_wrong_conflict_handler(self):
-        cmd = TestCommand(None, None)
+        cmd = TestCommand(self.app, None)
         cmd.conflict_handler = 'wrong'
         self.assertRaises(
             ValueError,

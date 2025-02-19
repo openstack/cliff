@@ -32,8 +32,7 @@ repos:
         # keep this in-sync with '[mypy] exclude' in 'pyproject.toml'
         exclude: |
           (?x)(
-            cliff/tests/.*
-            | demoapp/.*
+            demoapp/.*
             | doc/.*
             | releasenotes/.*
           )

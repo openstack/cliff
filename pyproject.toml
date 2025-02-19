@@ -29,7 +29,9 @@ exclude = '''
 
 [[tool.mypy.overrides]]
 module = ["cliff.tests.*"]
-ignore_errors = true
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_subclassing_any = false
 
 [tool.ruff]
 line-length = 79

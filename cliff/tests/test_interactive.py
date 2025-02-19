@@ -13,20 +13,20 @@
 
 import cmd2
 
+from cliff import app
 from cliff.interactive import InteractiveApp
 from cliff.tests import base
-
-
-class FakeApp:
-    NAME = 'Fake'
+from cliff.tests import utils
 
 
 class TestInteractive(base.TestBase):
     def make_interactive_app(self, errexit, *command_names):
         fake_command_manager = [(x, None) for x in command_names]
         return InteractiveApp(
-            FakeApp,
-            fake_command_manager,
+            app.App(
+                'foo', '1.0', utils.TestCommandManager(utils.TEST_NAMESPACE)
+            ),
+            fake_command_manager,  # type: ignore
             stdin=None,
             stdout=None,
             errexit=errexit,

@@ -10,6 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import typing as ty
 import weakref
 
 from unittest import mock
@@ -28,7 +29,7 @@ class FauxFormatter:
 
 
 class ExerciseLister(lister.Lister):
-    data = [('a', 'A'), ('b', 'B'), ('c', 'A')]
+    data: list[tuple[ty.Any, ty.Any]] = [('a', 'A'), ('b', 'B'), ('c', 'A')]
 
     def _load_formatter_plugins(self):
         return {
@@ -54,7 +55,7 @@ class ExerciseListerDifferentTypes(ExerciseLister):
 class TestLister(base.TestBase):
     def test_formatter_args(self):
         app = mock.Mock()
-        test_lister = ExerciseLister(app, [])
+        test_lister = ExerciseLister(app, None)
 
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
@@ -71,7 +72,7 @@ class TestLister(base.TestBase):
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
 
     def test_filter_by_columns_invalid(self):
-        test_lister = ExerciseLister(mock.Mock(), [])
+        test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('no_exist_column',)
         parsed_args.formatter = 'test'
@@ -85,7 +86,7 @@ class TestLister(base.TestBase):
             )
 
     def test_filter_by_columns_normalized(self):
-        test_lister = ExerciseLister(mock.Mock(), [])
+        test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('col1', 'COL2')
         parsed_args.formatter = 'test'
@@ -99,7 +100,7 @@ class TestLister(base.TestBase):
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
 
     def test_sort_by_column_cliff_side_procedure(self):
-        test_lister = ExerciseLister(mock.Mock(), [])
+        test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
         parsed_args.formatter = 'test'
@@ -113,7 +114,7 @@ class TestLister(base.TestBase):
         self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
 
     def test_sort_by_column_reverse_order(self):
-        test_lister = ExerciseLister(mock.Mock(), [])
+        test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
         parsed_args.formatter = 'test'
@@ -128,7 +129,7 @@ class TestLister(base.TestBase):
         self.assertEqual([['b', 'B'], ['c', 'A'], ['a', 'A']], data)
 
     def test_sort_by_column_data_already_sorted(self):
-        test_lister = ExerciseListerCustomSort(mock.Mock(), [])
+        test_lister = ExerciseListerCustomSort(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
         parsed_args.formatter = 'test'
@@ -142,7 +143,7 @@ class TestLister(base.TestBase):
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
 
     def test_sort_by_column_with_null(self):
-        test_lister = ExerciseListerNullValues(mock.Mock(), [])
+        test_lister = ExerciseListerNullValues(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
         parsed_args.formatter = 'test'
@@ -158,7 +159,7 @@ class TestLister(base.TestBase):
         )
 
     def test_sort_by_column_with_different_types(self):
-        test_lister = ExerciseListerDifferentTypes(mock.Mock(), [])
+        test_lister = ExerciseListerDifferentTypes(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
         parsed_args.formatter = 'test'
@@ -183,7 +184,7 @@ class TestLister(base.TestBase):
         )
 
     def test_sort_by_non_displayed_column(self):
-        test_lister = ExerciseLister(mock.Mock(), [])
+        test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1',)
         parsed_args.formatter = 'test'
@@ -202,7 +203,7 @@ class TestLister(base.TestBase):
         self.assertEqual([['a'], ['c'], ['b']], data)
 
     def test_sort_by_non_existing_column(self):
-        test_lister = ExerciseLister(mock.Mock(), [])
+        test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
         parsed_args.formatter = 'test'

@@ -10,6 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import argparse
 from io import StringIO
 
 from cliff.formatters import value
@@ -24,7 +25,7 @@ class TestValueFormatter(base.TestBase):
         d = ('A', 'B', 'C', '"no escape me"')
         expected = 'A\nB\nC\n"no escape me"\n'
         output = StringIO()
-        sf.emit_one(c, d, output, None)
+        sf.emit_one(c, d, output, argparse.Namespace())
         actual = output.getvalue()
         self.assertEqual(expected, actual)
 
@@ -34,7 +35,7 @@ class TestValueFormatter(base.TestBase):
         d = ('A', 'B', 'C', test_columns.FauxColumn(['the', 'value']))
         expected = "A\nB\nC\n['the', 'value']\n"
         output = StringIO()
-        sf.emit_one(c, d, output, None)
+        sf.emit_one(c, d, output, argparse.Namespace())
         actual = output.getvalue()
         self.assertEqual(expected, actual)
 
@@ -46,7 +47,7 @@ class TestValueFormatter(base.TestBase):
         data = [d1, d2]
         expected = 'A B C\nD E F\n'
         output = StringIO()
-        sf.emit_list(c, data, output, None)
+        sf.emit_list(c, data, output, argparse.Namespace())
         actual = output.getvalue()
         self.assertEqual(expected, actual)
 
@@ -57,6 +58,6 @@ class TestValueFormatter(base.TestBase):
         data = [d1]
         expected = "A B ['the', 'value']\n"
         output = StringIO()
-        sf.emit_list(c, data, output, None)
+        sf.emit_list(c, data, output, argparse.Namespace())
         actual = output.getvalue()
         self.assertEqual(expected, actual)

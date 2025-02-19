@@ -80,6 +80,20 @@ class TestFindUnknownCommand(base.TestBase):
             self.fail('expected a failure')
 
 
+class FooCommand(command.Command):
+    """Description of foo command."""
+
+    def take_action(self, parsed_args):
+        return 'foo'
+
+
+class FooBarCommand(command.Command):
+    """Description of foobar command."""
+
+    def take_action(self, parsed_args):
+        return 'foobar'
+
+
 class TestDynamicCommands(base.TestBase):
     def test_add(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
@@ -89,21 +103,12 @@ class TestDynamicCommands(base.TestBase):
         self.assertIs(mock_cmd, found_cmd)
 
     def test_intersected_commands(self):
-        def foo(arg):
-            pass
-
-        def foo_bar():
-            pass
-
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-        mgr.add_command('foo', foo)
-        mgr.add_command('foo bar', foo_bar)
+        mgr.add_command('foo', FooCommand)
+        mgr.add_command('foo bar', FooBarCommand)
 
-        self.assertIs(foo_bar, mgr.find_command(['foo', 'bar'])[0])
-        self.assertIs(
-            foo,
-            mgr.find_command(['foo', 'arg0'])[0],
-        )
+        self.assertIs(FooBarCommand, mgr.find_command(['foo', 'bar'])[0])
+        self.assertIs(FooCommand, mgr.find_command(['foo', 'arg0'])[0])
 
 
 class TestLoad(base.TestBase):
@@ -161,7 +166,7 @@ class FauxCommand2(FauxCommand):
 
 class TestLegacyCommand(base.TestBase):
     def test_find_legacy(self):
-        mgr = utils.TestCommandManager(None)
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mgr.add_command('new name', FauxCommand)
         mgr.add_legacy_command('old name', 'new name')
         cmd, name, remaining = mgr.find_command(['old', 'name'])
@@ -169,7 +174,7 @@ class TestLegacyCommand(base.TestBase):
         self.assertEqual(name, 'old name')
 
     def test_legacy_overrides_new(self):
-        mgr = utils.TestCommandManager(None)
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mgr.add_command('cmd1', FauxCommand)
         mgr.add_command('cmd2', FauxCommand2)
         mgr.add_legacy_command('cmd2', 'cmd1')
@@ -178,7 +183,7 @@ class TestLegacyCommand(base.TestBase):
         self.assertEqual(name, 'cmd2')
 
     def test_no_legacy(self):
-        mgr = utils.TestCommandManager(None)
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mgr.add_command('cmd1', FauxCommand)
         self.assertRaises(
             ValueError,
@@ -187,7 +192,7 @@ class TestLegacyCommand(base.TestBase):
         )
 
     def test_no_command(self):
-        mgr = utils.TestCommandManager(None)
+        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mgr.add_legacy_command('cmd2', 'cmd1')
         self.assertRaises(
             ValueError,
@@ -225,13 +230,13 @@ class TestGetByPartialName(base.TestBase):
         self.assertEqual(
             [],
             commandmanager._get_commands_by_partial_name(
-                ['r', 'p'], self.commands
+                ['r', 'p'], list(self.commands)
             ),
         )
         self.assertEqual(
             [],
             commandmanager._get_commands_by_partial_name(
-                ['r', 'p', 'c'], self.commands
+                ['r', 'p', 'c'], list(self.commands)
             ),
         )
 
@@ -240,7 +245,7 @@ class TestGetByPartialName(base.TestBase):
             2,
             len(
                 commandmanager._get_commands_by_partial_name(
-                    ['se', 'li'], self.commands
+                    ['se', 'li'], list(self.commands)
                 )
             ),
         )
@@ -249,36 +254,27 @@ class TestGetByPartialName(base.TestBase):
         self.assertEqual(
             ['resource provider list'],
             commandmanager._get_commands_by_partial_name(
-                ['r', 'p', 'l'], self.commands
+                ['r', 'p', 'l'], list(self.commands)
             ),
         )
         self.assertEqual(
             ['resource provider list'],
             commandmanager._get_commands_by_partial_name(
-                ['resource', 'provider', 'list'], self.commands
+                ['resource', 'provider', 'list'], list(self.commands)
             ),
         )
         self.assertEqual(
             ['server list'],
             commandmanager._get_commands_by_partial_name(
-                ['serve', 'l'], self.commands
+                ['serve', 'l'], list(self.commands)
             ),
         )
 
 
-class FakeCommand:
-    @classmethod
-    def load(cls):
-        return cls
-
-    def __init__(self):
-        return
-
-
-FAKE_CMD_ONE = FakeCommand
-FAKE_CMD_TWO = FakeCommand
-FAKE_CMD_ALPHA = FakeCommand
-FAKE_CMD_BETA = FakeCommand
+FAKE_CMD_ONE = commandmanager.EntryPointWrapper('one', utils.TestCommand)
+FAKE_CMD_TWO = commandmanager.EntryPointWrapper('two', utils.TestCommand)
+FAKE_CMD_ALPHA = commandmanager.EntryPointWrapper('alpha', utils.TestCommand)
+FAKE_CMD_BETA = commandmanager.EntryPointWrapper('beta', utils.TestCommand)
 
 
 class FakeCommandManager(commandmanager.CommandManager):
@@ -307,18 +303,18 @@ class TestCommandManagerGroups(base.TestBase):
 
         # Find a command added in initialization
         cmd_one, name, args = mgr.find_command(['one'])
-        self.assertEqual(FAKE_CMD_ONE, cmd_one)
+        self.assertEqual(FAKE_CMD_ONE.load(), cmd_one)
 
         # Load another command group
         mgr.add_command_group('greek')
 
         # Find a new command
         cmd_alpha, name, args = mgr.find_command(['alpha'])
-        self.assertEqual(FAKE_CMD_ALPHA, cmd_alpha)
+        self.assertEqual(FAKE_CMD_ALPHA.load(), cmd_alpha)
 
         # Ensure that the original commands were not overwritten
         cmd_two, name, args = mgr.find_command(['two'])
-        self.assertEqual(FAKE_CMD_TWO, cmd_two)
+        self.assertEqual(FAKE_CMD_TWO.load(), cmd_two)
 
     def test_get_command_groups(self):
         mgr = FakeCommandManager('test')

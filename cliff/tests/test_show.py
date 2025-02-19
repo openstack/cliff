@@ -43,7 +43,7 @@ class ExerciseShowOne(show.ShowOne):
 class TestShow(base.TestBase):
     def test_formatter_args(self):
         app = mock.Mock()
-        test_show = ExerciseShowOne(app, [])
+        test_show = ExerciseShowOne(app, None)
 
         parsed_args = mock.Mock()
         parsed_args.columns = ('Col1', 'Col2')
@@ -59,14 +59,14 @@ class TestShow(base.TestBase):
 
     def test_dict2columns(self):
         app = mock.Mock()
-        test_show = ExerciseShowOne(app, [])
+        test_show = ExerciseShowOne(app, None)
         d = {'a': 'A', 'b': 'B', 'c': 'C'}
         expected = [('a', 'b', 'c'), ('A', 'B', 'C')]
         actual = list(test_show.dict2columns(d))
         self.assertEqual(expected, actual)
 
     def test_no_exist_column(self):
-        test_show = ExerciseShowOne(mock.Mock(), [])
+        test_show = ExerciseShowOne(mock.Mock(), None)
         parsed_args = mock.Mock()
         parsed_args.columns = ('no_exist_column',)
         parsed_args.formatter = 'test'

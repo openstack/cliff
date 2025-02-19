@@ -22,33 +22,36 @@ from cliff.tests import base
 from cliff.tests import test_columns
 
 
-class args:
-    def __init__(self, max_width=0, print_empty=False, fit_width=False):
-        self.fit_width = fit_width
-        if max_width > 0:
-            self.max_width = max_width
-        else:
-            # Envvar is only taken into account iff CLI parameter not given
-            self.max_width = int(os.environ.get('CLIFF_MAX_TERM_WIDTH', 0))
-        self.print_empty = print_empty
+def _generate_namespace(
+    max_width: int = 0, print_empty: bool = False, fit_width: bool = False
+) -> argparse.Namespace:
+    if max_width == 0:
+        # Envvar is only taken into account if CLI parameter not given
+        max_width = int(os.environ.get('CLIFF_MAX_TERM_WIDTH', 0))
+
+    return argparse.Namespace(
+        max_width=max_width,
+        print_empty=print_empty,
+        fit_width=fit_width,
+    )
 
 
 def _table_tester_helper(tags, data, extra_args=None):
     """Get table output as a string, formatted according to
     CLI arguments, environment variables and terminal size
 
-    tags - tuple of strings for data tags (column headers or fields)
-    data - tuple of strings for single data row
-         - list of tuples of strings for multiple rows of data
-    extra_args - an instance of class args
-               - a list of strings for CLI arguments
+    :param tags: tuple of strings for data tags (column headers or fields)
+    :param data: tuple of strings for single data row or list of tuples of
+        strings for multiple rows of data
+    :param extra_args: an instance of argparse.Namespace, a list of strings for
+        CLI arguments, or None
     """
     sf = table.TableFormatter()
 
     if extra_args is None:
         # Default to no CLI arguments
-        parsed_args = args()
-    elif isinstance(extra_args, args):
+        parsed_args = _generate_namespace()
+    elif isinstance(extra_args, argparse.Namespace):
         # Use the given CLI arguments
         parsed_args = extra_args
     else:
@@ -138,7 +141,9 @@ class TestTerminalWidth(base.TestBase):
         d = ('A', 'B', 'C', 'd' * 77)
         self.assertEqual(
             self.expected_ml_80_val,
-            _table_tester_helper(c, d, extra_args=args(fit_width=True)),
+            _table_tester_helper(
+                c, d, extra_args=_generate_namespace(fit_width=True)
+            ),
         )
 
     @mock.patch('cliff.utils.terminal_width')
@@ -159,7 +164,7 @@ class TestTerminalWidth(base.TestBase):
         # output should not be wrapped to multiple lines
         self.assertEqual(
             self.expected_sl_val,
-            _table_tester_helper(c, d, extra_args=args()),
+            _table_tester_helper(c, d, extra_args=_generate_namespace()),
         )
 
     @mock.patch('cliff.utils.terminal_width')
@@ -575,7 +580,9 @@ class TestListFormatter(base.TestBase):
         self.assertEqual(
             self._expected_mv[80],
             _table_tester_helper(
-                self._col_names, self._col_data, extra_args=args(666)
+                self._col_names,
+                self._col_data,
+                extra_args=_generate_namespace(666),
             ),
         )
 
@@ -584,7 +591,9 @@ class TestListFormatter(base.TestBase):
         self.assertEqual(
             self._expected_mv[40],
             _table_tester_helper(
-                self._col_names, self._col_data, extra_args=args(40)
+                self._col_names,
+                self._col_data,
+                extra_args=_generate_namespace(40),
             ),
         )
 
@@ -592,15 +601,13 @@ class TestListFormatter(base.TestBase):
     def test_empty(self, tw):
         tw.return_value = 80
         c = ('a', 'b', 'c')
-        data = []
         expected = '\n'
-        self.assertEqual(expected, _table_tester_helper(c, data))
+        self.assertEqual(expected, _table_tester_helper(c, []))
 
     @mock.patch('cliff.utils.terminal_width')
     def test_empty_table(self, tw):
         tw.return_value = 80
         c = ('a', 'b', 'c')
-        data = []
         expected = textwrap.dedent(
             '''\
         +---+---+---+
@@ -611,7 +618,7 @@ class TestListFormatter(base.TestBase):
         )
         self.assertEqual(
             expected,
-            _table_tester_helper(c, data, extra_args=['--print-empty']),
+            _table_tester_helper(c, [], extra_args=['--print-empty']),
         )
 
 
@@ -621,7 +628,7 @@ class TestFieldWidths(base.TestBase):
         self.assertEqual(
             {'a': 1, 'b': 2, 'c': 3, 'd': 10},
             tf._field_widths(
-                ('a', 'b', 'c', 'd'), '+---+----+-----+------------+'
+                ['a', 'b', 'c', 'd'], '+---+----+-----+------------+'
             ),
         )
 
@@ -629,7 +636,7 @@ class TestFieldWidths(base.TestBase):
         tf = table.TableFormatter
         self.assertEqual(
             {'a': 0, 'b': 0, 'c': 0},
-            tf._field_widths(('a', 'b', 'c'), '+--+-++'),
+            tf._field_widths(['a', 'b', 'c'], '+--+-++'),
         )
 
     def test_info(self):

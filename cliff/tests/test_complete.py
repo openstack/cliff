@@ -12,6 +12,7 @@
 
 """Bash completion tests"""
 
+import io
 from unittest import mock
 
 from cliff import app as application
@@ -72,20 +73,6 @@ class TestCompletion(base.TestBase):
         self.assertEqual("3", result[3][1])
 
 
-class FakeStdout:
-    def __init__(self):
-        self.content = []
-
-    def write(self, text):
-        self.content.append(text)
-
-    def make_string(self):
-        result = ''
-        for line in self.content:
-            result = result + line
-        return result
-
-
 class TestCompletionAlternatives(base.TestBase):
     def given_cmdo_data(self):
         cmdo = "image server"
@@ -99,26 +86,29 @@ class TestCompletionAlternatives(base.TestBase):
         return cmdo, data
 
     def then_data(self, content):
-        self.assertIn("  cmds='image server'\n", content)
-        self.assertIn("  cmds_image='create'\n", content)
-        self.assertIn("  cmds_image_create='--eolus'\n", content)
-        self.assertIn("  cmds_server='meta ssh'\n", content)
-        self.assertIn("  cmds_server_meta_delete='--wilson'\n", content)
-        self.assertIn("  cmds_server_ssh='--sunlight'\n", content)
+        self.assertIn("  cmds='image server'", content)
+        self.assertIn("  cmds_image='create'", content)
+        self.assertIn("  cmds_image_create='--eolus'", content)
+        self.assertIn("  cmds_server='meta ssh'", content)
+        self.assertIn("  cmds_server_meta_delete='--wilson'", content)
+        self.assertIn("  cmds_server_ssh='--sunlight'", content)
 
     def test_complete_no_code(self):
-        output = FakeStdout()
+        output = io.StringIO()
         sot = complete.CompleteNoCode("doesNotMatter", output)
         sot.write(*self.given_cmdo_data())
-        self.then_data(output.content)
+        self.then_data(output.getvalue().splitlines())
 
     def test_complete_bash(self):
-        output = FakeStdout()
+        output = io.StringIO()
         sot = complete.CompleteBash("openstack", output)
         sot.write(*self.given_cmdo_data())
-        self.then_data(output.content)
-        self.assertIn("_openstack()\n", output.content[0])
-        self.assertIn("complete -F _openstack openstack\n", output.content[-1])
+        self.then_data(output.getvalue().splitlines())
+        self.assertIn("_openstack()", output.getvalue().splitlines()[0])
+        self.assertIn(
+            "complete -F _openstack openstack",
+            output.getvalue().splitlines()[-1],
+        )
 
     def test_complete_command_parser(self):
         sot = complete.CompleteCommand(mock.Mock(), mock.Mock())
@@ -130,7 +120,7 @@ class TestCompletionAlternatives(base.TestBase):
 class TestCompletionAction(base.TestBase):
     def given_complete_command(self):
         cmd_mgr = commandmanager.CommandManager('cliff.tests')
-        app = application.App('testing', '1', cmd_mgr, stdout=FakeStdout())
+        app = application.App('testing', '1', cmd_mgr, stdout=io.StringIO())
         sot = complete.CompleteCommand(app, mock.Mock())
         cmd_mgr.add_command('complete', complete.CompleteCommand)
         return sot, app, cmd_mgr
@@ -158,20 +148,20 @@ class TestCompletionAction(base.TestBase):
         parsed_args = mock.Mock()
         parsed_args.name = "test_take"
         parsed_args.shell = "bash"
-        content = app.stdout.content
         self.assertEqual(0, sot.take_action(parsed_args))
-        self.assertIn("_test_take()\n", content[0])
-        self.assertIn("complete -F _test_take test_take\n", content[-1])
-        self.assertIn("  cmds='complete help'\n", content)
-        self.assertIn("  cmds_complete='-h --help --name --shell'\n", content)
-        self.assertIn("  cmds_help='-h --help'\n", content)
+        content = app.stdout.getvalue().splitlines()
+        self.assertIn("_test_take()", content[0])
+        self.assertIn("complete -F _test_take test_take", content[-1])
+        self.assertIn("  cmds='complete help'", content)
+        self.assertIn("  cmds_complete='-h --help --name --shell'", content)
+        self.assertIn("  cmds_help='-h --help'", content)
 
     def test_complete_command_remove_dashes(self):
         sot, app, cmd_mgr = self.given_complete_command()
         parsed_args = mock.Mock()
         parsed_args.name = "test-take"
         parsed_args.shell = "bash"
-        content = app.stdout.content
         self.assertEqual(0, sot.take_action(parsed_args))
-        self.assertIn("_test_take()\n", content[0])
-        self.assertIn("complete -F _test_take test-take\n", content[-1])
+        content = app.stdout.getvalue().splitlines()
+        self.assertIn("_test_take()", content[0])
+        self.assertIn("complete -F _test_take test-take", content[-1])

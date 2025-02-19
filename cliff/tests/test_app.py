@@ -12,7 +12,6 @@
 #  under the License.
 
 import argparse
-import codecs
 import io
 from unittest import mock
 
@@ -269,7 +268,12 @@ class TestOptionParser(base.TestBase):
                     command_manager=commandmanager.CommandManager('tests'),
                 )
 
-            def build_option_parser(self, description, version):
+            def build_option_parser(
+                self,
+                description,
+                version,
+                argparse_kwargs=None,
+            ):
                 parser = super().build_option_parser(description, version)
                 parser.add_argument(
                     '-h',
@@ -292,7 +296,12 @@ class TestOptionParser(base.TestBase):
                     command_manager=commandmanager.CommandManager('tests'),
                 )
 
-            def build_option_parser(self, description, version):
+            def build_option_parser(
+                self,
+                description,
+                version,
+                argparse_kwargs=None,
+            ):
                 argparse_kwargs = {'conflict_handler': 'resolve'}
                 parser = super().build_option_parser(
                     description, version, argparse_kwargs=argparse_kwargs
@@ -325,10 +334,15 @@ class TestOptionParser(base.TestBase):
                 super().__init__(
                     description='testing',
                     version='0.1',
-                    command_manager=MyCommandManager(None),
+                    command_manager=MyCommandManager('fake'),
                 )
 
-            def build_option_parser(self, description, version):
+            def build_option_parser(
+                self,
+                description,
+                version,
+                argparse_kwargs=None,
+            ):
                 parser = super().build_option_parser(
                     description,
                     version,
@@ -502,39 +516,22 @@ class TestIO(base.TestBase):
         cmd_mgr = commandmanager.CommandManager('cliff.tests')
         io = mock.Mock()
 
-        app = application.App('no io streams', 1, cmd_mgr)
+        app = application.App('no io streams', "", cmd_mgr)
         self.assertIs(sys.stdin, app.stdin)
         self.assertIs(sys.stdout, app.stdout)
         self.assertIs(sys.stderr, app.stderr)
 
-        app = application.App('with stdin io stream', 1, cmd_mgr, stdin=io)
+        app = application.App('with stdin io stream', "", cmd_mgr, stdin=io)
         self.assertIs(io, app.stdin)
         self.assertIs(sys.stdout, app.stdout)
         self.assertIs(sys.stderr, app.stderr)
 
-        app = application.App('with stdout io stream', 1, cmd_mgr, stdout=io)
+        app = application.App('with stdout io stream', "", cmd_mgr, stdout=io)
         self.assertIs(sys.stdin, app.stdin)
         self.assertIs(io, app.stdout)
         self.assertIs(sys.stderr, app.stderr)
 
-        app = application.App('with stderr io stream', 1, cmd_mgr, stderr=io)
+        app = application.App('with stderr io stream', "", cmd_mgr, stderr=io)
         self.assertIs(sys.stdin, app.stdin)
         self.assertIs(sys.stdout, app.stdout)
         self.assertIs(io, app.stderr)
-
-    def test_writer_encoding(self):
-        # The word "test" with the e replaced by
-        # Unicode latin small letter e with acute,
-        # U+00E9, utf-8 encoded as 0xC3 0xA9
-        text = 't\u00e9st'
-        text_utf8 = text.encode('utf-8')
-
-        # In PY3 you can't write encoded bytes to a text writer
-        # instead text functions require text.
-        out = io.StringIO()
-        writer = codecs.getwriter('utf-8')(out)
-        self.assertRaises(TypeError, writer.write, text)
-
-        out = io.StringIO()
-        writer = codecs.getwriter('utf-8')(out)
-        self.assertRaises(TypeError, writer.write, text_utf8)
