@@ -79,6 +79,8 @@ class TestListerCommand(lister.Lister):
 
 
 class TestHook(hooks.CommandHook):
+    """A hook that returns an epilog and a new argument."""
+
     _before_called = False
     _after_called = False
 
@@ -96,7 +98,31 @@ class TestHook(hooks.CommandHook):
         self._after_called = True
 
 
+class TestNullHook(hooks.CommandHook):
+    """A hook that does not return an epilog nor any new arguments."""
+
+    _before_called = False
+    _after_called = False
+
+    def get_parser(self, parser):
+        return None
+
+    def get_epilog(self):
+        return None
+
+    def before(self, parsed_args):
+        self._before_called = True
+
+    def after(self, parsed_args, return_code):
+        self._after_called = True
+
+
 class TestChangeHook(hooks.CommandHook):
+    """A hook that modifies the parsed arguments and the return code.
+
+    This would be used with subclasses of the Command base command class.
+    """
+
     _before_called = False
     _after_called = False
 
@@ -119,6 +145,11 @@ class TestChangeHook(hooks.CommandHook):
 
 
 class TestDisplayChangeHook(hooks.CommandHook):
+    """A hook that modifies the parsed arguments and the output.
+
+    This would be used with subclasses of :class:`cliff.show.ShowOne`.
+    """
+
     _before_called = False
     _after_called = False
 
@@ -141,6 +172,11 @@ class TestDisplayChangeHook(hooks.CommandHook):
 
 
 class TestListerChangeHook(hooks.CommandHook):
+    """A hook that modifies the parsed arguments and the output.
+
+    This would be used with subclasses of :class:`cliff.show.Lister`.
+    """
+
     _before_called = False
     _after_called = False
 
@@ -183,9 +219,13 @@ class TestHooks(base.TestBase):
         super().setUp()
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
-        self.hook = TestHook(self.cmd)
+        self.hook_a = TestHook(self.cmd)
+        self.hook_b = TestNullHook(self.cmd)
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension('parser-hook', None, None, self.hook)],
+            [
+                extension.Extension('parser-hook-a', None, None, self.hook_a),
+                extension.Extension('parser-hook-b', None, None, self.hook_b),
+            ],
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -201,14 +241,18 @@ class TestHooks(base.TestBase):
         self.assertIn('hook epilog', results)
 
     def test_before(self):
-        self.assertFalse(self.hook._before_called)
+        self.assertFalse(self.hook_a._before_called)
+        self.assertFalse(self.hook_b._before_called)
         self.cmd.run(argparse.Namespace())
-        self.assertTrue(self.hook._before_called)
+        self.assertTrue(self.hook_a._before_called)
+        self.assertTrue(self.hook_b._before_called)
 
     def test_after(self):
-        self.assertFalse(self.hook._after_called)
+        self.assertFalse(self.hook_a._after_called)
+        self.assertFalse(self.hook_b._after_called)
         result = self.cmd.run(argparse.Namespace())
-        self.assertTrue(self.hook._after_called)
+        self.assertTrue(self.hook_a._after_called)
+        self.assertTrue(self.hook_b._after_called)
         self.assertEqual(result, 42)
 
 

@@ -143,7 +143,7 @@ class Command(metaclass=abc.ABCMeta):
         # replace a None in self._epilog with an empty string
         parts = [self._epilog or '']
         hook_epilogs = [
-            h.obj.get_epilog() for h in self._hooks if h is not None
+            e for h in self._hooks if (e := h.obj.get_epilog()) is not None
         ]
         parts.extend(hook_epilogs)
         app_dist_name = getattr(
