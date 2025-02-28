@@ -12,6 +12,7 @@
 
 import abc
 import argparse
+import typing as ty
 
 from cliff import _argparse
 from cliff import command
@@ -20,9 +21,14 @@ from cliff import command
 class CommandHook(metaclass=abc.ABCMeta):
     """Base class for command hooks.
 
-    :param app: Command instance being invoked
-    :paramtype app: cliff.command.Command
+    Hook methods are executed in the following order:
 
+    1. :meth:`get_epilog`
+    2. :meth:`get_parser`
+    3. :meth:`before`
+    4. :meth:`after`
+
+    :param command: Command instance being invoked
     """
 
     def __init__(self, command: command.Command):
@@ -31,18 +37,23 @@ class CommandHook(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_parser(
         self, parser: _argparse.ArgumentParser
-    ) -> _argparse.ArgumentParser:
-        """Return an :class:`argparse.ArgumentParser`.
+    ) -> ty.Optional[_argparse.ArgumentParser]:
+        """Modify the command :class:`argparse.ArgumentParser`.
+
+        The provided parser is modified in-place, and the return value is not
+        used.
 
         :param parser: An existing ArgumentParser instance to be modified.
-        :paramtype parser: ArgumentParser
-        :returns: ArgumentParser
+        :returns: ArgumentParser or None
         """
         return parser
 
     @abc.abstractmethod
-    def get_epilog(self) -> str:
-        "Return text to add to the command help epilog."
+    def get_epilog(self) -> ty.Optional[str]:
+        """Return text to add to the command help epilog.
+
+        :returns: An epilog string or None.
+        """
         return ''
 
     @abc.abstractmethod
@@ -50,7 +61,6 @@ class CommandHook(metaclass=abc.ABCMeta):
         """Called before the command's take_action() method.
 
         :param parsed_args: The arguments to the command.
-        :paramtype parsed_args: argparse.Namespace
         :returns: argparse.Namespace
         """
         return parsed_args
@@ -60,7 +70,6 @@ class CommandHook(metaclass=abc.ABCMeta):
         """Called after the command's take_action() method.
 
         :param parsed_args: The arguments to the command.
-        :paramtype parsed_args: argparse.Namespace
         :param return_code: The value returned from take_action().
         :paramtype return_code: int
         :returns: int
