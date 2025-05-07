@@ -12,21 +12,14 @@
 
 import abc
 import argparse
+from importlib.metadata import packages_distributions
 import inspect
 import types
-import sys
 import typing as ty
 
 from stevedore import extension
 
 from cliff import _argparse
-
-if sys.version_info < (3, 10):
-    # Python 3.9 and older
-    from importlib_metadata import packages_distributions
-else:
-    # Python 3.10 and later
-    from importlib.metadata import packages_distributions  # type: ignore
 
 if ty.TYPE_CHECKING:
     from . import app as _app
@@ -52,8 +45,8 @@ def _get_distributions_by_modules() -> dict[str, str]:
 
 
 def _get_distribution_for_module(
-    module: ty.Optional[types.ModuleType],
-) -> ty.Optional[str]:
+    module: types.ModuleType | None,
+) -> str | None:
     "Return the distribution containing the module."
     dist_name = None
     if module:
@@ -77,7 +70,7 @@ class Command(metaclass=abc.ABCMeta):
     :param cmd_name: The name of the command.
     """
 
-    app_dist_name: ty.Optional[str]
+    app_dist_name: str | None
 
     deprecated = False
     conflict_handler = 'ignore'
@@ -88,8 +81,8 @@ class Command(metaclass=abc.ABCMeta):
     def __init__(
         self,
         app: '_app.App',
-        app_args: ty.Optional[argparse.Namespace],
-        cmd_name: ty.Optional[str] = None,
+        app_args: argparse.Namespace | None,
+        cmd_name: str | None = None,
     ) -> None:
         self.app = app
         self.app_args = app_args

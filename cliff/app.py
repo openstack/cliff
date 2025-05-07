@@ -76,15 +76,14 @@ class App:
 
     def __init__(
         self,
-        description: ty.Optional[str],
-        version: ty.Optional[str],
+        description: str | None,
+        version: str | None,
         command_manager: '_commandmanager.CommandManager',
-        stdin: ty.Optional[ty.TextIO] = None,
-        stdout: ty.Optional[ty.TextIO] = None,
-        stderr: ty.Optional[ty.TextIO] = None,
-        interactive_app_factory: ty.Optional[
-            type['_interactive.InteractiveApp']
-        ] = None,
+        stdin: ty.TextIO | None = None,
+        stdout: ty.TextIO | None = None,
+        stderr: ty.TextIO | None = None,
+        interactive_app_factory: type['_interactive.InteractiveApp']
+        | None = None,
         deferred_help: bool = False,
     ) -> None:
         """Initialize the application."""
@@ -96,13 +95,13 @@ class App:
         self.deferred_help = deferred_help
         self.parser = self.build_option_parser(description, version)
         self.interactive_mode = False
-        self.interpreter: ty.Optional[_interactive.InteractiveApp] = None
+        self.interpreter: _interactive.InteractiveApp | None = None
 
     def _set_streams(
         self,
-        stdin: ty.Optional[ty.TextIO],
-        stdout: ty.Optional[ty.TextIO],
-        stderr: ty.Optional[ty.TextIO],
+        stdin: ty.TextIO | None,
+        stdout: ty.TextIO | None,
+        stderr: ty.TextIO | None,
     ) -> None:
         try:
             locale.setlocale(locale.LC_ALL, '')
@@ -141,9 +140,9 @@ class App:
 
     def build_option_parser(
         self,
-        description: ty.Optional[str],
-        version: ty.Optional[str],
-        argparse_kwargs: ty.Optional[dict[str, ty.Any]] = None,
+        description: str | None,
+        version: str | None,
+        argparse_kwargs: dict[str, ty.Any] | None = None,
     ) -> _argparse.ArgumentParser:
         """Return an argparse option parser for this application.
 
@@ -331,7 +330,7 @@ class App:
         self,
         cmd: '_command.Command',
         result: int,
-        err: ty.Optional[BaseException],
+        err: BaseException | None,
     ) -> None:
         """Hook run after a command is done to shutdown the app.
 
@@ -434,7 +433,7 @@ class App:
             kwargs['cmd_name'] = cmd_name
         cmd = cmd_factory(self, self.options, **kwargs)
         result = 1
-        err: ty.Optional[BaseException] = None
+        err: BaseException | None = None
         try:
             self.prepare_to_run_command(cmd)
             full_name = (

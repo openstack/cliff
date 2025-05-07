@@ -196,7 +196,7 @@ class CompleteCommand(_command.Command):
         self,
         app: 'app.App',
         app_args: argparse.Namespace,
-        cmd_name: ty.Optional[str] = None,
+        cmd_name: str | None = None,
     ) -> None:
         super().__init__(app, app_args, cmd_name)
         self._formatters = stevedore.ExtensionManager(

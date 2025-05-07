@@ -50,8 +50,8 @@ class InteractiveApp(cmd2.Cmd):
         self,
         parent_app: '_app.App',
         command_manager: '_commandmanager.CommandManager',
-        stdin: ty.Optional[ty.TextIO],
-        stdout: ty.Optional[ty.TextIO],
+        stdin: ty.TextIO | None,
+        stdout: ty.TextIO | None,
         errexit: bool = False,
     ):
         self.parent_app = parent_app
@@ -65,7 +65,7 @@ class InteractiveApp(cmd2.Cmd):
         cmd2.Cmd.__init__(self, 'tab', stdin=stdin, stdout=stdout)
 
     # def _split_line(self, line: cmd2.Statement) -> list[str]:
-    def _split_line(self, line: ty.Union[str, cmd2.Statement]) -> list[str]:
+    def _split_line(self, line: str | cmd2.Statement) -> list[str]:
         # cmd2 >= 0.9.1 gives us a Statement not a PyParsing parse
         # result.
         parts = shlex.split(line)
@@ -73,7 +73,7 @@ class InteractiveApp(cmd2.Cmd):
             parts.insert(0, line.command)
         return parts
 
-    def default(self, line: str) -> ty.Optional[bool]:  # type: ignore[override]
+    def default(self, line: str) -> bool | None:  # type: ignore[override]
         # Tie in the default command processor to
         # dispatch commands known to the command manager.
         # We send the message through our parent app,
@@ -120,7 +120,7 @@ class InteractiveApp(cmd2.Cmd):
         # Use the command manager to get instructions for "help"
         self.default('help help')
 
-    def do_help(self, arg: ty.Optional[str]) -> None:
+    def do_help(self, arg: str | None) -> None:
         if arg:
             # Check if the arg is a builtin command or something
             # coming from the command manager
@@ -167,9 +167,7 @@ class InteractiveApp(cmd2.Cmd):
             n for n in cmd2.Cmd.get_names(self) if not n.startswith('do__')
         ]
 
-    def precmd(
-        self, statement: ty.Union[cmd2.Statement, str]
-    ) -> cmd2.Statement:
+    def precmd(self, statement: cmd2.Statement | str) -> cmd2.Statement:
         """Hook method executed just before the command is executed by
         :meth:`~cmd2.Cmd.onecmd` and after adding it to history.
 
@@ -207,7 +205,7 @@ class InteractiveApp(cmd2.Cmd):
             )
         return statement
 
-    def cmdloop(self, intro: ty.Optional[str] = None) -> None:  # type: ignore[override]
+    def cmdloop(self, intro: str | None = None) -> None:  # type: ignore[override]
         # We don't want the cmd2 cmdloop() behaviour, just call the old one
         # directly.  In part this is because cmd2.cmdloop() doe not return
         # anything useful and we want to have a useful exit code.

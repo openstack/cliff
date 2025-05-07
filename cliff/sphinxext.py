@@ -279,7 +279,7 @@ class AutoprogramCliffDirective(rst.Directive):
                     del parser._actions[parser._actions.index(action)]
                     break
 
-    def _load_app(self) -> ty.Optional[app.App]:
+    def _load_app(self) -> app.App | None:
         mod_str, _sep, class_str = self.arguments[0].rpartition('.')
         if not mod_str:
             return None

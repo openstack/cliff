@@ -15,7 +15,6 @@
 import collections.abc
 import inspect
 import logging
-import typing as ty
 
 import stevedore
 
@@ -158,7 +157,7 @@ class CommandManager:
                 return i
         return len(argv)
 
-    def add_command_group(self, group: ty.Optional[str] = None) -> None:
+    def add_command_group(self, group: str | None = None) -> None:
         """Adds another group of command entrypoints"""
         if group:
             self.load_commands(group)
@@ -167,7 +166,7 @@ class CommandManager:
         """Returns a list of the loaded command groups"""
         return self.group_list
 
-    def get_command_names(self, group: ty.Optional[str] = None) -> list[str]:
+    def get_command_names(self, group: str | None = None) -> list[str]:
         """Returns a list of commands loaded for the specified group"""
         group_list: list[str] = []
         if group is not None:

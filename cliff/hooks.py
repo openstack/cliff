@@ -12,7 +12,6 @@
 
 import abc
 import argparse
-import typing as ty
 
 from cliff import _argparse
 from cliff import command
@@ -37,7 +36,7 @@ class CommandHook(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_parser(
         self, parser: _argparse.ArgumentParser
-    ) -> ty.Optional[_argparse.ArgumentParser]:
+    ) -> _argparse.ArgumentParser | None:
         """Modify the command :class:`argparse.ArgumentParser`.
 
         The provided parser is modified in-place, and the return value is not
@@ -49,7 +48,7 @@ class CommandHook(metaclass=abc.ABCMeta):
         return parser
 
     @abc.abstractmethod
-    def get_epilog(self) -> ty.Optional[str]:
+    def get_epilog(self) -> str | None:
         """Return text to add to the command help epilog.
 
         :returns: An epilog string or None.

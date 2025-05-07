@@ -33,8 +33,8 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     def __init__(
         self,
         app: app.App,
-        app_args: ty.Optional[argparse.Namespace],
-        cmd_name: ty.Optional[str] = None,
+        app_args: argparse.Namespace | None,
+        cmd_name: str | None = None,
     ) -> None:
         super().__init__(app, app_args, cmd_name=cmd_name)
         self._formatter_plugins = self._load_formatter_plugins()
@@ -112,7 +112,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         self,
         parsed_args: argparse.Namespace,
         column_names: collections.abc.Sequence[str],
-    ) -> tuple[list[str], ty.Optional[list[bool]]]:
+    ) -> tuple[list[str], list[bool] | None]:
         """Generate included columns and selector according to parsed args.
 
         We normalize the column names so that someone can do e.g. '-c

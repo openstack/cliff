@@ -44,8 +44,8 @@ class HelpAction(argparse.Action):
         self,
         parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,
-        values: ty.Union[str, collections.abc.Sequence[ty.Any], None],
-        option_string: ty.Optional[str] = None,
+        values: str | collections.abc.Sequence[ty.Any] | None,
+        option_string: str | None = None,
     ) -> None:
         app = self.default
         pager = autopage.argparse.help_pager(app.stdout)
@@ -57,7 +57,7 @@ class HelpAction(argparse.Action):
             out.write('\n{}Commands{}:\n'.format(*title_hl))
             dists_by_module = command._get_distributions_by_modules()
 
-            def dist_for_obj(obj: object) -> ty.Optional[str]:
+            def dist_for_obj(obj: object) -> str | None:
                 mod = inspect.getmodule(obj)
                 if mod is None:
                     raise RuntimeError(f"failed to find app: {obj}")

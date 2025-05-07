@@ -29,9 +29,9 @@ _T = ty.TypeVar('_T')
 
 def _format_row(
     row: collections.abc.Iterable[
-        ty.Union[columns.FormattableColumn[ty.Any], str, _T]
+        columns.FormattableColumn[ty.Any] | str | _T
     ],
-) -> list[ty.Union[_T, str]]:
+) -> list[_T | str]:
     new_row = []
     for r in row:
         if isinstance(r, columns.FormattableColumn):
