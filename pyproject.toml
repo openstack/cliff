@@ -1,3 +1,74 @@
+[build-system]
+requires = ["pbr>=6.1.1"]
+build-backend = "pbr.build"
+
+[project]
+name = "cliff"
+description = "Command Line Interface Formulation Framework"
+authors = [
+    {name = "OpenStack", email = "openstack-discuss@lists.openstack.org"},
+]
+readme = {file = "README.rst", content-type = "text/x-rst"}
+license = {text = "Apache-2.0"}
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://docs.openstack.org/cliff/"
+Repository = "https://opendev.org/openstack/cliff/"
+
+[project.entry-points."cliff.formatter.list"]
+table = "cliff.formatters.table:TableFormatter"
+csv = "cliff.formatters.commaseparated:CSVLister"
+value = "cliff.formatters.value:ValueFormatter"
+yaml = "cliff.formatters.yaml_format:YAMLFormatter"
+json = "cliff.formatters.json_format:JSONFormatter"
+
+[project.entry-points."cliff.formatter.show"]
+table = "cliff.formatters.table:TableFormatter"
+shell = "cliff.formatters.shell:ShellFormatter"
+value = "cliff.formatters.value:ValueFormatter"
+yaml = "cliff.formatters.yaml_format:YAMLFormatter"
+json = "cliff.formatters.json_format:JSONFormatter"
+
+[project.entry-points."cliff.formatter.completion"]
+bash = "cliff.complete:CompleteBash"
+none = "cliff.complete:CompleteNoCode"
+
+# NOTE(dhellmann): Duplicated from demoapp/setup.py for the documentation
+# build.
+[project.entry-points."cliff.demo"]
+simple = "cliffdemo.simple:Simple"
+two_part = "cliffdemo.simple:Simple"
+error = "cliffdemo.simple:Error"
+"list files" = "cliffdemo.list:Files"
+files = "cliffdemo.list:Files"
+file = "cliffdemo.show:File"
+"show file" = "cliffdemo.show:File"
+unicode = "cliffdemo.encoding:Encoding"
+hooked = "cliffdemo.hook:Hooked"
+
+[project.entry-points."cliff.demo.hooked"]
+sample-hook = "cliffdemo.hook:Hook"
+
+[tool.setuptools]
+packages = [
+    "cliff"
+]
+
 [tool.mypy]
 python_version = "3.10"
 show_column_numbers = true
