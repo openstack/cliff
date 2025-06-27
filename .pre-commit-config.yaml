@@ -15,13 +15,13 @@ repos:
         files: .*\.(yaml|yml)$
         exclude: '^zuul.d/.*$'
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.8
+    rev: v0.12.1
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: ['--fix', '--unsafe-fixes']
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
+    rev: v1.16.1
     hooks:
       - id: mypy
         additional_dependencies:
