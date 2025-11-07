@@ -359,7 +359,7 @@ class AutoprogramCliffDirective(rst.Directive):
         parser.prog = application_name
 
         source_name = f'<{app.__class__.__name__}>'
-        result: statemachine.ViewList[str] = statemachine.ViewList()
+        result = statemachine.StringList()
         for line in _format_parser(parser):
             result.append(line, source_name)
 
@@ -410,7 +410,7 @@ class AutoprogramCliffDirective(rst.Directive):
         )
 
         source_name = f'<{command.__class__.__name__}>'
-        result: statemachine.ViewList[str] = statemachine.ViewList()
+        result = statemachine.StringList()
 
         for line in _format_parser(parser):
             result.append(line, source_name)

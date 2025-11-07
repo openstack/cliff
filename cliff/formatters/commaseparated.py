@@ -23,7 +23,7 @@ from cliff.formatters import base
 
 
 class CSVLister(base.ListFormatter):
-    QUOTE_MODES = {
+    QUOTE_MODES: dict[str, ty.Literal[0, 1, 2, 3]] = {
         'all': csv.QUOTE_ALL,
         'minimal': csv.QUOTE_MINIMAL,
         'nonnumeric': csv.QUOTE_NONNUMERIC,
