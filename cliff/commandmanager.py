@@ -13,7 +13,6 @@
 """Discover and lookup command plugins."""
 
 import collections.abc
-import inspect
 import logging
 
 import stevedore
@@ -49,7 +48,7 @@ class EntryPointWrapper:
         self.name = name
         self.command_class = command_class
 
-    def load(self, require: bool = False) -> type[command.Command]:
+    def load(self) -> type[command.Command]:
         return self.command_class
 
 
@@ -137,16 +136,7 @@ class CommandManager:
                     found = candidates[0]
             if found:
                 cmd_ep = self.commands[found]
-                if hasattr(cmd_ep, 'resolve'):
-                    cmd_factory = cmd_ep.resolve()
-                else:
-                    # NOTE(dhellmann): Some fake classes don't take
-                    # require as an argument. Yay?
-                    arg_spec = inspect.getfullargspec(cmd_ep.load)
-                    if 'require' in arg_spec[0]:
-                        cmd_factory = cmd_ep.load(require=False)
-                    else:
-                        cmd_factory = cmd_ep.load()
+                cmd_factory = cmd_ep.load()
                 return (cmd_factory, return_name, search_args)
         else:
             raise ValueError(f'Unknown command {argv!r}')
