@@ -18,6 +18,9 @@ import collections.abc
 import typing as ty
 
 
+FormatterT = ty.TypeVar('FormatterT', bound='Formatter')
+
+
 class Formatter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def add_argument_group(self, parser: argparse.ArgumentParser) -> None:

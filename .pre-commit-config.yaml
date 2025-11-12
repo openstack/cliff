@@ -27,6 +27,7 @@ repos:
         additional_dependencies:
           - autopage
           - cmd2
+          - 'stevedore>=5.6.0'
           - types-docutils
           - types-PyYAML
         # keep this in-sync with '[mypy] exclude' in 'pyproject.toml'

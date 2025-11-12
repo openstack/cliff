@@ -10,18 +10,23 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import argparse
 import weakref
 
 from unittest import mock
 
+from cliff.formatters import base as base_formatters
 from cliff import show
 from cliff.tests import base
 
 
-class FauxFormatter:
+class FauxFormatter(base_formatters.SingleFormatter):
     def __init__(self):
         self.args = []
         self.obj = weakref.proxy(self)
+
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
+        return None
 
     def emit_one(self, columns, data, stdout, args):
         self.args.append((columns, data))
@@ -51,6 +56,7 @@ class TestShow(base.TestBase):
 
         test_show.run(parsed_args)
         f = test_show._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         self.assertEqual(1, len(f.args))
         args = f.args[0]
         self.assertEqual(list(parsed_args.columns), args[0])

@@ -20,9 +20,13 @@ import typing as ty
 
 from cliff import _argparse
 from cliff import display
+from cliff.formatters import base as base_formatters
 
 
-class Lister(display.DisplayCommandBase, metaclass=abc.ABCMeta):
+class Lister(
+    display.DisplayCommandBase[base_formatters.ListFormatter],
+    metaclass=abc.ABCMeta,
+):
     """Command base class for providing a list of data as output."""
 
     log = logging.getLogger(__name__)

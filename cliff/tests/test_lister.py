@@ -10,19 +10,24 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+import argparse
 import typing as ty
 import weakref
 
 from unittest import mock
 
+from cliff.formatters import base as base_formatters
 from cliff import lister
 from cliff.tests import base
 
 
-class FauxFormatter:
+class FauxFormatter(base_formatters.ListFormatter):
     def __init__(self):
         self.args = []
         self.obj = weakref.proxy(self)
+
+    def add_argument_group(self, parser: argparse.ArgumentParser) -> None:
+        return None
 
     def emit_list(self, columns, data, stdout, args):
         self.args.append((columns, data))
@@ -65,6 +70,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         self.assertEqual(1, len(f.args))
         args = f.args[0]
         self.assertEqual(list(parsed_args.columns), args[0])
@@ -95,6 +101,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
@@ -109,6 +116,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
@@ -124,6 +132,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['b', 'B'], ['c', 'A'], ['a', 'A']], data)
@@ -138,6 +147,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)
@@ -152,6 +162,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual(
@@ -169,6 +180,7 @@ class TestLister(base.TestBase):
             test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         # The output should be unchanged
@@ -198,6 +210,7 @@ class TestLister(base.TestBase):
             test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['a'], ['c'], ['b']], data)
@@ -212,6 +225,7 @@ class TestLister(base.TestBase):
         test_lister.run(parsed_args)
 
         f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
         args = f.args[0]
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['b', 'B'], ['c', 'A']], data)

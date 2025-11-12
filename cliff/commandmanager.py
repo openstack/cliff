@@ -13,7 +13,9 @@
 """Discover and lookup command plugins."""
 
 import collections.abc
+import importlib.metadata
 import logging
+from typing import TypeAlias
 
 import stevedore
 
@@ -52,6 +54,9 @@ class EntryPointWrapper:
         return self.command_class
 
 
+EntryPointT: TypeAlias = EntryPointWrapper | importlib.metadata.EntryPoint
+
+
 class CommandManager:
     """Discovers commands and handles lookup based on argv data.
 
@@ -64,7 +69,7 @@ class CommandManager:
     def __init__(
         self, namespace: str, convert_underscores: bool = True
     ) -> None:
-        self.commands: dict[str, EntryPointWrapper] = {}
+        self.commands: dict[str, EntryPointT] = {}
         self._legacy: dict[str, str] = {}
         self.namespace = namespace
         self.convert_underscores = convert_underscores
@@ -79,7 +84,9 @@ class CommandManager:
     def load_commands(self, namespace: str) -> None:
         """Load all the commands from an entrypoint"""
         self.group_list.append(namespace)
-        for ep in stevedore.ExtensionManager(namespace):
+        em: stevedore.ExtensionManager[command.Command]
+        em = stevedore.ExtensionManager(namespace)
+        for ep in em:
             LOG.debug('found command %r', ep.name)
             cmd_name = (
                 ep.name.replace('_', ' ')
@@ -90,7 +97,7 @@ class CommandManager:
 
     def __iter__(
         self,
-    ) -> collections.abc.Iterator[tuple[str, EntryPointWrapper]]:
+    ) -> collections.abc.Iterator[tuple[str, EntryPointT]]:
         return iter(self.commands.items())
 
     def add_command(
@@ -163,7 +170,9 @@ class CommandManager:
         """Returns a list of commands loaded for the specified group"""
         group_list: list[str] = []
         if group is not None:
-            for ep in stevedore.ExtensionManager(group):
+            em: stevedore.ExtensionManager[command.Command]
+            em = stevedore.ExtensionManager(group)
+            for ep in em:
                 cmd_name = (
                     ep.name.replace('_', ' ')
                     if self.convert_underscores

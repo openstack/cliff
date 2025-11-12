@@ -191,6 +191,7 @@ class CompleteCommand(_command.Command):
     """print bash completion command"""
 
     log = logging.getLogger(__name__ + '.CompleteCommand')
+    _formatters: stevedore.ExtensionManager[CompleteShellBase]
 
     def __init__(
         self,

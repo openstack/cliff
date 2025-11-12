@@ -23,12 +23,20 @@ import stevedore
 from cliff import app
 from cliff import _argparse
 from cliff import command
+from cliff.formatters import base as base_formatters
 
 _T = ty.TypeVar("_T")
 
 
-class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
+class DisplayCommandBase(
+    command.Command,
+    ty.Generic[base_formatters.FormatterT],
+    metaclass=abc.ABCMeta,
+):
     """Command base class for displaying data about a single object."""
+
+    _formatter_plugins: stevedore.ExtensionManager[base_formatters.FormatterT]
+    formatter: base_formatters.FormatterT
 
     def __init__(
         self,
@@ -49,7 +57,9 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     def formatter_default(self) -> str:
         """String specifying the name of the default formatter."""
 
-    def _load_formatter_plugins(self) -> stevedore.ExtensionManager:
+    def _load_formatter_plugins(
+        self,
+    ) -> stevedore.ExtensionManager[base_formatters.FormatterT]:
         # Here so tests can override
         return stevedore.ExtensionManager(
             self.formatter_namespace,
@@ -89,6 +99,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
             ),
         )
         for formatter in self._formatter_plugins:
+            assert formatter.obj is not None  # noqa
             formatter.obj.add_argument_group(parser)
         return parser
 
@@ -97,7 +108,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         self,
         parsed_args: argparse.Namespace,
         column_names: collections.abc.Sequence[str],
-        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        data: ty.Any,
     ) -> int:
         """Use the formatter to generate the output.
 
@@ -144,7 +155,9 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
 
     def run(self, parsed_args: argparse.Namespace) -> int:
         parsed_args = self._run_before_hooks(parsed_args)
-        self.formatter = self._formatter_plugins[parsed_args.formatter].obj
+        formatter = self._formatter_plugins[parsed_args.formatter].obj
+        assert formatter is not None  # noqa
+        self.formatter = formatter
         column_names, data = self.take_action(parsed_args)
         column_names, data = self._run_after_hooks(
             parsed_args, (column_names, data)
@@ -171,11 +184,15 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         hook processing behavior.
         """
         for hook in self._hooks:
-            ret = hook.obj.after(parsed_args, data)
+            # we need to ignore the types since CommandHook states that it
+            # should return an integer, but they'll actually return a tuple of
+            # column names and data when used with DisplayCommandBase
+            # subclasses
+            ret = hook.obj.after(parsed_args, data)  # type: ignore
             # If the return is None do not change return_code, otherwise
             # set up to pass it to the next hook
             if ret is not None:
-                data = ret
+                data = ret  # type: ignore
         return data
 
     @staticmethod

@@ -11,6 +11,7 @@
 #  under the License.
 
 import argparse
+import importlib.metadata
 
 from cliff import app as application
 from cliff import command
@@ -22,6 +23,15 @@ from cliff.tests import base
 
 from stevedore import extension
 from unittest import mock
+
+
+def make_extension(name, plugin, obj):
+    ep = importlib.metadata.EntryPoint(
+        name=name,
+        value=f'my_module:{name.replace("-", "_")}',
+        group='my_app.plugins',
+    )
+    return extension.Extension(name, ep, plugin, obj)
 
 
 def make_app(**kwargs):
@@ -221,10 +231,11 @@ class TestHooks(base.TestBase):
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook_a = TestHook(self.cmd)
         self.hook_b = TestNullHook(self.cmd)
+        self.mgr: extension.ExtensionManager[hooks.CommandHook]
         self.mgr = extension.ExtensionManager.make_test_instance(
             [
-                extension.Extension('parser-hook-a', None, None, self.hook_a),
-                extension.Extension('parser-hook-b', None, None, self.hook_b),
+                make_extension('parser-hook-a', TestHook, self.hook_a),
+                make_extension('parser-hook-b', TestHook, self.hook_b),
             ],
         )
         # Replace the auto-loaded hooks with our explicitly created
@@ -262,8 +273,9 @@ class TestChangeHooks(base.TestBase):
         self.app = make_app()
         self.cmd = TestCommand(self.app, None, cmd_name='test')
         self.hook = TestChangeHook(self.cmd)
+        self.mgr: extension.ExtensionManager[hooks.CommandHook]
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension('parser-hook', None, None, self.hook)],
+            [make_extension('parser-hook', TestChangeHook, self.hook)]
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -302,8 +314,9 @@ class TestShowOneHooks(base.TestBase):
         self.app = make_app()
         self.cmd = TestShowCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
+        self.mgr: extension.ExtensionManager[hooks.CommandHook]
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension('parser-hook', None, None, self.hook)],
+            [make_extension('parser-hook', TestHook, self.hook)]
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -339,8 +352,9 @@ class TestShowOneChangeHooks(base.TestBase):
         self.app = make_app()
         self.cmd = TestShowCommand(self.app, None, cmd_name='test')
         self.hook = TestDisplayChangeHook(self.cmd)
+        self.mgr: extension.ExtensionManager[hooks.CommandHook]
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension('parser-hook', None, None, self.hook)],
+            [make_extension('parser-hook', TestDisplayChangeHook, self.hook)]
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -379,8 +393,9 @@ class TestListerHooks(base.TestBase):
         self.app = make_app()
         self.cmd = TestListerCommand(self.app, None, cmd_name='test')
         self.hook = TestHook(self.cmd)
+        self.mgr: extension.ExtensionManager[hooks.CommandHook]
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension('parser-hook', None, None, self.hook)],
+            [make_extension('parser-hook', TestHook, self.hook)]
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.
@@ -416,8 +431,9 @@ class TestListerChangeHooks(base.TestBase):
         self.app = make_app()
         self.cmd = TestListerCommand(self.app, None, cmd_name='test')
         self.hook = TestListerChangeHook(self.cmd)
+        self.mgr: extension.ExtensionManager[hooks.CommandHook]
         self.mgr = extension.ExtensionManager.make_test_instance(
-            [extension.Extension('parser-hook', None, None, self.hook)],
+            [make_extension('parser-hook', TestListerChangeHook, self.hook)]
         )
         # Replace the auto-loaded hooks with our explicitly created
         # manager.

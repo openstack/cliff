@@ -23,6 +23,8 @@ from cliff import _argparse
 
 if ty.TYPE_CHECKING:
     from . import app as _app
+    from . import hooks
+    from typing_extensions import Never
 
 _T = ty.TypeVar('_T')
 _dists_by_mods = None
@@ -96,6 +98,9 @@ class Command(metaclass=abc.ABCMeta):
                 self.app.command_manager.namespace,
                 self.cmd_name.replace(' ', '_'),
             )
+            self._hooks: (
+                extension.ExtensionManager[hooks.CommandHook] | list[Never]
+            )
             self._hooks = extension.ExtensionManager(
                 namespace=namespace,
                 invoke_on_load=True,
@@ -136,7 +141,9 @@ class Command(metaclass=abc.ABCMeta):
         # replace a None in self._epilog with an empty string
         parts = [self._epilog or '']
         hook_epilogs = [
-            e for h in self._hooks if (e := h.obj.get_epilog()) is not None
+            e
+            for h in self._hooks
+            if (h.obj is not None and (e := h.obj.get_epilog()) is not None)
         ]
         parts.extend(hook_epilogs)
         app_dist_name = getattr(
@@ -161,6 +168,8 @@ class Command(metaclass=abc.ABCMeta):
             conflict_handler=self.conflict_handler,
         )
         for hook in self._hooks:
+            if hook.obj is None:
+                continue
             hook.obj.get_parser(parser)
         return parser
 
@@ -201,6 +210,8 @@ class Command(metaclass=abc.ABCMeta):
         hook processing behavior.
         """
         for hook in self._hooks:
+            if hook.obj is None:
+                continue
             ret = hook.obj.before(parsed_args)
             # If the return is None do not change parsed_args, otherwise
             # set up to pass it to the next hook
@@ -221,6 +232,9 @@ class Command(metaclass=abc.ABCMeta):
         hook processing behavior.
         """
         for hook in self._hooks:
+            if hook.obj is None:
+                continue
+
             ret = hook.obj.after(parsed_args, return_code)
             # If the return is None do not change return_code, otherwise
             # set up to pass it to the next hook
