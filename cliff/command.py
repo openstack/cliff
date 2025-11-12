@@ -209,8 +209,8 @@ class Command(metaclass=abc.ABCMeta):
         return parsed_args
 
     def _run_after_hooks(
-        self, parsed_args: argparse.Namespace, return_code: _T
-    ) -> _T:
+        self, parsed_args: argparse.Namespace, return_code: int
+    ) -> int:
         """Calls after() method of the hooks.
 
         This method is intended to be called from the run() method after

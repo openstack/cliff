@@ -34,9 +34,13 @@ class ShowOne(display.DisplayCommandBase, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def take_action(
         self, parsed_args: argparse.Namespace
-    ) -> tuple[tuple[str, ...], tuple[ty.Any, ...]]:
-        """Return a two-part tuple with a tuple of column names
-        and a tuple of values.
+    ) -> tuple[
+        collections.abc.Sequence[str], collections.abc.Iterable[ty.Any]
+    ]:
+        """Run command.
+
+        Return a tuple containing the column names and an iterable containing
+        the data to be listed.
         """
 
     def produce_output(

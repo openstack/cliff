@@ -152,6 +152,32 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
         self.produce_output(parsed_args, column_names, data)
         return 0
 
+    def _run_after_hooks(  # type: ignore[override]
+        self,
+        parsed_args: argparse.Namespace,
+        data: tuple[
+            collections.abc.Sequence[str], collections.abc.Iterable[ty.Any]
+        ],
+    ) -> tuple[
+        collections.abc.Sequence[str], collections.abc.Iterable[ty.Any]
+    ]:
+        """Calls after() method of the hooks.
+
+        This method is intended to be called from the run() method after
+        take_action() is called.
+
+        This method should only be overridden by developers creating new
+        command base classes and only if it is necessary to have different
+        hook processing behavior.
+        """
+        for hook in self._hooks:
+            ret = hook.obj.after(parsed_args, data)
+            # If the return is None do not change return_code, otherwise
+            # set up to pass it to the next hook
+            if ret is not None:
+                data = ret
+        return data
+
     @staticmethod
     def _compress_iterable(
         iterable: collections.abc.Iterable[_T],
