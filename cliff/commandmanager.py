@@ -38,7 +38,10 @@ def _get_commands_by_partial_name(
 
 
 class EntryPointWrapper:
-    """Wrap up a command class already imported to make it look like a plugin."""
+    """An entrypoint-like object.
+
+    Wrap up a command class already imported to make it look like a plugin.
+    """
 
     def __init__(
         self, name: str, command_class: type[command.Command]

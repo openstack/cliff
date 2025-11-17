@@ -28,7 +28,7 @@ class Formatter(metaclass=abc.ABCMeta):
 
 
 class ListFormatter(Formatter, metaclass=abc.ABCMeta):
-    """Base class for formatters that know how to deal with multiple objects."""
+    """Base class for formatters that know how to deal with many objects."""
 
     @abc.abstractmethod
     def emit_list(

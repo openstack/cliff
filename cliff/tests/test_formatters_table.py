@@ -117,8 +117,8 @@ class TestTerminalWidth(base.TestBase):
     | d     | dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd |
     |       | ddddddddd                                                            |
     +-------+----------------------------------------------------------------------+
-    '''
-    )  # noqa
+    '''  # noqa: E501
+    )
 
     # Single-line output, for when no line length restriction apply
     expected_sl_val = textwrap.dedent(
@@ -131,8 +131,8 @@ class TestTerminalWidth(base.TestBase):
     | c     | C                                                                             |
     | d     | ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd |
     +-------+-------------------------------------------------------------------------------+
-    '''
-    )  # noqa
+    '''  # noqa: E501
+    )
 
     @mock.patch('cliff.utils.terminal_width')
     def test_table_formatter_no_cli_param(self, tw):

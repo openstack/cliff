@@ -42,7 +42,7 @@ class DisplayCommandBase(command.Command, metaclass=abc.ABCMeta):
     @property
     @abc.abstractmethod
     def formatter_namespace(self) -> str:
-        """String specifying the namespace to use for loading formatter plugins."""
+        """Namespace to use for loading formatter plugins."""
 
     @property
     @abc.abstractmethod
