@@ -18,7 +18,6 @@ import logging
 from typing import TypeAlias
 
 import stevedore
-from stevedore import extension
 
 from cliff import command
 
@@ -65,24 +64,15 @@ class CommandManager:
         plugins to be loaded. For example, ``'cliff.formatter.list'``.
     :param convert_underscores: Whether cliff should convert underscores to
         spaces in entry_point commands.
-    :param conflict_resolver: The conflict resolver to use in the event that
-        there are multiple plugins sharing the same namespace and name.
     """
 
     def __init__(
-        self,
-        namespace: str,
-        convert_underscores: bool = True,
-        *,
-        conflict_resolver: extension.ConflictResolverT[command.Command] = (
-            extension.ignore_conflicts
-        ),
+        self, namespace: str, convert_underscores: bool = True
     ) -> None:
         self.commands: dict[str, EntryPointT] = {}
         self._legacy: dict[str, str] = {}
         self.namespace = namespace
         self.convert_underscores = convert_underscores
-        self.conflict_resolver = conflict_resolver
         self.group_list: list[str] = []
         self._load_commands()
 
@@ -92,16 +82,10 @@ class CommandManager:
             self.load_commands(self.namespace)
 
     def load_commands(self, namespace: str) -> None:
-        """Load all the commands from an entrypoint
-
-        :param namespace: The namespace to load commands from.
-        :returns: None
-        """
+        """Load all the commands from an entrypoint"""
         self.group_list.append(namespace)
         em: stevedore.ExtensionManager[command.Command]
-        em = stevedore.ExtensionManager(
-            namespace, conflict_resolver=self.conflict_resolver
-        )
+        em = stevedore.ExtensionManager(namespace)
         for ep in em:
             LOG.debug('found command %r', ep.name)
             cmd_name = (
@@ -187,9 +171,7 @@ class CommandManager:
         group_list: list[str] = []
         if group is not None:
             em: stevedore.ExtensionManager[command.Command]
-            em = stevedore.ExtensionManager(
-                group, conflict_resolver=self.conflict_resolver
-            )
+            em = stevedore.ExtensionManager(group)
             for ep in em:
                 cmd_name = (
                     ep.name.replace('_', ' ')

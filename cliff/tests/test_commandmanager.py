@@ -120,9 +120,7 @@ class TestLoad(base.TestBase):
             'stevedore.ExtensionManager', mock_get_group_all
         ) as mock_manager:
             mgr = commandmanager.CommandManager('test')
-            mock_manager.assert_called_once_with(
-                'test', conflict_resolver=mock.ANY
-            )
+            mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
             self.assertEqual(['test'], names)
 
@@ -137,9 +135,7 @@ class TestLoad(base.TestBase):
                 'test',
                 convert_underscores=False,
             )
-            mock_manager.assert_called_once_with(
-                'test', conflict_resolver=mock.ANY
-            )
+            mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
             self.assertEqual(['test_cmd'], names)
 
@@ -154,9 +150,7 @@ class TestLoad(base.TestBase):
                 'test',
                 convert_underscores=True,
             )
-            mock_manager.assert_called_once_with(
-                'test', conflict_resolver=mock.ANY
-            )
+            mock_manager.assert_called_once_with('test')
             names = [n for n, v in mgr]
             self.assertEqual(['test cmd'], names)
 
@@ -350,8 +344,6 @@ class TestCommandManagerGroups(base.TestBase):
             mock_get_group_all,
         ) as mock_manager:
             mgr = commandmanager.CommandManager('test')
-            mock_manager.assert_called_once_with(
-                'test', conflict_resolver=mock.ANY
-            )
+            mock_manager.assert_called_once_with('test')
             cmds = mgr.get_command_names('test')
             self.assertEqual(['one', 'cmd two'], cmds)
