@@ -10,8 +10,9 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-import testscenarios
 from unittest import mock
+
+import testscenarios
 
 from cliff import command
 from cliff import commandmanager
@@ -113,20 +114,23 @@ class TestDynamicCommands(base.TestBase):
 
 class TestLoad(base.TestBase):
     def test_load_commands(self):
-        testcmd = mock.Mock(name='testcmd')
-        testcmd.name.replace.return_value = 'test'
+        testcmd = mock.Mock()
+        testcmd.name = 'test_cmd'
+        testcmd.module_name = 'module.a'
         mock_get_group_all = mock.Mock(return_value=[testcmd])
         with mock.patch(
             'stevedore.ExtensionManager', mock_get_group_all
         ) as mock_manager:
             mgr = commandmanager.CommandManager('test')
-            mock_manager.assert_called_once_with('test')
-            names = [n for n, v in mgr]
-            self.assertEqual(['test'], names)
+
+        mock_manager.assert_called_once_with('test')
+        names = [n for n, v in mgr]
+        self.assertEqual(['test cmd'], names)
 
     def test_load_commands_keep_underscores(self):
         testcmd = mock.Mock()
         testcmd.name = 'test_cmd'
+        testcmd.module_name = 'module.a'
         mock_get_group_all = mock.Mock(return_value=[testcmd])
         with mock.patch(
             'stevedore.ExtensionManager', mock_get_group_all
@@ -135,24 +139,58 @@ class TestLoad(base.TestBase):
                 'test',
                 convert_underscores=False,
             )
-            mock_manager.assert_called_once_with('test')
-            names = [n for n, v in mgr]
-            self.assertEqual(['test_cmd'], names)
 
-    def test_load_commands_replace_underscores(self):
-        testcmd = mock.Mock()
-        testcmd.name = 'test_cmd'
-        mock_get_group_all = mock.Mock(return_value=[testcmd])
+        mock_manager.assert_called_once_with('test')
+        names = [n for n, v in mgr]
+        self.assertEqual(['test_cmd'], names)
+
+    def test_load_commands_ignore_modules(self):
+        testcmd_normal = mock.Mock()
+        testcmd_normal.name = 'normal_cmd'
+        testcmd_normal.module_name = 'normal.module'
+        testcmd_ignored = mock.Mock()
+        testcmd_ignored.name = 'ignored_cmd'
+        testcmd_ignored.module_name = 'ignored.module'
+        mock_get_group_all = mock.Mock(
+            return_value=[testcmd_normal, testcmd_ignored]
+        )
         with mock.patch(
             'stevedore.ExtensionManager', mock_get_group_all
         ) as mock_manager:
             mgr = commandmanager.CommandManager(
                 'test',
-                convert_underscores=True,
+                ignored_modules=['ignored.module'],
             )
-            mock_manager.assert_called_once_with('test')
-            names = [n for n, v in mgr]
-            self.assertEqual(['test cmd'], names)
+
+        mock_manager.assert_called_once_with('test')
+        names = [n for n, v in mgr]
+        self.assertEqual(['normal cmd'], names)
+
+    def test_load_commands_duplicates(self):
+        testcmd_a = mock.Mock()
+        testcmd_a.name = 'test_cmd'
+        testcmd_a.module_name = 'module.a'
+        testcmd_a.entry_point.value = 'module.a:TestCmd'
+        testcmd_b = mock.Mock()
+        testcmd_b.name = 'test_cmd'
+        testcmd_b.module_name = 'module.b'
+        testcmd_b.entry_point.value = 'module.b:TestCmd'
+        mock_get_group_all = mock.Mock(return_value=[testcmd_a, testcmd_b])
+        with mock.patch(
+            'stevedore.ExtensionManager', mock_get_group_all
+        ) as mock_manager:
+            mgr = commandmanager.CommandManager('test')
+
+        mock_manager.assert_called_once_with('test')
+        names = [n for n, v in mgr]
+        commands = [v for _, v in mgr]
+        self.assertEqual(['test cmd'], names)
+        # we should have ended up with the second command
+        self.assertEqual([testcmd_b.entry_point], commands)
+        self.assertIn(
+            "found duplicate implementations of the 'test cmd' command",
+            self.logger.output,
+        )
 
 
 class FauxCommand(command.Command):
@@ -214,6 +252,34 @@ class TestLookupAndFindPartialName(base.TestBase):
         self.assertTrue(cmd)
         self.assertEqual(' '.join(self.argv), name)
         self.assertFalse(remaining)
+
+
+class TestIsModuleIgnored(base.TestBase):
+    def test_match(self):
+        result = commandmanager.CommandManager._is_module_ignored(
+            'foo.bar.baz', ['foo.bar.baz', 'other.module']
+        )
+        self.assertTrue(result)
+        result = commandmanager.CommandManager._is_module_ignored(
+            'foo.bar.baz', ['foo.bar', 'other.module']
+        )
+        self.assertTrue(result)
+        result = commandmanager.CommandManager._is_module_ignored(
+            'foo.bar.baz', ['foo', 'other.module']
+        )
+        self.assertTrue(result)
+
+    def test_no_match(self):
+        result = commandmanager.CommandManager._is_module_ignored(
+            'foo.bar.baz', ['other.module', 'another.package']
+        )
+        self.assertFalse(result)
+
+    def test_no_ignores(self):
+        result = commandmanager.CommandManager._is_module_ignored(
+            'foo.bar.baz', []
+        )
+        self.assertFalse(result)
 
 
 class TestGetByPartialName(base.TestBase):
@@ -334,8 +400,10 @@ class TestCommandManagerGroups(base.TestBase):
     def test_get_command_names(self):
         mock_cmd_one = mock.Mock()
         mock_cmd_one.name = 'one'
+        mock_cmd_one.module_name = 'module.a'
         mock_cmd_two = mock.Mock()
         mock_cmd_two.name = 'cmd two'
+        mock_cmd_two.module_name = 'module.b'
         mock_get_group_all = mock.Mock(
             return_value=[mock_cmd_one, mock_cmd_two],
         )
@@ -345,5 +413,9 @@ class TestCommandManagerGroups(base.TestBase):
         ) as mock_manager:
             mgr = commandmanager.CommandManager('test')
             mock_manager.assert_called_once_with('test')
+
             cmds = mgr.get_command_names('test')
+            mock_manager.assert_has_calls(
+                [mock.call('test'), mock.call('test')]
+            )
             self.assertEqual(['one', 'cmd two'], cmds)

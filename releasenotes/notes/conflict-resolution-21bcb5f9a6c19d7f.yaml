@@ -1,0 +1,12 @@
+---
+features:
+  - |
+    ``cliff.commandmanager.CommandManager`` now accepts an optional
+    ``ignored_modules`` argument, which can be used to indicate modules that
+    should be skipped when loading commands. This can be useful if e.g. moving
+    a command from a plugin to the core application, to ensure the version in
+    the core application is always preferred.
+upgrade:
+  - |
+    cliff will now warn if duplicates command implementations are found, rather
+    than silently ignoring them.

@@ -53,6 +53,13 @@ class EntryPointWrapper:
     def load(self) -> type[command.Command]:
         return self.command_class
 
+    @property
+    def value(self) -> str:
+        # fake entry point target for logging purposes
+        return ':'.join(
+            [self.command_class.__module__, self.command_class.__name__]
+        )
+
 
 EntryPointT: TypeAlias = EntryPointWrapper | importlib.metadata.EntryPoint
 
@@ -64,15 +71,23 @@ class CommandManager:
         plugins to be loaded. For example, ``'cliff.formatter.list'``.
     :param convert_underscores: Whether cliff should convert underscores to
         spaces in entry_point commands.
+    :param ignored_modules: A list of module names to ignore when loading
+        commands. This will be matched partial, so be as specific as needed.
     """
 
     def __init__(
-        self, namespace: str, convert_underscores: bool = True
+        self,
+        namespace: str | None,
+        convert_underscores: bool = True,
+        *,
+        ignored_modules: collections.abc.Iterable[str] | None = None,
     ) -> None:
-        self.commands: dict[str, EntryPointT] = {}
-        self._legacy: dict[str, str] = {}
         self.namespace = namespace
         self.convert_underscores = convert_underscores
+        self.ignored_modules = ignored_modules or ()
+
+        self.commands: dict[str, EntryPointT] = {}
+        self._legacy: dict[str, str] = {}
         self.group_list: list[str] = []
         self._load_commands()
 
@@ -81,19 +96,79 @@ class CommandManager:
         if self.namespace:
             self.load_commands(self.namespace)
 
+    @staticmethod
+    def _is_module_ignored(
+        module_name: str, ignored_modules: collections.abc.Iterable[str]
+    ) -> bool:
+        # given module_name = 'foo.bar.baz:wow', we expect to match any of
+        # the following ignores: foo.bar.baz:wow, foo.bar.baz, foo.bar, foo
+        while True:
+            if module_name in ignored_modules:
+                return True
+
+            split_index = max(module_name.rfind(':'), module_name.rfind('.'))
+            if split_index == -1:
+                break
+
+            module_name = module_name[:split_index]
+
+        return False
+
     def load_commands(self, namespace: str) -> None:
-        """Load all the commands from an entrypoint"""
+        """Load all the commands from an entrypoint
+
+        :param namespace: The namespace to load commands from.
+        :returns: None
+        """
         self.group_list.append(namespace)
         em: stevedore.ExtensionManager[command.Command]
+        # note that we don't invoke stevedore's conflict resolver functionality
+        # because that is namespace specific and we care about conflicts
+        # regardless of the namespace
         em = stevedore.ExtensionManager(namespace)
-        for ep in em:
-            LOG.debug('found command %r', ep.name)
+        for ext in em:
+            LOG.debug('found command %r', ext.name)
+
+            if self._is_module_ignored(ext.module_name, self.ignored_modules):
+                LOG.debug(
+                    'extension found in ignored module %r: skipping',
+                    ext.module_name,
+                )
+                continue
+
             cmd_name = (
-                ep.name.replace('_', ' ')
+                ext.name.replace('_', ' ')
                 if self.convert_underscores
-                else ep.name
+                else ext.name
             )
-            self.commands[cmd_name] = ep.entry_point
+
+            if cmd_name in self.commands:
+                # Attention, programmers: If you arrived here attempting to
+                # resolve a warning in your application then you have a command
+                # with the same name either defined more than once in the same
+                # application (a typo?) or in multiple packages (for example,
+                # a package that adds plugins to your applications). The latter
+                # can often happen if you e.g. move a command from a plugin to
+                # the core application. In this situation, you should add the
+                # old location to 'ignored_modules' and the plugin will now be
+                # ignored.
+                LOG.warning(
+                    'found duplicate implementations of the %(name)r command '
+                    'in the following modules: %(modules)s: this is likely '
+                    'programmer error and should be reported as a bug to the '
+                    'relevant project(s)',
+                    {
+                        'name': cmd_name,
+                        'modules': ', '.join(
+                            [
+                                self.commands[cmd_name].value,
+                                ext.entry_point.value,
+                            ]
+                        ),
+                    },
+                )
+
+            self.commands[cmd_name] = ext.entry_point
 
     def __iter__(
         self,
