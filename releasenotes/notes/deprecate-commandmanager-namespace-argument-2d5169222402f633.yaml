@@ -1,0 +1,13 @@
+---
+deprecations:
+  - |
+    The ``namespace`` argument to ``cliff.commandmanager.CommandManager`` has
+    been deprecated for removal. Users should prefer invoking ``load_commands``
+    instead. For example, instead of::
+
+        cm = commandmanager.CommandManager('foo')
+
+    Do::
+
+        cm = commandmanager.CommandManager()
+        cm.load_plugins('foo')
