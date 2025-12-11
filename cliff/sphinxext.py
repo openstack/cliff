@@ -456,9 +456,9 @@ class AutoprogramCliffDirective(rst.Directive):
 
 def setup(app: sphinx.application.Sphinx) -> dict[str, ty.Any]:
     app.add_directive('autoprogram-cliff', AutoprogramCliffDirective)
-    app.add_config_value('autoprogram_cliff_application', '', True)
-    app.add_config_value('autoprogram_cliff_ignored', ['--help'], True)
-    app.add_config_value('autoprogram_cliff_app_dist_name', None, True)
+    app.add_config_value('autoprogram_cliff_application', '', 'env')
+    app.add_config_value('autoprogram_cliff_ignored', ['--help'], 'env')
+    app.add_config_value('autoprogram_cliff_app_dist_name', None, 'env')
 
     return {
         'parallel_read_safe': True,

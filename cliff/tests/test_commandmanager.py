@@ -12,7 +12,7 @@
 
 from unittest import mock
 
-import testscenarios
+import testscenarios  # type: ignore
 
 from cliff import command
 from cliff import commandmanager
