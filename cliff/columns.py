@@ -12,13 +12,12 @@
 
 """Formattable column tools."""
 
-import abc
 import typing as ty
 
 _T = ty.TypeVar('_T')
 
 
-class FormattableColumn(ty.Generic[_T], metaclass=abc.ABCMeta):
+class FormattableColumn(ty.Generic[_T]):
     def __init__(self, value: _T) -> None:
         self._value = value
 
@@ -40,9 +39,9 @@ class FormattableColumn(ty.Generic[_T], metaclass=abc.ABCMeta):
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self.machine_readable()!r})'
 
-    @abc.abstractmethod
     def human_readable(self) -> str:
         """Return a basic human readable version of the data."""
+        raise NotImplementedError()
 
     def machine_readable(self) -> _T:
         """Return a raw data structure using only Python built-in types.
