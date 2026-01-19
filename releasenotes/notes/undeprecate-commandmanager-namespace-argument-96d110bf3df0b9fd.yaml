@@ -1,0 +1,9 @@
+---
+other:
+  - |
+    The ``namespace`` argument to ``cliff.commandmanager.CommandManager`` is
+    no longer deprecated for removal. Users should still prefer invoking
+    ``load_commands`` instead and the argument remains optional, but for
+    simpler use cases the following will continue to work::
+
+        cm = commandmanager.CommandManager('foo')

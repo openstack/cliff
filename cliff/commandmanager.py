@@ -16,7 +16,6 @@ import collections.abc
 import importlib.metadata
 import logging
 from typing import TypeAlias
-import warnings
 
 import stevedore
 
@@ -68,10 +67,11 @@ EntryPointT: TypeAlias = EntryPointWrapper | importlib.metadata.EntryPoint
 class CommandManager:
     """Discovers commands and handles lookup based on argv data.
 
-    :param namespace: **DEPRECATED** String containing the entrypoint namespace
-        for the plugins to be loaded from by default. For example,
-        ``'cliff.formatter.list'``. :meth:`CommandManager.load_commands` should
-        be preferred.
+    :param namespace: String containing the entrypoint namespace for the
+        plugins to be loaded. For example, ``'cliff.formatter.list'``.
+        If provided, commands will be loaded from this namespace initially,
+        though it remains possible to load from additional namespaces with
+        :meth:`CommandManager.load_commands`.
     :param convert_underscores: Whether cliff should convert underscores to
         spaces in entry_point commands.
     :param ignored_modules: A list of module names to ignore when loading
@@ -85,16 +85,6 @@ class CommandManager:
         *,
         ignored_modules: collections.abc.Iterable[str] | None = None,
     ) -> None:
-        if namespace:
-            # TODO(stephenfin): Remove this functionality in 5.0.0 and make
-            # convert_underscores a kwarg-only argument
-            warnings.warn(
-                f'Initialising {self.__class__!r} with a namespace is '
-                f'deprecated for removal. Prefer loading commands from a '
-                f'given namespace with load_commands instead',
-                DeprecationWarning,
-            )
-
         self.namespace = namespace
         self.convert_underscores = convert_underscores
         self.ignored_modules = ignored_modules or ()
@@ -106,8 +96,6 @@ class CommandManager:
 
     def _load_commands(self) -> None:
         # NOTE(jamielennox): kept for compatibility.
-        # TODO(stephenfin): We can remove this when we remove the 'namespace'
-        # argument
         if self.namespace:
             self.load_commands(self.namespace)
 
