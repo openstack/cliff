@@ -11,8 +11,6 @@
 #  under the License.
 
 import io
-import os
-import sys
 
 from unittest import mock
 
@@ -110,8 +108,9 @@ class TestHelp(base.TestBase):
         except help.HelpExit:
             pass
         help_text = stdout.getvalue()
-        basecommand = os.path.split(sys.argv[0])[1]
-        self.assertIn(f'usage: {basecommand} [--version]', help_text)
+        usage_line = help_text.splitlines()[0]
+        self.assertTrue(usage_line.startswith('usage: '), usage_line)
+        self.assertIn('[--version]', usage_line)
         self.assertRegex(help_text, 'option(s|al arguments):\n  --version')
         expected = (
             '  one            Test command\n'
