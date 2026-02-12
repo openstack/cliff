@@ -84,12 +84,23 @@ def _format_usage(parser: argparse.ArgumentParser) -> list[str]:
         re.VERBOSE,
     )
 
-    opt_usage = fmt._format_actions_usage(optionals, groups)
-    pos_usage = fmt._format_actions_usage(positionals, groups)
+    if sys.version_info >= (3, 14):
+        usage = parser.format_usage().strip()
 
-    opt_parts = part_regexp.findall(opt_usage)
-    pos_parts = part_regexp.findall(pos_usage)
-    parts = opt_parts + pos_parts
+        if usage.lower().startswith("usage:"):
+            usage = usage.split(":", 1)[1].strip()
+
+        if usage.startswith(parser.prog):
+            usage = usage[len(parser.prog) :].lstrip()
+
+        parts = part_regexp.findall(usage)
+    else:
+        opt_usage = fmt._format_actions_usage(optionals, groups)
+        pos_usage = fmt._format_actions_usage(positionals, groups)
+
+        opt_parts = part_regexp.findall(opt_usage)
+        pos_parts = part_regexp.findall(pos_usage)
+        parts = opt_parts + pos_parts
 
     if len(' '.join([parser.prog] + parts)) < 72:
         return [' '.join([parser.prog] + parts)]
