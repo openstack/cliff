@@ -73,7 +73,7 @@ class InteractiveApp(cmd2.Cmd):
             parts.insert(0, line.command)
         return parts
 
-    def default(self, line: str) -> bool | None:  # type: ignore[override]
+    def default(self, line: str) -> bool | None:
         # Tie in the default command processor to
         # dispatch commands known to the command manager.
         # We send the message through our parent app,
@@ -87,17 +87,7 @@ class InteractiveApp(cmd2.Cmd):
             return bool(ret)
         return None
 
-    def completenames(self, text: str, *ignored: ty.Any) -> list[str]:
-        """Tab-completion for command prefix without completer delimiter.
-
-        This method returns cmd style and cliff style commands matching
-        provided command prefix (text).
-        """
-        completions = cmd2.Cmd.completenames(self, text)
-        completions += self._complete_prefix(text)
-        return completions
-
-    def completedefault(
+    def completedefault(  # type: ignore[override]
         self, text: str, line: str, begidx: int, endidx: int
     ) -> list[str]:
         """Default tab-completion for command prefix with completer delimiter.
@@ -146,7 +136,7 @@ class InteractiveApp(cmd2.Cmd):
         else:
             stdout = self.stdout
             try:
-                with autopage.argparse.help_pager(stdout) as paged_out:  # type: ignore
+                with autopage.argparse.help_pager(stdout) as paged_out:
                     self.stdout = paged_out
 
                     cmd2.Cmd.do_help(self, arg)  # type: ignore
