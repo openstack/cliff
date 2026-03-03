@@ -30,6 +30,8 @@ class TestLookupAndFind(base.TestBase):
         ('three-words', {'argv': ['three', 'word', 'command']}),
     ]
 
+    argv: list[str]
+
     def test(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         cmd, name, remaining = mgr.find_command(self.argv)
@@ -45,6 +47,8 @@ class TestLookupWithRemainder(base.TestBase):
         ('three', {'argv': ['three', 'word', 'command', '--opt']}),
     ]
 
+    argv: list[str]
+
     def test(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         cmd, name, remaining = mgr.find_command(self.argv)
@@ -57,6 +61,8 @@ class TestFindInvalidCommand(base.TestBase):
         ('no-such-command', {'argv': ['a', '-b']}),
         ('no-command-given', {'argv': ['-b']}),
     ]
+
+    argv: list[str]
 
     def test(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
@@ -245,6 +251,8 @@ class TestLookupAndFindPartialName(base.TestBase):
         ('two-words', {'argv': ['t', 'w']}),
         ('three-words', {'argv': ['t', 'w', 'c']}),
     ]
+
+    argv: list[str]
 
     def test(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)

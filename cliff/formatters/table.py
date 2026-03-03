@@ -51,7 +51,7 @@ def _do_fit(fit_width: bool) -> bool:
 
 
 class TableFormatter(base.ListFormatter, base.SingleFormatter):
-    ALIGNMENTS = {
+    ALIGNMENTS: dict[type[int | str | float], ty.Literal['l', 'c', 'r']] = {
         int: 'r',
         str: 'l',
         float: 'r',

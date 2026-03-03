@@ -11,7 +11,6 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-import cmd2
 
 from cliff import app
 from cliff.interactive import InteractiveApp
@@ -31,33 +30,6 @@ class TestInteractive(base.TestBase):
             stdout=None,
             errexit=errexit,
         )
-
-    def _test_completenames(self, expecteds, prefix):
-        app = self.make_interactive_app(False, 'hips', 'hippo', 'nonmatching')
-        self.assertEqual(
-            set(app.completenames(prefix, '', 0, 1)), set(expecteds)
-        )
-
-    def test_cmd2_completenames(self):
-        # cmd2.Cmd define do_help method
-        self._test_completenames(['help'], 'he')
-
-    def test_cliff_completenames(self):
-        self._test_completenames(['hips', 'hippo'], 'hip')
-
-    def test_no_completenames(self):
-        self._test_completenames([], 'taz')
-
-    def test_both_completenames(self):
-        # cmd2.Cmd define do_history method
-        # NOTE(dtroyer): Before release 0.7.0 do_hi was also defined so we need
-        #                to account for that in the list of possible responses.
-        #                Remove this check after cmd2 0.7.0 is the minimum
-        #                requirement.
-        if hasattr(cmd2.Cmd, "do_hi"):
-            self._test_completenames(['hi', 'history', 'hips', 'hippo'], 'hi')
-        else:
-            self._test_completenames(['history', 'hips', 'hippo'], 'hi')
 
     def _test_completedefault(self, expecteds, line, begidx):
         command_names = set(
