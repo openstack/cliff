@@ -85,11 +85,8 @@ class TestLister(base.TestBase):
         parsed_args.sort_columns = []
         with mock.patch.object(test_lister, 'take_action') as mock_take_action:
             mock_take_action.return_value = (('Col1', 'Col2', 'Col3'), [])
-            self.assertRaises(
-                ValueError,
-                test_lister.run,
-                parsed_args,
-            )
+            with self.assertRaises(ValueError):
+                test_lister.run(parsed_args)
 
     def test_filter_by_columns_normalized(self):
         test_lister = ExerciseLister(mock.Mock(), None)

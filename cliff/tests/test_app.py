@@ -282,10 +282,8 @@ class TestOptionParser(base.TestBase):
                     help="Show help message and exit.",
                 )
 
-        self.assertRaises(
-            argparse.ArgumentError,
-            MyApp,
-        )
+        with self.assertRaises(argparse.ArgumentError):
+            MyApp()
 
     def test_conflicting_option_custom_arguments_should_not_throw(self):
         class MyApp(application.App):
@@ -364,11 +362,8 @@ class TestHelpHandling(base.TestBase):
             with mock.patch(
                 'cliff.help.HelpAction.__call__', side_effect=SystemExit(0)
             ) as helper:
-                self.assertRaises(
-                    SystemExit,
-                    app.run,
-                    ['--help'],
-                )
+                with self.assertRaises(SystemExit):
+                    app.run(['--help'])
                 self.assertTrue(helper.called)
             self.assertEqual(deferred_help, init.called)
 
@@ -504,11 +499,8 @@ class TestVerboseMode(base.TestBase):
         app.clean_up.reset_mock()
         app.run(['--quiet', 'mock'])
         app.clean_up.assert_called_once_with(command.return_value, 0, None)
-        self.assertRaises(
-            SystemExit,
-            app.run,
-            ['--verbose', '--quiet', 'mock'],
-        )
+        with self.assertRaises(SystemExit):
+            app.run(['--verbose', '--quiet', 'mock'])
 
 
 class TestIO(base.TestBase):

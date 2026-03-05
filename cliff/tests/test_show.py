@@ -78,8 +78,5 @@ class TestShow(base.TestBase):
         parsed_args.formatter = 'test'
         with mock.patch.object(test_show, 'take_action') as mock_take_action:
             mock_take_action.return_value = (('Col1', 'Col2', 'Col3'), [])
-            self.assertRaises(
-                ValueError,
-                test_show.run,
-                parsed_args,
-            )
+            with self.assertRaises(ValueError):
+                test_show.run(parsed_args)
