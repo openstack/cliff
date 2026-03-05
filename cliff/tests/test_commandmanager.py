@@ -12,68 +12,63 @@
 
 from unittest import mock
 
-import testscenarios  # type: ignore
-
 from cliff import command
 from cliff import commandmanager
 from cliff.tests import base
 from cliff.tests import utils
 
 
-load_tests = testscenarios.load_tests_apply_scenarios
-
-
 class TestLookupAndFind(base.TestBase):
     scenarios = [
-        ('one-word', {'argv': ['one']}),
-        ('two-words', {'argv': ['two', 'words']}),
-        ('three-words', {'argv': ['three', 'word', 'command']}),
+        ('one-word', ['one']),
+        ('two-words', ['two', 'words']),
+        ('three-words', ['three', 'word', 'command']),
     ]
 
-    argv: list[str]
-
     def test(self):
-        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-        cmd, name, remaining = mgr.find_command(self.argv)
-        self.assertTrue(cmd)
-        self.assertEqual(' '.join(self.argv), name)
-        self.assertFalse(remaining)
+        for scenario, argv in self.scenarios:
+            with self.subTest(scenario, argv=argv):
+                mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+                cmd, name, remaining = mgr.find_command(argv)
+                self.assertTrue(cmd)
+                self.assertEqual(' '.join(argv), name)
+                self.assertFalse(remaining)
 
 
 class TestLookupWithRemainder(base.TestBase):
     scenarios = [
-        ('one', {'argv': ['one', '--opt']}),
-        ('two', {'argv': ['two', 'words', '--opt']}),
-        ('three', {'argv': ['three', 'word', 'command', '--opt']}),
+        ('one', ['one', '--opt']),
+        ('two', ['two', 'words', '--opt']),
+        ('three', ['three', 'word', 'command', '--opt']),
     ]
 
-    argv: list[str]
-
     def test(self):
-        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-        cmd, name, remaining = mgr.find_command(self.argv)
-        self.assertTrue(cmd)
-        self.assertEqual(['--opt'], remaining)
+        for scenario, argv in self.scenarios:
+            with self.subTest(scenario, argv=argv):
+                mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+                cmd, name, remaining = mgr.find_command(argv)
+                self.assertTrue(cmd)
+                self.assertEqual(['--opt'], remaining)
 
 
 class TestFindInvalidCommand(base.TestBase):
     scenarios = [
-        ('no-such-command', {'argv': ['a', '-b']}),
-        ('no-command-given', {'argv': ['-b']}),
+        ('no-such-command', ['a', '-b']),
+        ('no-command-given', ['-b']),
     ]
 
-    argv: list[str]
-
     def test(self):
-        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-        try:
-            mgr.find_command(self.argv)
-        except ValueError as err:
-            # make sure err include 'a' when ['a', '-b']
-            self.assertIn(self.argv[0], str(err))
-            self.assertIn('-b', str(err))
-        else:
-            self.fail('expected a failure')
+        for scenario, argv in self.scenarios:
+            with self.subTest(scenario, argv=argv):
+                mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+                try:
+                    mgr.find_command(argv)
+                except ValueError as err:
+                    # make sure err include 'a' when ['a', '-b']
+                    self.assertIn(argv[0], str(err))
+                    self.assertIn('-b', str(err))
+                else:
+                    self.fail('expected a failure')
 
 
 class TestFindUnknownCommand(base.TestBase):
@@ -247,19 +242,19 @@ class TestLegacyCommand(base.TestBase):
 
 class TestLookupAndFindPartialName(base.TestBase):
     scenarios = [
-        ('one-word', {'argv': ['o']}),
-        ('two-words', {'argv': ['t', 'w']}),
-        ('three-words', {'argv': ['t', 'w', 'c']}),
+        ('one-word', ['o']),
+        ('two-words', ['t', 'w']),
+        ('three-words', ['t', 'w', 'c']),
     ]
 
-    argv: list[str]
-
     def test(self):
-        mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
-        cmd, name, remaining = mgr.find_command(self.argv)
-        self.assertTrue(cmd)
-        self.assertEqual(' '.join(self.argv), name)
-        self.assertFalse(remaining)
+        for scenario, argv in self.scenarios:
+            with self.subTest(scenario, argv=argv):
+                mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
+                cmd, name, remaining = mgr.find_command(argv)
+                self.assertTrue(cmd)
+                self.assertEqual(' '.join(argv), name)
+                self.assertFalse(remaining)
 
 
 class TestIsModuleIgnored(base.TestBase):
