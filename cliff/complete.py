@@ -233,7 +233,7 @@ class CompleteCommand(_command.Command):
         return cmd_parser._get_optional_actions()
 
     def take_action(self, parsed_args: argparse.Namespace) -> int:
-        self.log.debug(f'take_action({parsed_args})')
+        self.log.debug('take_action(%s)', parsed_args)
 
         name = parsed_args.name or self.app.NAME
         try:
