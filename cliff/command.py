@@ -15,18 +15,18 @@ import argparse
 from importlib.metadata import packages_distributions
 import inspect
 import types
-import typing as ty
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from stevedore import extension
 
 from cliff import _argparse
 
-if ty.TYPE_CHECKING:
+if TYPE_CHECKING:
     from . import app as _app
     from . import hooks
     from typing_extensions import Never
 
-_T = ty.TypeVar('_T')
+_T = TypeVar('_T')
 _dists_by_mods = None
 
 
@@ -174,7 +174,7 @@ class Command(metaclass=abc.ABCMeta):
         return parser
 
     @abc.abstractmethod
-    def take_action(self, parsed_args: argparse.Namespace) -> ty.Any:
+    def take_action(self, parsed_args: argparse.Namespace) -> Any:
         """Override to do something useful.
 
         The returned value will be returned by the program.

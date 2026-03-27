@@ -14,7 +14,7 @@
 
 import argparse
 from collections.abc import Iterable
-import typing as ty
+from typing import Any
 import warnings
 
 import autopage.argparse
@@ -26,14 +26,14 @@ class ArgumentParser(autopage.argparse.ArgumentParser):
     # special conflict handler.
 
     def add_argument_group(
-        self, *args: ty.Any, **kwargs: ty.Any
+        self, *args: Any, **kwargs: Any
     ) -> '_ArgumentGroup':
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
 
     def add_mutually_exclusive_group(
-        self, **kwargs: ty.Any
+        self, **kwargs: Any
     ) -> '_MutuallyExclusiveGroup':
         group = _MutuallyExclusiveGroup(self, **kwargs)
         self._mutually_exclusive_groups.append(group)
@@ -89,14 +89,14 @@ class _ArgumentGroup(argparse._ArgumentGroup):
     # special conflict handler.
 
     def add_argument_group(
-        self, *args: ty.Any, **kwargs: ty.Any
+        self, *args: Any, **kwargs: Any
     ) -> '_ArgumentGroup':
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
 
     def add_mutually_exclusive_group(
-        self, **kwargs: ty.Any
+        self, **kwargs: Any
     ) -> '_MutuallyExclusiveGroup':
         group = _MutuallyExclusiveGroup(self, **kwargs)
         self._mutually_exclusive_groups.append(group)
@@ -121,14 +121,14 @@ class _MutuallyExclusiveGroup(argparse._MutuallyExclusiveGroup):
     # special conflict handler.
 
     def add_argument_group(
-        self, *args: ty.Any, **kwargs: ty.Any
+        self, *args: Any, **kwargs: Any
     ) -> '_ArgumentGroup':
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
 
     def add_mutually_exclusive_group(
-        self, **kwargs: ty.Any
+        self, **kwargs: Any
     ) -> '_MutuallyExclusiveGroup':
         group = _MutuallyExclusiveGroup(self, **kwargs)
         self._mutually_exclusive_groups.append(group)

@@ -15,13 +15,13 @@
 import abc
 import argparse
 import logging
-import typing as ty
+from typing import TYPE_CHECKING, Any, TextIO
 
 import stevedore
 
 from cliff import command as _command
 
-if ty.TYPE_CHECKING:
+if TYPE_CHECKING:
     from cliff import app
 
 
@@ -59,7 +59,7 @@ class CompleteDictionary:
         return ' '.join(k for k in sorted(self._dictionary.keys()))
 
     def _get_data_recurse(
-        self, dictionary: dict[str, ty.Any], path: str
+        self, dictionary: dict[str, Any], path: str
     ) -> list[tuple[str, str]]:
         ray = []
         keys = sorted(dictionary.keys())
@@ -81,7 +81,7 @@ class CompleteDictionary:
 class CompleteShellBase(metaclass=abc.ABCMeta):
     """base class for bash completion generation"""
 
-    def __init__(self, name: str, output: ty.TextIO) -> None:
+    def __init__(self, name: str, output: TextIO) -> None:
         self.name = str(name)
         self.output = output
 
@@ -107,7 +107,7 @@ class CompleteShellBase(metaclass=abc.ABCMeta):
 class CompleteNoCode(CompleteShellBase):
     """completion with no code"""
 
-    def __init__(self, name: str, output: ty.TextIO) -> None:
+    def __init__(self, name: str, output: TextIO) -> None:
         super().__init__(name, output)
 
     def get_header(self) -> str:
@@ -120,7 +120,7 @@ class CompleteNoCode(CompleteShellBase):
 class CompleteBash(CompleteShellBase):
     """completion for bash"""
 
-    def __init__(self, name: str, output: ty.TextIO) -> None:
+    def __init__(self, name: str, output: TextIO) -> None:
         super().__init__(name, output)
 
     def get_header(self) -> str:

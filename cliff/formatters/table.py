@@ -16,7 +16,7 @@ import argparse
 from collections.abc import Iterable, Sequence
 import os
 import sys
-import typing as ty
+from typing import Any, Literal, TextIO, TypeVar
 
 import prettytable
 
@@ -24,11 +24,11 @@ from cliff import columns
 from cliff.formatters import base
 from cliff import utils
 
-_T = ty.TypeVar('_T')
+_T = TypeVar('_T')
 
 
 def _format_row(
-    row: Iterable[columns.FormattableColumn[ty.Any] | str | _T],
+    row: Iterable[columns.FormattableColumn[Any] | str | _T],
 ) -> list[_T | str]:
     new_row = []
     for r in row:
@@ -49,7 +49,7 @@ def _do_fit(fit_width: bool) -> bool:
 
 
 class TableFormatter(base.ListFormatter, base.SingleFormatter):
-    ALIGNMENTS: dict[type[int | str | float], ty.Literal['l', 'c', 'r']] = {
+    ALIGNMENTS: dict[type[int | str | float], Literal['l', 'c', 'r']] = {
         int: 'r',
         str: 'l',
         float: 'r',
@@ -89,7 +89,7 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
         self,
         table: prettytable.PrettyTable,
         column_names: Sequence[str],
-        data: Iterable[Sequence[ty.Any]],
+        data: Iterable[Sequence[Any]],
     ) -> None:
         # Figure out the types of the columns in the
         # first row and set the alignment of the
@@ -111,8 +111,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
     def emit_list(
         self,
         column_names: Sequence[str],
-        data: Iterable[Sequence[ty.Any]],
-        stdout: ty.TextIO,
+        data: Iterable[Sequence[Any]],
+        stdout: TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
         x = prettytable.PrettyTable(
@@ -141,8 +141,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
     def emit_one(
         self,
         column_names: Sequence[str],
-        data: Sequence[ty.Any],
-        stdout: ty.TextIO,
+        data: Sequence[Any],
+        stdout: TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
         x = prettytable.PrettyTable(

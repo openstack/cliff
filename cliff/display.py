@@ -16,7 +16,7 @@ import abc
 import argparse
 from collections.abc import Iterable, Iterator, Sequence
 from itertools import compress
-import typing as ty
+from typing import Any, Generic, TypeVar
 
 import stevedore
 
@@ -24,12 +24,12 @@ from cliff import app
 from cliff import command
 from cliff.formatters import base as base_formatters
 
-_T = ty.TypeVar("_T")
+_T = TypeVar("_T")
 
 
 class DisplayCommandBase(
     command.Command,
-    ty.Generic[base_formatters.FormatterT],
+    Generic[base_formatters.FormatterT],
     metaclass=abc.ABCMeta,
 ):
     """Command base class for displaying data about a single object."""
@@ -107,7 +107,7 @@ class DisplayCommandBase(
         self,
         parsed_args: argparse.Namespace,
         column_names: Sequence[str],
-        data: ty.Any,
+        data: Any,
     ) -> int:
         """Use the formatter to generate the output.
 
@@ -167,8 +167,8 @@ class DisplayCommandBase(
     def _run_after_hooks(  # type: ignore[override]
         self,
         parsed_args: argparse.Namespace,
-        data: tuple[Sequence[str], Iterable[ty.Any]],
-    ) -> tuple[Sequence[str], Iterable[ty.Any]]:
+        data: tuple[Sequence[str], Iterable[Any]],
+    ) -> tuple[Sequence[str], Iterable[Any]]:
         """Calls after() method of the hooks.
 
         This method is intended to be called from the run() method after
@@ -193,6 +193,6 @@ class DisplayCommandBase(
     @staticmethod
     def _compress_iterable(
         iterable: Iterable[_T],
-        selectors: Iterable[ty.Any],
+        selectors: Iterable[Any],
     ) -> Iterator[_T]:
         return compress(iterable, selectors)

@@ -16,14 +16,14 @@ import argparse
 from collections.abc import Iterable, Sequence
 import csv
 import os
-import typing as ty
+from typing import Any, Literal, TextIO
 
 from cliff import columns
 from cliff.formatters import base
 
 
 class CSVLister(base.ListFormatter):
-    QUOTE_MODES: dict[str, ty.Literal[0, 1, 2, 3]] = {
+    QUOTE_MODES: dict[str, Literal[0, 1, 2, 3]] = {
         'all': csv.QUOTE_ALL,
         'minimal': csv.QUOTE_MINIMAL,
         'nonnumeric': csv.QUOTE_NONNUMERIC,
@@ -43,8 +43,8 @@ class CSVLister(base.ListFormatter):
     def emit_list(
         self,
         column_names: Sequence[str],
-        data: Iterable[Sequence[ty.Any]],
-        stdout: ty.TextIO,
+        data: Iterable[Sequence[Any]],
+        stdout: TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
         writer = csv.writer(

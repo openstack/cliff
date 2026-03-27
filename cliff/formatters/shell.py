@@ -14,7 +14,7 @@
 
 import argparse
 from collections.abc import Sequence
-import typing as ty
+from typing import Any, TextIO
 
 from cliff import columns
 from cliff.formatters import base
@@ -45,8 +45,8 @@ class ShellFormatter(base.SingleFormatter):
     def emit_one(
         self,
         column_names: Sequence[str],
-        data: Sequence[ty.Any],
-        stdout: ty.TextIO,
+        data: Sequence[Any],
+        stdout: TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
         variable_names = [c.lower().replace(' ', '_') for c in column_names]

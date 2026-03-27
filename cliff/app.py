@@ -19,14 +19,14 @@ import logging
 import logging.handlers
 import os
 import sys
-import typing as ty
+from typing import TYPE_CHECKING, Any, TextIO
 
 from cliff import _argparse
 from . import complete
 from . import help
 from . import utils
 
-if ty.TYPE_CHECKING:
+if TYPE_CHECKING:
     from . import command as _command
     from . import commandmanager as _commandmanager
     from . import interactive as _interactive
@@ -79,9 +79,9 @@ class App:
         description: str | None,
         version: str | None,
         command_manager: '_commandmanager.CommandManager',
-        stdin: ty.TextIO | None = None,
-        stdout: ty.TextIO | None = None,
-        stderr: ty.TextIO | None = None,
+        stdin: TextIO | None = None,
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
         interactive_app_factory: type['_interactive.InteractiveApp']
         | None = None,
         deferred_help: bool = False,
@@ -99,9 +99,9 @@ class App:
 
     def _set_streams(
         self,
-        stdin: ty.TextIO | None,
-        stdout: ty.TextIO | None,
-        stderr: ty.TextIO | None,
+        stdin: TextIO | None,
+        stdout: TextIO | None,
+        stderr: TextIO | None,
     ) -> None:
         try:
             locale.setlocale(locale.LC_ALL, '')
@@ -142,7 +142,7 @@ class App:
         self,
         description: str | None,
         version: str | None,
-        argparse_kwargs: dict[str, ty.Any] | None = None,
+        argparse_kwargs: dict[str, Any] | None = None,
     ) -> _argparse.ArgumentParser:
         """Return an argparse option parser for this application.
 

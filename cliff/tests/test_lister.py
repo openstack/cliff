@@ -11,7 +11,7 @@
 #  under the License.
 
 import argparse
-import typing as ty
+from typing import Any
 import weakref
 
 from unittest import mock
@@ -34,7 +34,7 @@ class FauxFormatter(base_formatters.ListFormatter):
 
 
 class ExerciseLister(lister.Lister):
-    data: list[tuple[ty.Any, ty.Any]] = [('a', 'A'), ('b', 'B'), ('c', 'A')]
+    data: list[tuple[Any, Any]] = [('a', 'A'), ('b', 'B'), ('c', 'A')]
 
     def _load_formatter_plugins(self):
         return {

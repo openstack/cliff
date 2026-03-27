@@ -14,7 +14,7 @@
 
 import argparse
 from collections.abc import Iterable, Sequence
-import typing as ty
+from typing import Any, TextIO
 
 from cliff import columns
 from cliff.formatters import base
@@ -27,8 +27,8 @@ class ValueFormatter(base.ListFormatter, base.SingleFormatter):
     def emit_list(
         self,
         column_names: Sequence[str],
-        data: Iterable[Sequence[ty.Any]],
-        stdout: ty.TextIO,
+        data: Iterable[Sequence[Any]],
+        stdout: TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
         for row in data:
@@ -48,8 +48,8 @@ class ValueFormatter(base.ListFormatter, base.SingleFormatter):
     def emit_one(
         self,
         column_names: Sequence[str],
-        data: Sequence[ty.Any],
-        stdout: ty.TextIO,
+        data: Sequence[Any],
+        stdout: TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
         for value in data:

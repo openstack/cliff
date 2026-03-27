@@ -12,12 +12,12 @@
 
 """Formattable column tools."""
 
-import typing as ty
+from typing import Generic, TypeVar
 
-_T = ty.TypeVar('_T')
+_T = TypeVar('_T')
 
 
-class FormattableColumn(ty.Generic[_T]):
+class FormattableColumn(Generic[_T]):
     def __init__(self, value: _T) -> None:
         self._value = value
 

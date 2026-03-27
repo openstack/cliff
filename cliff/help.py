@@ -14,7 +14,7 @@ import argparse
 from collections.abc import Sequence
 import inspect
 import traceback
-import typing as ty
+from typing import Any
 
 import autopage.argparse
 
@@ -43,7 +43,7 @@ class HelpAction(argparse.Action):
         self,
         parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,
-        values: str | Sequence[ty.Any] | None,
+        values: str | Sequence[Any] | None,
         option_string: str | None = None,
     ) -> None:
         app = self.default

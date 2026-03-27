@@ -15,12 +15,12 @@
 import itertools
 import shlex
 import sys
-import typing as ty
+from typing import TYPE_CHECKING, TextIO
 
 import autopage.argparse
 import cmd2
 
-if ty.TYPE_CHECKING:
+if TYPE_CHECKING:
     from . import app as _app
     from . import commandmanager as _commandmanager
 
@@ -50,8 +50,8 @@ class InteractiveApp(cmd2.Cmd):
         self,
         parent_app: '_app.App',
         command_manager: '_commandmanager.CommandManager',
-        stdin: ty.TextIO | None,
-        stdout: ty.TextIO | None,
+        stdin: TextIO | None,
+        stdout: TextIO | None,
         errexit: bool = False,
     ):
         self.parent_app = parent_app

@@ -19,7 +19,7 @@ import importlib
 import inspect
 import re
 import sys
-import typing as ty
+from typing import Any
 
 from docutils import nodes
 from docutils.parsers import rst
@@ -465,7 +465,7 @@ class AutoprogramCliffDirective(rst.Directive):
         return self._generate_command_nodes(commands, application_name)
 
 
-def setup(app: sphinx.application.Sphinx) -> dict[str, ty.Any]:
+def setup(app: sphinx.application.Sphinx) -> dict[str, Any]:
     app.add_directive('autoprogram-cliff', AutoprogramCliffDirective)
     app.add_config_value('autoprogram_cliff_application', '', 'env')
     app.add_config_value('autoprogram_cliff_ignored', ['--help'], 'env')
