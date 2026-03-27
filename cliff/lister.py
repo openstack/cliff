@@ -18,7 +18,6 @@ import collections.abc
 import logging
 import typing as ty
 
-from cliff import _argparse
 from cliff import display
 from cliff.formatters import base as base_formatters
 
@@ -60,7 +59,7 @@ class Lister(
         the data to be listed.
         """
 
-    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
+    def get_parser(self, prog_name: str) -> argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         group = self._formatter_group
         group.add_argument(

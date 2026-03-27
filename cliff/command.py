@@ -158,7 +158,7 @@ class Command(metaclass=abc.ABCMeta):
             )
         return '\n\n'.join(parts)
 
-    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
+    def get_parser(self, prog_name: str) -> argparse.ArgumentParser:
         """Return an :class:`argparse.ArgumentParser`."""
         parser = _argparse.ArgumentParser(
             description=self.get_description(),
