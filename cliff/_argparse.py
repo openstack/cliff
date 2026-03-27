@@ -13,7 +13,7 @@
 """Overrides of standard argparse behavior."""
 
 import argparse
-import collections.abc
+from collections.abc import Iterable
 import typing as ty
 import warnings
 
@@ -42,9 +42,7 @@ class ArgumentParser(autopage.argparse.ArgumentParser):
     def _handle_conflict_ignore(
         self,
         action: argparse.Action,
-        conflicting_actions: collections.abc.Iterable[
-            tuple[str, argparse.Action]
-        ],
+        conflicting_actions: Iterable[tuple[str, argparse.Action]],
     ) -> None:
         _handle_conflict_ignore(
             self,
@@ -58,7 +56,7 @@ def _handle_conflict_ignore(
     container: argparse._ActionsContainer,
     option_string_actions: dict[str, argparse.Action],
     new_action: argparse.Action,
-    conflicting_actions: collections.abc.Iterable[tuple[str, argparse.Action]],
+    conflicting_actions: Iterable[tuple[str, argparse.Action]],
 ) -> None:
     # Remember the option strings the new action starts with so we can
     # restore them as part of error reporting if we need to.
@@ -107,9 +105,7 @@ class _ArgumentGroup(argparse._ArgumentGroup):
     def _handle_conflict_ignore(
         self,
         action: argparse.Action,
-        conflicting_actions: collections.abc.Iterable[
-            tuple[str, argparse.Action]
-        ],
+        conflicting_actions: Iterable[tuple[str, argparse.Action]],
     ) -> None:
         _handle_conflict_ignore(
             self,
@@ -141,9 +137,7 @@ class _MutuallyExclusiveGroup(argparse._MutuallyExclusiveGroup):
     def _handle_conflict_ignore(
         self,
         action: argparse.Action,
-        conflicting_actions: collections.abc.Iterable[
-            tuple[str, argparse.Action]
-        ],
+        conflicting_actions: Iterable[tuple[str, argparse.Action]],
     ) -> None:
         _handle_conflict_ignore(
             self,

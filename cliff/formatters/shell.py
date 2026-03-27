@@ -13,7 +13,7 @@
 """Output formatters using shell syntax."""
 
 import argparse
-import collections.abc
+from collections.abc import Sequence
 import typing as ty
 
 from cliff import columns
@@ -44,8 +44,8 @@ class ShellFormatter(base.SingleFormatter):
 
     def emit_one(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Sequence[ty.Any],
+        column_names: Sequence[str],
+        data: Sequence[ty.Any],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:

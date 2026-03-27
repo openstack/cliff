@@ -14,7 +14,7 @@
 
 import abc
 import argparse
-import collections.abc
+from collections.abc import Iterable, Iterator, Sequence
 from itertools import compress
 import typing as ty
 
@@ -106,7 +106,7 @@ class DisplayCommandBase(
     def produce_output(
         self,
         parsed_args: argparse.Namespace,
-        column_names: collections.abc.Sequence[str],
+        column_names: Sequence[str],
         data: ty.Any,
     ) -> int:
         """Use the formatter to generate the output.
@@ -121,7 +121,7 @@ class DisplayCommandBase(
     def _generate_columns_and_selector(
         self,
         parsed_args: argparse.Namespace,
-        column_names: collections.abc.Sequence[str],
+        column_names: Sequence[str],
     ) -> tuple[list[str], list[bool] | None]:
         """Generate included columns and selector according to parsed args.
 
@@ -167,12 +167,8 @@ class DisplayCommandBase(
     def _run_after_hooks(  # type: ignore[override]
         self,
         parsed_args: argparse.Namespace,
-        data: tuple[
-            collections.abc.Sequence[str], collections.abc.Iterable[ty.Any]
-        ],
-    ) -> tuple[
-        collections.abc.Sequence[str], collections.abc.Iterable[ty.Any]
-    ]:
+        data: tuple[Sequence[str], Iterable[ty.Any]],
+    ) -> tuple[Sequence[str], Iterable[ty.Any]]:
         """Calls after() method of the hooks.
 
         This method is intended to be called from the run() method after
@@ -196,7 +192,7 @@ class DisplayCommandBase(
 
     @staticmethod
     def _compress_iterable(
-        iterable: collections.abc.Iterable[_T],
-        selectors: collections.abc.Iterable[ty.Any],
-    ) -> collections.abc.Iterator[_T]:
+        iterable: Iterable[_T],
+        selectors: Iterable[ty.Any],
+    ) -> Iterator[_T]:
         return compress(iterable, selectors)

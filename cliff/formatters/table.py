@@ -13,7 +13,7 @@
 """Output formatters using prettytable."""
 
 import argparse
-import collections.abc
+from collections.abc import Iterable, Sequence
 import os
 import sys
 import typing as ty
@@ -28,9 +28,7 @@ _T = ty.TypeVar('_T')
 
 
 def _format_row(
-    row: collections.abc.Iterable[
-        columns.FormattableColumn[ty.Any] | str | _T
-    ],
+    row: Iterable[columns.FormattableColumn[ty.Any] | str | _T],
 ) -> list[_T | str]:
     new_row = []
     for r in row:
@@ -90,8 +88,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
     def add_rows(
         self,
         table: prettytable.PrettyTable,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        column_names: Sequence[str],
+        data: Iterable[Sequence[ty.Any]],
     ) -> None:
         # Figure out the types of the columns in the
         # first row and set the alignment of the
@@ -112,8 +110,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
 
     def emit_list(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        column_names: Sequence[str],
+        data: Iterable[Sequence[ty.Any]],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
@@ -142,8 +140,8 @@ class TableFormatter(base.ListFormatter, base.SingleFormatter):
 
     def emit_one(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Sequence[ty.Any],
+        column_names: Sequence[str],
+        data: Sequence[ty.Any],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:

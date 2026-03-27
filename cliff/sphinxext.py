@@ -13,7 +13,7 @@
 # under the License.
 
 import argparse
-import collections.abc
+from collections.abc import Iterable
 import fnmatch
 import importlib
 import inspect
@@ -36,7 +36,7 @@ def _indent(text: str) -> str:
     """Indent by four spaces."""
     prefix = ' ' * 4
 
-    def prefixed_lines() -> collections.abc.Iterable[str]:
+    def prefixed_lines() -> Iterable[str]:
         for line in text.splitlines(True):
             yield (prefix + line if line.strip() else line)
 
@@ -45,7 +45,7 @@ def _indent(text: str) -> str:
 
 def _format_description(
     parser: argparse.ArgumentParser,
-) -> collections.abc.Iterable[str]:
+) -> Iterable[str]:
     """Get parser description.
 
     We parse this as reStructuredText, allowing users to embed rich
@@ -110,7 +110,7 @@ def _format_usage(parser: argparse.ArgumentParser) -> list[str]:
 
 def _format_epilog(
     parser: argparse.ArgumentParser,
-) -> collections.abc.Iterable[str]:
+) -> Iterable[str]:
     """Get parser epilog.
 
     We parse this as reStructuredText, allowing users to embed rich
@@ -127,7 +127,7 @@ def _format_epilog(
 
 def _format_positional_action(
     action: argparse.Action,
-) -> collections.abc.Iterable[str]:
+) -> Iterable[str]:
     """Format a positional action."""
     if action.help == argparse.SUPPRESS:
         return
@@ -156,7 +156,7 @@ def _format_positional_action(
 
 def _format_optional_action(
     action: argparse.Action,
-) -> collections.abc.Iterable[str]:
+) -> Iterable[str]:
     """Format an optional action."""
     if action.help == argparse.SUPPRESS or action.option_strings is None:
         return
@@ -191,7 +191,7 @@ def _format_optional_action(
 
 def _format_parser(
     parser: argparse.ArgumentParser,
-) -> collections.abc.Iterable[str]:
+) -> Iterable[str]:
     """Format the output of an argparse 'ArgumentParser' object.
 
     Given the following parser::

@@ -13,7 +13,7 @@
 """Output formatters using csv format."""
 
 import argparse
-import collections.abc
+from collections.abc import Iterable, Sequence
 import csv
 import os
 import typing as ty
@@ -42,8 +42,8 @@ class CSVLister(base.ListFormatter):
 
     def emit_list(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        column_names: Sequence[str],
+        data: Iterable[Sequence[ty.Any]],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:

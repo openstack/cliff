@@ -13,7 +13,7 @@
 """Output formatters using PyYAML."""
 
 import argparse
-import collections.abc
+from collections.abc import Iterable, Sequence
 import typing as ty
 
 from cliff import columns
@@ -37,8 +37,8 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
 
     def emit_list(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        column_names: Sequence[str],
+        data: Iterable[Sequence[ty.Any]],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
@@ -54,8 +54,8 @@ class YAMLFormatter(base.ListFormatter, base.SingleFormatter):
 
     def emit_one(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Sequence[ty.Any],
+        column_names: Sequence[str],
+        data: Sequence[ty.Any],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:

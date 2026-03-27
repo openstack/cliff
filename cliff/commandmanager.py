@@ -12,7 +12,7 @@
 
 """Discover and lookup command plugins."""
 
-import collections.abc
+from collections.abc import Iterable, Iterator
 import importlib.metadata
 import logging
 from typing import TypeAlias
@@ -83,7 +83,7 @@ class CommandManager:
         namespace: str | None = None,
         convert_underscores: bool = True,
         *,
-        ignored_modules: collections.abc.Iterable[str] | None = None,
+        ignored_modules: Iterable[str] | None = None,
     ) -> None:
         self.namespace = namespace
         self.convert_underscores = convert_underscores
@@ -101,7 +101,7 @@ class CommandManager:
 
     @staticmethod
     def _is_module_ignored(
-        module_name: str, ignored_modules: collections.abc.Iterable[str]
+        module_name: str, ignored_modules: Iterable[str]
     ) -> bool:
         # given module_name = 'foo.bar.baz:wow', we expect to match any of
         # the following ignores: foo.bar.baz:wow, foo.bar.baz, foo.bar, foo
@@ -175,7 +175,7 @@ class CommandManager:
 
     def __iter__(
         self,
-    ) -> collections.abc.Iterator[tuple[str, EntryPointT]]:
+    ) -> Iterator[tuple[str, EntryPointT]]:
         return iter(self.commands.items())
 
     def add_command(

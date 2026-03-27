@@ -13,7 +13,7 @@
 """Output formatters for JSON."""
 
 import argparse
-import collections.abc
+from collections.abc import Iterable, Sequence
 import json
 import typing as ty
 
@@ -33,8 +33,8 @@ class JSONFormatter(base.ListFormatter, base.SingleFormatter):
 
     def emit_list(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Iterable[collections.abc.Sequence[ty.Any]],
+        column_names: Sequence[str],
+        data: Iterable[Sequence[ty.Any]],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:
@@ -56,8 +56,8 @@ class JSONFormatter(base.ListFormatter, base.SingleFormatter):
 
     def emit_one(
         self,
-        column_names: collections.abc.Sequence[str],
-        data: collections.abc.Sequence[ty.Any],
+        column_names: Sequence[str],
+        data: Sequence[ty.Any],
         stdout: ty.TextIO,
         parsed_args: argparse.Namespace,
     ) -> None:

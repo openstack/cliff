@@ -11,7 +11,7 @@
 #  under the License.
 
 import argparse
-import collections.abc
+from collections.abc import Sequence
 import inspect
 import traceback
 import typing as ty
@@ -43,7 +43,7 @@ class HelpAction(argparse.Action):
         self,
         parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,
-        values: str | collections.abc.Sequence[ty.Any] | None,
+        values: str | Sequence[ty.Any] | None,
         option_string: str | None = None,
     ) -> None:
         app = self.default
