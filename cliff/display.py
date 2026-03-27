@@ -21,7 +21,6 @@ import typing as ty
 import stevedore
 
 from cliff import app
-from cliff import _argparse
 from cliff import command
 from cliff.formatters import base as base_formatters
 
@@ -66,7 +65,7 @@ class DisplayCommandBase(
             invoke_on_load=True,
         )
 
-    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
+    def get_parser(self, prog_name: str) -> argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         formatter_group = parser.add_argument_group(
             title='output formatters',

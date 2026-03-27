@@ -36,7 +36,7 @@ class CommandHook(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_parser(
         self, parser: _argparse.ArgumentParser
-    ) -> _argparse.ArgumentParser | None:
+    ) -> argparse.ArgumentParser | None:
         """Modify the command :class:`argparse.ArgumentParser`.
 
         The provided parser is modified in-place, and the return value is not

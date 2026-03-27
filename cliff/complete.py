@@ -19,7 +19,6 @@ import typing as ty
 
 import stevedore
 
-from cliff import _argparse
 from cliff import command as _command
 
 if ty.TYPE_CHECKING:
@@ -204,7 +203,7 @@ class CompleteCommand(_command.Command):
             namespace='cliff.formatter.completion',
         )
 
-    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
+    def get_parser(self, prog_name: str) -> argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         parser.add_argument(
             "--name",

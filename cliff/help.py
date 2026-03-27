@@ -18,7 +18,6 @@ import typing as ty
 
 import autopage.argparse
 
-from cliff import _argparse
 from cliff import command
 
 
@@ -104,7 +103,7 @@ class HelpAction(argparse.Action):
 class HelpCommand(command.Command):
     """print detailed help for another command"""
 
-    def get_parser(self, prog_name: str) -> _argparse.ArgumentParser:
+    def get_parser(self, prog_name: str) -> argparse.ArgumentParser:
         parser = super().get_parser(prog_name)
         parser.add_argument(
             'cmd',
