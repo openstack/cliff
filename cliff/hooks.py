@@ -13,7 +13,6 @@
 import abc
 import argparse
 
-from cliff import _argparse
 from cliff import command
 
 
@@ -35,7 +34,7 @@ class CommandHook(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def get_parser(
-        self, parser: _argparse.ArgumentParser
+        self, parser: argparse.ArgumentParser
     ) -> argparse.ArgumentParser | None:
         """Modify the command :class:`argparse.ArgumentParser`.
 
