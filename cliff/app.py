@@ -143,7 +143,7 @@ class App:
         description: str | None,
         version: str | None,
         argparse_kwargs: dict[str, Any] | None = None,
-    ) -> _argparse.ArgumentParser:
+    ) -> argparse.ArgumentParser:
         """Return an argparse option parser for this application.
 
         Subclasses may override this method to extend
