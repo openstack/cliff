@@ -94,9 +94,10 @@ class HelpAction(argparse.Action):
                         dist_info = f'\033[90m{dist_info}\033[39m'
                 else:
                     dist_info = ''
+                padded_name = f'{name:<13}'
                 if color:
-                    name = f'\033[36m{name}\033[39m'
-                out.write(f'  {name:<13}  {one_liner}{dist_info}\n')
+                    padded_name = f'\033[36m{padded_name}\033[39m'
+                out.write(f'  {padded_name}  {one_liner}{dist_info}\n')
         raise HelpExit()
 
 

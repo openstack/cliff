@@ -11,6 +11,7 @@
 #  under the License.
 
 import io
+import re
 
 from unittest import mock
 
@@ -194,3 +195,36 @@ class TestHelp(base.TestBase):
         self.assertIn('Commands:', help_output)
         self.assertIn('Could not load', help_output)
         self.assertIn('Exception: Could not load EntryPoint', help_output)
+
+    def test_show_help_color_output_equivalent_to_plain(self):
+        """Colored help should be identical save for ANSI codes."""
+
+        def run_help(color):
+            output = io.StringIO()
+            pager = mock.MagicMock()
+            pager.to_terminal.return_value = color
+            pager.__enter__ = mock.Mock(return_value=output)
+            pager.__exit__ = mock.Mock(return_value=False)
+            app = application.App(
+                'testing',
+                '1',
+                utils.TestCommandManager(utils.TEST_NAMESPACE),
+                stdout=io.StringIO(),
+            )
+            app.NAME = 'test'
+            with mock.patch(
+                'cliff.help.autopage.argparse.help_pager', return_value=pager
+            ):
+                with mock.patch(
+                    'cliff.help.autopage.argparse.use_color_for_parser'
+                ):
+                    try:
+                        app.run(['--help'])
+                    except help.HelpExit:
+                        pass
+            return output.getvalue()
+
+        plain = run_help(color=False)
+        colored = run_help(color=True)
+        self.assertNotEqual(plain, colored)
+        self.assertEqual(plain, re.sub(r'\x1b\[[0-9;]*m', '', colored))
