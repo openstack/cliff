@@ -181,7 +181,7 @@ class InteractiveApp(cmd2.Cmd):
             # Not a plugin command
             pass
         else:
-            statement = cmd2.Statement(
+            statement = cmd2.Statement(  # type: ignore[call-arg]
                 ' '.join(sub_argv),
                 raw=statement.raw,
                 command=cmd_name,
@@ -189,9 +189,9 @@ class InteractiveApp(cmd2.Cmd):
                 multiline_command=statement.multiline_command,
                 terminator=statement.terminator,
                 suffix=statement.suffix,
-                pipe_to=statement.pipe_to,
-                output=statement.output,
-                output_to=statement.output_to,
+                pipe_to=statement.pipe_to,  # type: ignore[attr-defined]
+                output=statement.output,  # type: ignore[attr-defined]
+                output_to=statement.output_to,  # type: ignore[attr-defined]
             )
         return statement
 
