@@ -24,7 +24,7 @@ from cliff import _argparse
 if TYPE_CHECKING:
     from . import app as _app
     from . import hooks
-    from typing_extensions import Never
+    from typing import Never
 
 _T = TypeVar('_T')
 _dists_by_mods = None

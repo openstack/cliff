@@ -11,7 +11,7 @@ authors = [
 readme = {file = "README.rst", content-type = "text/x-rst"}
 license = {text = "Apache-2.0"}
 dynamic = ["version", "dependencies"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
