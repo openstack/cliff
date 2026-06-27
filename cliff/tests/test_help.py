@@ -82,11 +82,8 @@ class TestHelp(base.TestBase):
         help_cmd = help.HelpCommand(app, mock.Mock())
         parser = help_cmd.get_parser('test')
         parsed_args = parser.parse_args(['z'])
-        self.assertRaises(
-            ValueError,
-            help_cmd.run,
-            parsed_args,
-        )
+        with self.assertRaises(ValueError):
+            help_cmd.run(parsed_args)
 
     def test_show_help_for_help(self):
         # FIXME(dhellmann): Are commands tied too closely to the app? Or

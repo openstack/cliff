@@ -165,11 +165,8 @@ class TestArgumentParser(base.TestBase):
         # name that already exists because we configure the argument
         # parser to ignore conflicts but this option has no other name
         # to be used.
-        self.assertRaises(
-            argparse.ArgumentError,
-            parser.add_argument,
-            '-z',
-        )
+        with self.assertRaises(argparse.ArgumentError):
+            parser.add_argument('-z')
 
     def test_option_name_collision_with_alias(self):
         cmd = TestCommand(self.app, None)
@@ -208,11 +205,8 @@ class TestArgumentParser(base.TestBase):
             dest='foo',
             default='foo',
         )
-        self.assertRaises(
-            argparse.ArgumentError,
-            parser.add_argument,
-            '-f',
-        )
+        with self.assertRaises(argparse.ArgumentError):
+            parser.add_argument('-f')
 
     def test_resolve_conflict_argument(self):
         cmd = TestCommand(self.app, None)
@@ -236,8 +230,5 @@ class TestArgumentParser(base.TestBase):
     def test_wrong_conflict_handler(self):
         cmd = TestCommand(self.app, None)
         cmd.conflict_handler = 'wrong'
-        self.assertRaises(
-            ValueError,
-            cmd.get_parser,
-            'NAME',
-        )
+        with self.assertRaises(ValueError):
+            cmd.get_parser('NAME')

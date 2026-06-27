@@ -224,20 +224,14 @@ class TestLegacyCommand(base.TestBase):
     def test_no_legacy(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mgr.add_command('cmd1', FauxCommand)
-        self.assertRaises(
-            ValueError,
-            mgr.find_command,
-            ['cmd2'],
-        )
+        with self.assertRaises(ValueError):
+            mgr.find_command(['cmd2'])
 
     def test_no_command(self):
         mgr = utils.TestCommandManager(utils.TEST_NAMESPACE)
         mgr.add_legacy_command('cmd2', 'cmd1')
-        self.assertRaises(
-            ValueError,
-            mgr.find_command,
-            ['cmd2'],
-        )
+        with self.assertRaises(ValueError):
+            mgr.find_command(['cmd2'])
 
 
 class TestLookupAndFindPartialName(base.TestBase):
