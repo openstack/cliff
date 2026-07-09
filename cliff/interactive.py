@@ -181,17 +181,15 @@ class InteractiveApp(cmd2.Cmd):
             # Not a plugin command
             pass
         else:
-            statement = cmd2.Statement(  # type: ignore[call-arg]
+            statement = cmd2.Statement(
                 ' '.join(sub_argv),
                 raw=statement.raw,
                 command=cmd_name,
-                arg_list=sub_argv,
                 multiline_command=statement.multiline_command,
                 terminator=statement.terminator,
                 suffix=statement.suffix,
-                pipe_to=statement.pipe_to,  # type: ignore[attr-defined]
-                output=statement.output,  # type: ignore[attr-defined]
-                output_to=statement.output_to,  # type: ignore[attr-defined]
+                redirector=statement.redirector,
+                redirect_to=statement.redirect_to,
             )
         return statement
 
