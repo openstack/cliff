@@ -31,6 +31,12 @@ classifiers = [
 Homepage = "https://docs.openstack.org/cliff/"
 Repository = "https://opendev.org/openstack/cliff/"
 
+[project.optional-dependencies]
+sphinxext = [
+    "sphinx>=9.0.4",
+    "docutils>=0.21.2",
+]
+
 [project.entry-points."cliff.formatter.list"]
 table = "cliff.formatters.table:TableFormatter"
 csv = "cliff.formatters.commaseparated:CSVLister"
