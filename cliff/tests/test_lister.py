@@ -188,7 +188,7 @@ class TestLister(base.TestBase):
                 mock.call(
                     "Could not sort on field '%s'; unsortable types", col
                 )
-                for col in parsed_args.sort_columns
+                for col in parsed_args.columns
             ]
         )
 

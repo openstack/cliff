@@ -120,7 +120,7 @@ class Lister(
                     # Simply log and then ignore this; sorting is best effort
                     self.log.warning(
                         "Could not sort on field '%s'; unsortable types",
-                        parsed_args.sort_columns[index],
+                        column_names[index],
                     )
 
         columns_to_include, selector = self._generate_columns_and_selector(
