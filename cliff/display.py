@@ -135,12 +135,13 @@ class DisplayCommandBase(
         if not parsed_args.columns:
             return list(column_names), None
 
-        def normalize_column(column_name: str) -> str:
-            return column_name.lower().strip().replace(' ', '_')
-
-        requested_columns = [normalize_column(c) for c in parsed_args.columns]
+        requested_columns = [
+            self._normalize_column_name(c) for c in parsed_args.columns
+        ]
         columns_to_include = [
-            c for c in column_names if normalize_column(c) in requested_columns
+            c
+            for c in column_names
+            if self._normalize_column_name(c) in requested_columns
         ]
         if not columns_to_include:
             raise ValueError(
@@ -151,6 +152,10 @@ class DisplayCommandBase(
         # Set up argument to compress()
         selector = [(c in columns_to_include) for c in column_names]
         return columns_to_include, selector
+
+    @staticmethod
+    def _normalize_column_name(column_name: str) -> str:
+        return column_name.lower().strip().replace(' ', '_')
 
     def run(self, parsed_args: argparse.Namespace) -> int:
         parsed_args = self._run_before_hooks(parsed_args)

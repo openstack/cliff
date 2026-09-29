@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    Values passed to ``--sort-column`` are now normalized in the same way as
+    values passed to ``--column``. Sorting is therefore case-insensitive and
+    accepts underscores in place of spaces in column names, including leading
+    or trailing whitespace around the requested name.

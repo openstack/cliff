@@ -69,7 +69,8 @@ class Lister(
             help=(
                 'specify the column(s) to sort the data (columns specified '
                 'first have a priority, non-existing columns are ignored), '
-                'can be repeated'
+                'column names are case-insensitive and accept underscores '
+                'for spaces, can be repeated'
             ),
         )
         sort_dir_group = group.add_mutually_exclusive_group()
@@ -96,11 +97,20 @@ class Lister(
         data: Iterable[Sequence[Any]],
     ) -> int:
         if parsed_args.sort_columns and self.need_sort_by_cliff:
-            indexes = [
-                column_names.index(c)
-                for c in parsed_args.sort_columns
-                if c in column_names
+            normalized_column_names = [
+                self._normalize_column_name(c) for c in column_names
             ]
+            indexes = []
+            for column in parsed_args.sort_columns:
+                if column in column_names:
+                    indexes.append(column_names.index(column))
+                    continue
+
+                normalized_column = self._normalize_column_name(column)
+                if normalized_column in normalized_column_names:
+                    indexes.append(
+                        normalized_column_names.index(normalized_column)
+                    )
             reverse = parsed_args.sort_direction == 'desc'
             for index in indexes[::-1]:
                 try:

@@ -118,6 +118,66 @@ class TestLister(base.TestBase):
         data = list(args[1])
         self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
 
+    def test_sort_by_column_normalized(self):
+        test_lister = ExerciseLister(mock.Mock(), None)
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Col1', 'Col2')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = ['col2', 'COL1']
+
+        test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
+        args = f.args[0]
+        data = list(args[1])
+        self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
+
+    def test_sort_by_column_normalized_spaces(self):
+        test_lister = ExerciseLister(mock.Mock(), None)
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Column One', 'Column Two')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = ['column_two', 'column_one']
+
+        test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
+        args = f.args[0]
+        data = list(args[1])
+        self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
+
+    def test_sort_by_column_normalized_whitespace(self):
+        test_lister = ExerciseLister(mock.Mock(), None)
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Column One', 'Column Two')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = [' column_two ']
+
+        test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
+        args = f.args[0]
+        data = list(args[1])
+        self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
+
+    def test_sort_by_column_exact_match_takes_priority(self):
+        test_lister = ExerciseLister(mock.Mock(), None)
+        parsed_args = mock.Mock()
+        parsed_args.columns = ('Column One', 'column_one')
+        parsed_args.formatter = 'test'
+        parsed_args.sort_columns = ['column_one']
+
+        test_lister.run(parsed_args)
+
+        f = test_lister._formatter_plugins['test']
+        assert isinstance(f, FauxFormatter)
+        args = f.args[0]
+        data = list(args[1])
+        self.assertEqual([['a', 'A'], ['c', 'A'], ['b', 'B']], data)
+
     def test_sort_by_column_reverse_order(self):
         test_lister = ExerciseLister(mock.Mock(), None)
         parsed_args = mock.Mock()
