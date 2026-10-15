@@ -9,14 +9,20 @@ authors = [
     {name = "OpenStack", email = "openstack-discuss@lists.openstack.org"},
 ]
 readme = {file = "README.rst", content-type = "text/x-rst"}
-license = {text = "Apache-2.0"}
-dynamic = ["version", "dependencies"]
+license = "Apache-2.0"
+dynamic = ["version"]
+dependencies = [
+    "autopage>=0.4.0", # Apache 2.0
+    "cmd2>=4.0.0", # MIT
+    "PrettyTable>=0.7.2", # BSD
+    "PyYAML>=3.12", # MIT
+    "stevedore>=5.6.0", # Apache-2.0
+]
 requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -27,14 +33,31 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+[dependency-groups]
+doc = [
+    "openstackdocstheme>=2.2.1", # Apache-2.0
+    "sphinx>=5.0.0", # BSD
+]
+test = [
+    "fixtures>=3.0.0", # Apache-2.0/BSD
+    "sphinx>=5.0.0", # BSD
+    "stestr>=1.0.0", # Apache-2.0
+    "testtools>=2.8.0", # MIT
+]
+typing = [
+    "mypy", # MIT
+    "types-docutils", # Apache-2.0
+    "types-PyYAML", # Apache-2.0
+]
+
 [project.urls]
 Homepage = "https://docs.openstack.org/cliff/"
 Repository = "https://opendev.org/openstack/cliff/"
 
 [project.optional-dependencies]
 sphinxext = [
-    "sphinx>=9.0.4",
     "docutils>=0.21.2",
+    "sphinx>=9.0.4",
 ]
 
 [project.entry-points."cliff.formatter.list"]
@@ -71,10 +94,8 @@ hooked = "cliffdemo.hook:Hooked"
 [project.entry-points."cliff.demo.hooked"]
 sample-hook = "cliffdemo.hook:Hook"
 
-[tool.setuptools]
-packages = [
-    "cliff"
-]
+[tool.setuptools.packages.find]
+include = ["cliff*"]
 
 [tool.mypy]
 python_version = "3.11"
