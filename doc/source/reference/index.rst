@@ -41,6 +41,12 @@ ShowOne
 .. autoclass:: cliff.show.ShowOne
    :members:
 
+ShowOneWithDetails
+------------------
+
+.. autoclass:: cliff.show.ShowOneWithDetails
+   :members:
+
 Lister
 ------
 

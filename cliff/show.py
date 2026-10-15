@@ -71,3 +71,54 @@ class ShowOne(
             return ((), ())
         else:
             return (tuple(data.keys()), tuple(data.values()))
+
+
+class ShowOneWithDetails(
+    display.DisplayCommandBase[base_formatters.ListFormatter],
+    metaclass=abc.ABCMeta,
+):
+    """Display a single object's fields with additional columns.
+
+    Each row starts with a field name, followed by its value and any
+    additional details. The ``-c`` option selects fields (rows), not output
+    columns. Output is rendered using list formatters.
+    """
+
+    @property
+    def formatter_namespace(self) -> str:
+        return 'cliff.formatter.list'
+
+    @property
+    def formatter_default(self) -> str:
+        return 'table'
+
+    @abc.abstractmethod
+    def take_action(
+        self, parsed_args: argparse.Namespace
+    ) -> tuple[Sequence[str], Iterable[Sequence[Any]]]:
+        """Return output column names and an iterable of field rows.
+
+        The first item in each row must be a string containing the field
+        name used for selection with ``-c``. The remaining items contain
+        the field's value and additional details, in column order.
+        """
+
+    def produce_output(
+        self,
+        parsed_args: argparse.Namespace,
+        column_names: Sequence[str],
+        data: Iterable[Sequence[Any]],
+    ) -> int:
+        if parsed_args.columns:
+            rows = list(data)
+            field_names = [row[0] for row in rows]
+            _, selector = self._generate_columns_and_selector(
+                parsed_args, field_names
+            )
+            if selector:
+                data = self._compress_iterable(rows, selector)
+
+        self.formatter.emit_list(
+            column_names, data, self.app.stdout, parsed_args
+        )
+        return 0

@@ -20,6 +20,76 @@ iterable that contains the data values associated with those
 names. See the description of :ref:`the file command in the demoapp
 <demoapp-show>` for details.
 
+ShowOneWithDetails
+==================
+
+The :class:`cliff.show.ShowOneWithDetails` base class displays a single
+object's fields with additional columns, such as descriptions, types, or
+sources. Unlike :class:`~cliff.show.ShowOne`, it does not limit table output
+to ``Field`` and ``Value`` columns.
+
+Subclasses implement :meth:`~cliff.show.ShowOneWithDetails.take_action` to
+return a two-member tuple containing:
+
+* A sequence of output column names.
+* An iterable of rows, each containing values in output column order.
+  The first value in each row must be a string containing the resource's
+  field name.
+
+For example:
+
+.. code-block:: python
+
+    from cliff import show
+
+
+    class ShowResource(show.ShowOneWithDetails):
+        def take_action(self, parsed_args):
+            return (
+                ('Field', 'Value', 'Description'),
+                (
+                    ('name', 'demo', 'Resource name'),
+                    ('status', 'ACTIVE', 'Current resource status'),
+                ),
+            )
+
+As with ``ShowOne``, ``-c`` / ``--column`` selects resource fields (rows),
+not output columns. Selection is case-insensitive, ignores surrounding
+whitespace, and accepts underscores in place of spaces. Selected rows
+retain their original order and all their output columns. Unrecognized
+field names are ignored if at least one requested field is recognized;
+otherwise, selection raises an error.
+
+For example, ``resource show -c status`` would produce:
+
+.. code-block:: text
+
+    +--------+--------+-------------------------+
+    | Field  | Value  | Description             |
+    +--------+--------+-------------------------+
+    | status | ACTIVE | Current resource status |
+    +--------+--------+-------------------------+
+
+``ShowOneWithDetails`` uses the ``cliff.formatter.list`` plugins described
+in :doc:`list_commands`, with ``table`` as the default. Consequently, JSON
+and YAML output contain a list of row mappings rather than the single
+field-to-value mapping produced by ``ShowOne``. For example,
+``resource show -f json -c status`` would produce:
+
+.. code-block:: json
+
+    [
+      {
+        "Field": "status",
+        "Value": "ACTIVE",
+        "Description": "Current resource status"
+      }
+    ]
+
+CSV and value output also include every output column of each selected
+row. The show-only ``shell`` formatter and ``Lister`` sorting options are
+not available.
+
 Show Output Formatters
 ======================
 
