@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Added ``cliff.show.ShowOneWithDetails`` for displaying a single resource's
+    fields with additional output columns, such as descriptions or sources.
+    Like ``ShowOne``, its ``-c`` / ``--column`` option selects resource fields
+    (rows), not output columns. It uses list formatters, so JSON and YAML
+    output contain a list of row mappings rather than a single field-to-value
+    mapping.
