@@ -42,7 +42,14 @@ def _get_distributions_by_modules() -> dict[str, str]:
     if _dists_by_mods is None:
         # There can be multiple distribution in the case of namespace packages
         # so we'll just grab the first one
-        _dists_by_mods = {k: v[0] for k, v in packages_distributions().items()}
+        try:
+            _dists_by_mods = {
+                k: v[0] for k, v in packages_distributions().items()
+            }
+        except FileNotFoundError:
+            # MetadataNotFound is only available in Python 3.15+
+            # https://docs.python.org/3.15/library/importlib.metadata.html
+            _dists_by_mods = {}
     return _dists_by_mods
 
 
