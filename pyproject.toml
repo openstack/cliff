@@ -45,7 +45,7 @@ test = [
     "stestr>=1.0.0", # Apache-2.0
     "testtools>=2.8.0", # MIT
 ]
-typing = [
+types = [
     "mypy", # MIT
     "types-docutils", # Apache-2.0
     "types-PyYAML", # Apache-2.0
